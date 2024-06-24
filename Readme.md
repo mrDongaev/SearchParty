@@ -21,3 +21,9 @@
 
 ### Ссылка на доску задач:
 https://ru.yougile.com/team/9192842eeb1a/C%23-Professional/Найти-Пати
+
+#### Архитектура приложения
+![Architecture](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/app_schema.png)
+
+#### Схема сервиса профилей игроков и команд
+![schema](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/profile_and_teams_schema.png)
