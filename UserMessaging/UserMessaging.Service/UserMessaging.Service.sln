@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserMessaging.Service", "UserMessaging.Service\UserMessaging.Service.csproj", "{4AEB5CAE-59F5-48CC-AA62-90BEE4ED23FE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4AEB5CAE-59F5-48CC-AA62-90BEE4ED23FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AEB5CAE-59F5-48CC-AA62-90BEE4ED23FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AEB5CAE-59F5-48CC-AA62-90BEE4ED23FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AEB5CAE-59F5-48CC-AA62-90BEE4ED23FE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19649305-2195-4166-9560-5941913DA98A}
+	EndGlobalSection
+EndGlobal
