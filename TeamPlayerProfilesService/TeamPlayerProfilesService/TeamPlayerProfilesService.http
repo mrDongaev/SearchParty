@@ -1,0 +1,6 @@
+@TeamPlayerProfilesService_HostAddress = http://localhost:5005
+
+GET {{TeamPlayerProfilesService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
