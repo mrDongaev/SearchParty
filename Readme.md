@@ -27,7 +27,7 @@ https://ru.yougile.com/team/9192842eeb1a/C%23-Professional/Найти-Пати
 ![schema](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/profile_and_teams_schema_v2.png)
 
 #### Сценарии использования системы авторизации и профиля пользователя
-![use-case](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/auth_use_case.png.png)
+![use-case](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/auth_use_case.png)
 
 #### Сценарии использования управлением собственными профилями команд и игроков
 ![use-case](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/profiles_use_case.png)
