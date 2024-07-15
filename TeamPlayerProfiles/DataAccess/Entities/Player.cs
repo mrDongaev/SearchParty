@@ -14,11 +14,11 @@ namespace DataAccess.Entities
 
         public bool Displayed { get; set; }
 
+        public Position Position { get; set; }
+
         public DateTime UpdatedAt { get; set; }
 
         public int PositionId { get; set; }
-
-        public Position Position { get; set; }
 
         public ICollection<Hero> Heroes { get; set; } = [];
 

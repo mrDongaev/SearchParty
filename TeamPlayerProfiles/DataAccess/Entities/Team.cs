@@ -20,6 +20,6 @@ namespace DataAccess.Entities
 
         public ICollection<Player> Players { get; set; } = [];
 
-        public ICollection<TeamPlayer> TeamComps { get; set; } = [];
+        public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
     }
 }

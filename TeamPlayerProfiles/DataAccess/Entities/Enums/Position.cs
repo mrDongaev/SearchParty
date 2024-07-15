@@ -2,10 +2,10 @@
 {
     public enum Position
     {
-        Carry,
-        Midlane,
-        Offlane,
-        Roamer,
-        Support
+        Carry = 1,
+        Midlane = 2,
+        Offlane = 3,
+        Roamer = 4,
+        Support = 5,
     }
 }
