@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using DataAccess.Entities;
+﻿using DataAccess.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Context.Configurations
 {
-    public class PlayerConfiguration: ProfileConfiguration<Player>
+    public class PlayerConfiguration : ProfileConfiguration<Player>
     {
         public override void Configure(EntityTypeBuilder<Player> builder)
         {

@@ -2,7 +2,7 @@
 
 namespace DataAccess.Repositories.Interfaces
 {
-    public interface IPlayerRepository: IRepository<Player, Guid>
+    public interface IPlayerRepository : IRepository<Player, Guid>
     {
     }
 }

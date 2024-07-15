@@ -1,6 +1,6 @@
 ﻿using DataAccess.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Enums = DataAccess.Entities.Enums;
 
 namespace DataAccess.Context.Configurations

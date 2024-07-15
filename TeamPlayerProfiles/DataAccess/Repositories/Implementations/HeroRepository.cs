@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class HeroRepository(DbContext context): Repository<Hero, int>(context), IHeroRepository
+    public class HeroRepository(DbContext context) : Repository<Hero, int>(context), IHeroRepository
     {
 
     }

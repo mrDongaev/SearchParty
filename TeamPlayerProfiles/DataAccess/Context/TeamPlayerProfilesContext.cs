@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Context
 {
-    public class TeamPlayerProfilesContext: DbContext
+    public class TeamPlayerProfilesContext : DbContext
     {
         public DbSet<Team> Teams { get; set; }
 
@@ -25,8 +25,6 @@ namespace DataAccess.Context
             modelBuilder.ApplyConfiguration(new TeamConfiguration());
             modelBuilder.ApplyConfiguration(new PositionConfiguration());
             modelBuilder.ApplyConfiguration(new HeroConfiguration());
-
-            
         }
     }
 }

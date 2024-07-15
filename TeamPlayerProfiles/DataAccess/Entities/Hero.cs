@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using DataAccess.Entities.Enums;
+﻿using DataAccess.Entities.Enums;
 using DataAccess.Entities.Interfaces;
 
 namespace DataAccess.Entities
 {
     public class Hero : IEntity<int>
     {
-        public int Id {  get; set; }
+        public int Id { get; set; }
 
         public string Name { get; set; }
 

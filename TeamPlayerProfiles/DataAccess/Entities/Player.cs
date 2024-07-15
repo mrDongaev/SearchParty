@@ -2,7 +2,7 @@
 
 namespace DataAccess.Entities
 {
-    public class Player: IProfile
+    public class Player : IProfile
     {
         public Guid Id { get; set; }
 

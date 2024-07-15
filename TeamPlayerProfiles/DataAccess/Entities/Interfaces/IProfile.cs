@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DataAccess.Entities.Interfaces
+﻿namespace DataAccess.Entities.Interfaces
 {
     public interface IProfile : IEntity<Guid>, IUpdateable
     {

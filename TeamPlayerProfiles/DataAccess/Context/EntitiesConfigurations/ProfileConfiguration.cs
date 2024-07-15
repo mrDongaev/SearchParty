@@ -1,7 +1,6 @@
-﻿using DataAccess.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using DataAccess.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using DataAccess.Entities.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Context.Configurations
 {
