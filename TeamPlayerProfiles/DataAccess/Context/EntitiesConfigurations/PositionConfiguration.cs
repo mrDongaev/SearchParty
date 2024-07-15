@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Enums = DataAccess.Entities.Enums;
 
-namespace DataAccess.Context.Configurations
+namespace DataAccess.Context.EntitiesConfigurations
 {
     public class PositionConfiguration : IEntityTypeConfiguration<Position>
     {
@@ -12,16 +12,6 @@ namespace DataAccess.Context.Configurations
             builder.Property(e => e.Name)
                 .IsRequired()
                 .HasConversion(e => e.ToString(), e => Enum.Parse<Enums.Position>(e));
-
-            builder.HasMany(e => e.Players)
-                .WithOne(e => e.Position)
-                .HasForeignKey(e => e.PositionId)
-                .IsRequired();
-
-            builder.HasMany(e => e.TeamPlayers)
-                .WithOne(e => e.Position)
-                .HasForeignKey(e => e.PositionId)
-                .IsRequired();
 
             SeedData(builder);
         }

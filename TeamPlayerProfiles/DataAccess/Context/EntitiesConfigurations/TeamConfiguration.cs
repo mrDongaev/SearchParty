@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DataAccess.Context.Configurations
+namespace DataAccess.Context.EntitiesConfigurations
 {
     public class TeamConfiguration : ProfileConfiguration<Team>
     {

@@ -7,9 +7,5 @@ namespace DataAccess.Entities
         public int Id { get; set; }
 
         public Enums.Position Name { get; set; }
-
-        public ICollection<Player> Players { get; set; }
-
-        public ICollection<TeamPlayer> TeamPlayers { get; set; }
     }
 }

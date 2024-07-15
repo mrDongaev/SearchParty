@@ -1,7 +1,7 @@
 ﻿using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DataAccess.Context.Configurations
+namespace DataAccess.Context.EntitiesConfigurations
 {
     public class PlayerConfiguration : ProfileConfiguration<Player>
     {
@@ -9,6 +9,14 @@ namespace DataAccess.Context.Configurations
         {
             builder.Property(e => e.Position)
                 .IsRequired();
+
+            builder.HasOne(e => e.Position)
+                .WithMany()
+                .HasForeignKey(e => e.PositionId)
+                .IsRequired();
+
+            builder.HasMany(e => e.Heroes)
+                .WithMany();
 
             base.Configure(builder);
         }

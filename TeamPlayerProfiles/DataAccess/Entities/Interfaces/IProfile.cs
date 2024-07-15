@@ -2,13 +2,13 @@
 {
     public interface IProfile : IEntity<Guid>, IUpdateable
     {
-        public Guid UserId { get; set; }
+        Guid UserId { get; set; }
 
-        public string Name { get; set; }
+        string Name { get; set; }
 
-        public string Description { get; set; }
+        string Description { get; set; }
 
-        public bool Displayed { get; set; }
+        bool Displayed { get; set; }
 
     }
 }

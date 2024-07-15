@@ -3,7 +3,7 @@ using DataAccess.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DataAccess.Context.Configurations
+namespace DataAccess.Context.EntitiesConfigurations
 {
     public class HeroConfiguration : IEntityTypeConfiguration<Hero>
     {
@@ -15,9 +15,6 @@ namespace DataAccess.Context.Configurations
             builder.Property(e => e.MainStat)
                 .IsRequired()
                 .HasConversion(e => e.ToString(), e => Enum.Parse<MainStat>(e));
-
-            builder.HasMany(e => e.Players)
-                .WithMany();
 
             SeedData(builder);
         }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DataAccess.Context.Configurations
+namespace DataAccess.Context.EntitiesConfigurations
 {
     public abstract class ProfileConfiguration<T> : IEntityTypeConfiguration<T> where T : class, IProfile
     {

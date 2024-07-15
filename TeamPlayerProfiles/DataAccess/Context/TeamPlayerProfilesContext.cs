@@ -1,4 +1,4 @@
-﻿using DataAccess.Context.Configurations;
+﻿using DataAccess.Context.EntitiesConfigurations;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +21,11 @@ namespace DataAccess.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new PlayerConfiguration());
-            modelBuilder.ApplyConfiguration(new TeamConfiguration());
             modelBuilder.ApplyConfiguration(new PositionConfiguration());
             modelBuilder.ApplyConfiguration(new HeroConfiguration());
+            modelBuilder.ApplyConfiguration(new PlayerConfiguration());
+            modelBuilder.ApplyConfiguration(new TeamConfiguration());
+            modelBuilder.ApplyConfiguration(new TeamPlayerConfiguration());
         }
     }
 }
