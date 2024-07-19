@@ -25,7 +25,7 @@ namespace DataAccess.Repositories.Implementations
         /// </summary>
         /// <param name="cancellationToken"> Токен отмены </param>
         /// <returns> Список сущностей. </returns>
-        public async Task<ICollection<T>> GetAll(CancellationToken cancellationToken)
+        public virtual async Task<ICollection<T>> GetAll(CancellationToken cancellationToken)
         {
             return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
         }
@@ -46,23 +46,26 @@ namespace DataAccess.Repositories.Implementations
         /// </summary>
         /// <param name="entities"> Массив сущностей. </param>
         /// <param name="cancellationToken"> Токен отмены </param>
-        public virtual async Task AddRange(ICollection<T> entities, CancellationToken cancellationToken)
+        public virtual async Task<bool> AddRange(ICollection<T> entities, CancellationToken cancellationToken)
         {
             if (entities == null || !entities.Any())
             {
-                return;
+                return false;
             }
             await _dbSet.AddRangeAsync(entities, cancellationToken);
+            return true;
         }
 
         /// <summary>
         /// Для сущности проставить состояние - что она изменена.
         /// </summary>
         /// <param name="entity"> Сущность для изменения. </param>
-        public virtual async Task Update(T entity, CancellationToken cancellationToken)
+        public virtual async Task<T> Update(T entity, CancellationToken cancellationToken)
         {
-            context.Entry(entity).State = EntityState.Modified;
+            var entry = context.Entry(entity);
+            entry.State = EntityState.Modified;
             await context.SaveChangesAsync(cancellationToken);
+            return entry.Entity;
         }
 
         /// <summary>

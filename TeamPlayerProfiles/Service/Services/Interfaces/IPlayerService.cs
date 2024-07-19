@@ -2,7 +2,7 @@
 
 namespace Service.Services.Interfaces
 {
-    public interface IPlayerService: IProfileService<PlayerDto, UpdatePlayerDto, CreatePlayerDto>
+    public interface IPlayerService : IProfileService<PlayerDto, UpdatePlayerDto, CreatePlayerDto>, IRangeGettable<PlayerDto, Guid>
     {
     }
 }

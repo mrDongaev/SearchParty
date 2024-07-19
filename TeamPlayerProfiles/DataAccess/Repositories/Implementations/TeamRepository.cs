@@ -4,8 +4,96 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class TeamRepository(DbContext context) : Repository<Team, Guid>(context), ITeamRepository
+    public class TeamRepository(DbContext context, IPlayerRepository playerRepo) : ProfileRepository<Team>(context), ITeamRepository
     {
+        private readonly DbSet<Team> _teams = context.Set<Team>();
 
+        public override async Task<ICollection<Team>> GetAll(CancellationToken cancellationToken)
+        {
+            return await _teams
+                .AsNoTracking()
+                .Include(t => t.Players)
+                .ThenInclude(p => p.Heroes)
+                .Include(t => t.TeamPlayers)
+                .ThenInclude(tp => tp.Position)
+                .ToListAsync(cancellationToken);
+        }
+
+        public override async Task<Team> Get(Guid id, CancellationToken cancellationToken)
+        {
+            return await _teams
+                .AsNoTracking()
+                .Include(t => t.Players)
+                .ThenInclude(p => p.Heroes)
+                .Include(t => t.TeamPlayers)
+                .ThenInclude(tp => tp.Position)
+                .SingleAsync(t => t.Id == id, cancellationToken);
+        }
+
+        public override async Task<Team> Update(Team team, CancellationToken cancellationToken)
+        {
+            var existingTeam = await _teams
+                .Include(t => t.Players)
+                .ThenInclude(p => p.Heroes)
+                .Include(t => t.TeamPlayers)
+                .ThenInclude(tp => tp.Position)
+                .SingleAsync(t => t.Id == team.Id, cancellationToken);
+            if (existingTeam == null)
+            {
+                throw new Exception($"Профиль команды с Id = {team.Id} не найден");
+            }
+            existingTeam.Name = team.Name;
+            existingTeam.Description = team.Description;
+            existingTeam.Displayed = team.Displayed;
+            var existingPlayerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId).ToList();
+            var updatedPlayerIds = team.TeamPlayers.Select(tp => tp.PlayerId).ToList();
+            var playerIdsToAdd = updatedPlayerIds.Except(existingPlayerIds).ToList();
+            var playerIdsToRemove = existingPlayerIds.Except(updatedPlayerIds);
+            if (playerIdsToRemove.Any())
+            {
+                var playersToRemove = existingTeam.Players
+                    .Where(p => playerIdsToRemove.Contains(p.Id))
+                    .ToList();
+                foreach (var player in playersToRemove)
+                {
+                    existingTeam.Players.Remove(player);
+                }
+                context.ChangeTracker.DetectChanges();
+                var teamPlayersToRemove = existingTeam.TeamPlayers
+                    .Where(tp => playerIdsToRemove.Contains(tp.PlayerId))
+                    .ToList();
+                foreach (var teamPlayer in teamPlayersToRemove)
+                {
+                    existingTeam.TeamPlayers.Remove(teamPlayer);
+                }
+            }
+            if (playerIdsToAdd.Any())
+            {
+                var playersToAdd = await playerRepo.GetRange(playerIdsToAdd, cancellationToken);
+                foreach (var player in playersToAdd)
+                {
+                    existingTeam.Players.Add(player);
+                }
+                context.ChangeTracker.DetectChanges();
+                var teamPlayersToAdd = team.TeamPlayers
+                    .Where(tp => playerIdsToAdd.Contains(tp.PlayerId))
+                    .ToList();
+                foreach (var teamPlayer in teamPlayersToAdd)
+                {
+                    existingTeam.TeamPlayers.Add(new TeamPlayer()
+                    {
+                        TeamId = teamPlayer.TeamId,
+                        PlayerId = teamPlayer.PlayerId,
+                        Position = new Position()
+                        {
+                            Id = teamPlayer.PositionId,
+                            Name = teamPlayer.Position.Name
+                        },
+                    });
+                }
+            }
+            await context.SaveChangesAsync(cancellationToken);
+            return existingTeam;
+        }
     }
 }

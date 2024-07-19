@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using Service.Contracts.Team;
-using System;
 
 namespace Service.Mapping
 {

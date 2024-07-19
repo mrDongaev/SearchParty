@@ -2,7 +2,7 @@
 
 namespace DataAccess.Entities
 {
-    public class Player : IProfile
+    public class Player : IProfile, IUpdateable
     {
         public Guid Id { get; set; }
 
@@ -20,10 +20,10 @@ namespace DataAccess.Entities
 
         public int PositionId { get; set; }
 
-        public ICollection<Hero> Heroes { get; set; } = [];
+        public ICollection<Hero> Heroes { get; protected set; } = [];
 
-        public ICollection<Team> Teams { get; set; } = [];
+        public ICollection<Team> Teams { get; protected set; } = [];
 
-        public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
+        public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
     }
 }

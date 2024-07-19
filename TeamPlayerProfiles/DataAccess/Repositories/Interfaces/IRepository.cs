@@ -46,7 +46,7 @@ namespace DataAccess.Repositories.Interfaces
         /// </summary>
         /// <param name="entity"> Сущность для изменения. </param>
         /// <param name="cancellationToken"> Токен отмены </param>
-        Task Update(T entity, CancellationToken cancellationToken);
+        Task<T> Update(T entity, CancellationToken cancellationToken);
 
         /// <summary>
         /// Добавить в базу одну сущность.
@@ -61,6 +61,6 @@ namespace DataAccess.Repositories.Interfaces
         /// </summary>
         /// <param name="entities"> Массив сущностей. </param>
         /// <param name="cancellationToken"> Токен отмены </param>
-        Task AddRange(ICollection<T> entities, CancellationToken cancellationToken);
+        Task<bool> AddRange(ICollection<T> entities, CancellationToken cancellationToken);
     }
 }

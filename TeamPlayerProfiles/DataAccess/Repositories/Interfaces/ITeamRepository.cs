@@ -2,7 +2,7 @@
 
 namespace DataAccess.Repositories.Interfaces
 {
-    public interface ITeamRepository : IRepository<Team, Guid>
+    public interface ITeamRepository : IProfileRepository<Team>
     {
 
     }

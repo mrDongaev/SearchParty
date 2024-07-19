@@ -1,23 +1,28 @@
-﻿using Service.Contracts.Hero;
+﻿using AutoMapper;
+using DataAccess.Repositories.Interfaces;
+using Service.Contracts.Hero;
 using Service.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services.Implementations
 {
-    public class HeroService : IHeroService
+    public class HeroService(IMapper mapper, IHeroRepository heroRepo) : IHeroService
     {
-        public Task<HeroDto> Get(int id)
+        public async Task<HeroDto> Get(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var hero = await heroRepo.Get(id, cancellationToken);
+            return mapper.Map<HeroDto>(hero);
         }
 
-        public Task<ICollection<HeroDto>> GetAll()
+        public async Task<ICollection<HeroDto>> GetAll(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var heroes = await heroRepo.GetAll(cancellationToken);
+            return mapper.Map<ICollection<HeroDto>>(heroes);
+        }
+
+        public async Task<ICollection<HeroDto>> GetRange(ICollection<int> ids, CancellationToken cancellationToken = default)
+        {
+            var heroes = await heroRepo.GetRange(ids, cancellationToken);
+            return mapper.Map<ICollection<HeroDto>>(heroes);
         }
     }
 }

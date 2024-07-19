@@ -18,8 +18,8 @@ namespace DataAccess.Entities
 
         public int PlayerCount { get; set; }
 
-        public ICollection<Player> Players { get; set; } = [];
+        public ICollection<Player> Players { get; protected set; } = [];
 
-        public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
+        public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
     }
 }

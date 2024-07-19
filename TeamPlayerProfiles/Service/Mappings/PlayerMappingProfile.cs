@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
-using Enums = DataAccess.Entities.Enums;
 using Service.Contracts.Player;
+using Enums = DataAccess.Entities.Enums;
 
 namespace Service.Mapping
 {

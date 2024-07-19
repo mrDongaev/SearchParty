@@ -2,7 +2,7 @@
 
 namespace Service.Services.Interfaces
 {
-    internal interface ITeamService: IProfileService<TeamDto, UpdateTeamDto, CreateTeamDto>
+    public interface ITeamService : IProfileService<TeamDto, UpdateTeamDto, CreateTeamDto>
     {
     }
 }

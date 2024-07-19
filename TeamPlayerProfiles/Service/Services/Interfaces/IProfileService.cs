@@ -13,20 +13,20 @@
         /// </summary>
         /// <param name="id"> Идентификатор</param>
         /// <returns> ДТО удалённого профиля</returns>
-        Task<TGetDto> Delete(Guid id);
+        Task<bool> Delete(Guid id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Создать профиль
         /// </summary>
         /// <param name="dto">ДТО создаваемого профиля</param>
         /// <returns>ДТО созданного профиля</returns>
-        Task<TGetDto> Create(TCreateDto dto);
+        Task<TGetDto> Create(TCreateDto dto, CancellationToken cancellationToken);
 
         /// <summary>
         /// Обновить данные профиля
         /// </summary>
         /// <param name="dto">ДТО обновляемого профиля</param>
         /// <returns>ДТО обновлённого профиля</returns>
-        Task<TGetDto> Update(TUpdateDto dto);
+        Task<TGetDto> Update(TUpdateDto dto, CancellationToken cancellationToken);
     }
 }
