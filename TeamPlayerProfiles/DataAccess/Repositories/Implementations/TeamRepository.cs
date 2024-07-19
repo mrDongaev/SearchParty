@@ -36,7 +36,6 @@ namespace DataAccess.Repositories.Implementations
                 .Include(t => t.Players)
                 .ThenInclude(p => p.Heroes)
                 .Include(t => t.TeamPlayers)
-                .ThenInclude(tp => tp.Position)
                 .SingleAsync(t => t.Id == team.Id, cancellationToken);
             if (existingTeam == null)
             {
@@ -45,6 +44,7 @@ namespace DataAccess.Repositories.Implementations
             existingTeam.Name = team.Name;
             existingTeam.Description = team.Description;
             existingTeam.Displayed = team.Displayed;
+            existingTeam.UpdatedAt = DateTime.UtcNow;
             var existingPlayerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId).ToList();
             var updatedPlayerIds = team.TeamPlayers.Select(tp => tp.PlayerId).ToList();
             var playerIdsToAdd = updatedPlayerIds.Except(existingPlayerIds).ToList();
@@ -67,7 +67,7 @@ namespace DataAccess.Repositories.Implementations
                     existingTeam.TeamPlayers.Remove(teamPlayer);
                 }
             }
-            if (playerIdsToAdd.Any())
+            if (playerIdsToAdd.Count != 0)
             {
                 var playersToAdd = await playerRepo.GetRange(playerIdsToAdd, cancellationToken);
                 foreach (var player in playersToAdd)
@@ -84,11 +84,7 @@ namespace DataAccess.Repositories.Implementations
                     {
                         TeamId = teamPlayer.TeamId,
                         PlayerId = teamPlayer.PlayerId,
-                        Position = new Position()
-                        {
-                            Id = teamPlayer.PositionId,
-                            Name = teamPlayer.Position.Name
-                        },
+                        Position = teamPlayer.Position,
                     });
                 }
             }

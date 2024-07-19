@@ -13,11 +13,5 @@ namespace DataAccess.Repositories.Implementations
             profile.UpdatedAt = DateTime.UtcNow;
             return await base.Add(profile, cancellationToken);
         }
-
-        public override async Task<TProfile> Update(TProfile profile, CancellationToken cancellationToken)
-        {
-            profile.UpdatedAt = DateTime.UtcNow;
-            return await base.Update(profile, cancellationToken);
-        }
     }
 }

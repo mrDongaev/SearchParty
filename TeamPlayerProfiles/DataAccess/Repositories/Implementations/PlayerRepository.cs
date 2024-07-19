@@ -45,6 +45,7 @@ namespace DataAccess.Repositories.Implementations
             existingPlayer.Description = player.Description;
             existingPlayer.Displayed = player.Displayed;
             existingPlayer.Position = player.Position;
+            existingPlayer.UpdatedAt = DateTime.UtcNow;
             var existingHeroIds = existingPlayer.Heroes.Select(p => p.Id).ToList();
             var updatedHeroIds = player.Heroes.Select(p => p.Id).ToList();
             var heroIdsToAdd = updatedHeroIds.Except(existingHeroIds).ToList();
@@ -59,7 +60,7 @@ namespace DataAccess.Repositories.Implementations
                     existingPlayer.Heroes.Remove(hero);
                 }
             }
-            if (heroIdsToAdd.Any())
+            if (heroIdsToAdd.Count != 0)
             {
                 var heroesToAdd = await heroRepo.GetRange(heroIdsToAdd, cancellationToken);
                 foreach (var hero in heroesToAdd)
