@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities.Interfaces;
+using EnumPosition = Common.Models.Enums.Position;
 
 namespace DataAccess.Entities
 {
@@ -6,6 +7,6 @@ namespace DataAccess.Entities
     {
         public int Id { get; set; }
 
-        public Enums.Position Name { get; set; }
+        public EnumPosition Name { get; set; }
     }
 }

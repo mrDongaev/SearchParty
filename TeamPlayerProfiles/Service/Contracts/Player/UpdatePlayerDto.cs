@@ -1,4 +1,5 @@
 ﻿using Service.Contracts.Hero;
+using EnumPosition = Common.Models.Enums.Position;
 
 namespace Service.Contracts.Player
 {
@@ -10,7 +11,7 @@ namespace Service.Contracts.Player
 
         public string Description { get; set; }
 
-        public string Position { get; set; }
+        public EnumPosition Position { get; set; }
 
         public ICollection<HeroDto> Heroes { get; set; }
     }

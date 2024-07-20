@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using EnumPosition = DataAccess.Entities.Enums.Position;
+using EnumPosition = Common.Models.Enums.Position;
 using Service.Contracts.Team;
 using Service.Services.Interfaces;
 
@@ -15,9 +15,8 @@ namespace Service.Services.Implementations
             var players = await playerRepo.GetRange(dto.Players.Select(p => p.PlayerId).ToList(), cancellationToken);
             foreach (var player in players)
             {
-                team.Players.Add(player);
-                string posString = dto.Players.Single(tp => tp.PlayerId == player.Id).Position;
-                EnumPosition pos = Enum.Parse<EnumPosition>(posString);
+                team.Players.Add(player); 
+                EnumPosition pos = dto.Players.Single(tp => tp.PlayerId == player.Id).Position;
                 team.TeamPlayers.Add(new TeamPlayer()
                 {
                     TeamId = team.Id,
@@ -63,8 +62,7 @@ namespace Service.Services.Implementations
             foreach (var player in players)
             {
                 team.Players.Add(player);
-                string posString = dto.Players.Single(tp => tp.PlayerId == player.Id).Position;
-                EnumPosition pos = Enum.Parse<EnumPosition>(posString);
+                EnumPosition pos = dto.Players.Single(tp => tp.PlayerId == player.Id).Position;
                 team.TeamPlayers.Add(new TeamPlayer()
                 {
                     TeamId = team.Id,

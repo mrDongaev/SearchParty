@@ -1,4 +1,6 @@
-﻿namespace Service.Contracts.Hero
+﻿using Common.Models.Enums;
+
+namespace Service.Contracts.Hero
 {
     /// <summary>
     /// ДТО героя
@@ -9,6 +11,6 @@
 
         public string Name { get; set; }
 
-        public string MainStat { get; set; }
+        public MainStat MainStat { get; set; }
     }
 }
