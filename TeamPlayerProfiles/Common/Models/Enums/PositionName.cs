@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Models.Enums
 {
-    public enum Position
+    public enum PositionName
     {
         Carry = 1,
         Midlane = 2,

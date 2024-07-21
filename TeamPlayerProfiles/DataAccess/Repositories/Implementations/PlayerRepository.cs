@@ -59,6 +59,7 @@ namespace DataAccess.Repositories.Implementations
                 {
                     existingPlayer.Heroes.Remove(hero);
                 }
+                context.ChangeTracker.DetectChanges();
             }
             if (heroIdsToAdd.Count != 0)
             {
@@ -67,6 +68,7 @@ namespace DataAccess.Repositories.Implementations
                 {
                     existingPlayer.Heroes.Add(hero);
                 }
+                context.ChangeTracker.DetectChanges();
             }
             await context.SaveChangesAsync(cancellationToken);
             return existingPlayer;

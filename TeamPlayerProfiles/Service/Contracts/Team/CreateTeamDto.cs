@@ -1,4 +1,6 @@
-﻿namespace Service.Contracts.Team
+﻿using Common.Models;
+
+namespace Service.Contracts.Team
 {
     public class CreateTeamDto
     {
@@ -8,6 +10,6 @@
 
         public string Description { get; set; }
 
-        public ICollection<PlayerInTeamDto> Players { get; set; }
+        public ICollection<PlayerInTeam> Players { get; set; }
     }
 }

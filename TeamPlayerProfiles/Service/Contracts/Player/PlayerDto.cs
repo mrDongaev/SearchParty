@@ -1,5 +1,5 @@
 ﻿using Service.Contracts.Hero;
-using EnumPosition = Common.Models.Enums.Position;
+using Common.Models.Enums;
 
 namespace Service.Contracts.Player
 {
@@ -15,9 +15,9 @@ namespace Service.Contracts.Player
 
         public bool Displayed { get; set; }
 
-        public EnumPosition Position { get; set; }
+        public PositionName Position { get; set; }
 
-        public ICollection<HeroDto> Heroes { get; set; }
+        public ISet<HeroDto> Heroes { get; set; }
 
         public DateTime UpdatedAt { get; set; }
     }

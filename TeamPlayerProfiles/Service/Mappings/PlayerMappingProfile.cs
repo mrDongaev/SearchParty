@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using Service.Contracts.Player;
-using EnumPosition = Common.Models.Enums.Position;
+using Common.Models.Enums;
 
 namespace Service.Mapping
 {
@@ -19,6 +19,7 @@ namespace Service.Mapping
 
             CreateMap<UpdatePlayerDto, Player>()
                 .ForMember(d => d.UserId, m => m.Ignore())
+                .ForMember(d => d.Displayed, m => m.Ignore())
                 .ForMember(d => d.PositionId, m => m.MapFrom(src => (int)src.Position))
                 .ForMember(d => d.Teams, m => m.Ignore())
                 .ForMember(d => d.TeamPlayers, m => m.Ignore());

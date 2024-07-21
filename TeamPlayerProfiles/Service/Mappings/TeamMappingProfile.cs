@@ -23,7 +23,6 @@ namespace Service.Mapping
                 .ForMember(d => d.PlayerCount, m => m.MapFrom(src => src.Players.Count))
                 .ForMember(d => d.Players, m => m.Ignore())
                 .ForMember(d => d.TeamPlayers, m => m.Ignore());
-
         }
     }
 }
