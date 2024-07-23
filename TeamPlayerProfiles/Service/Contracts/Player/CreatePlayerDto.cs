@@ -1,5 +1,5 @@
-﻿using Service.Contracts.Hero;
-using Common.Models.Enums;
+﻿using Common.Models.Enums;
+using Service.Contracts.Hero;
 
 namespace Service.Contracts.Player
 {

@@ -14,8 +14,9 @@ namespace DataAccess.Context
 
         public DbSet<Position> Positions { get; set; }
 
-        public TeamPlayerProfilesContext(DbContextOptions<TeamPlayerProfilesContext> options)
+        public TeamPlayerProfilesContext(DbContextOptions<TeamPlayerProfilesContext> options) : base(options)
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 

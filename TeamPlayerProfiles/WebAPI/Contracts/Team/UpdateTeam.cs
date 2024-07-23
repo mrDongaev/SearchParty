@@ -1,5 +1,4 @@
 ﻿using Common.Models;
-using Common.Models.Enums;
 
 namespace WebAPI.Contracts.Team
 {

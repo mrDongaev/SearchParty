@@ -1,4 +1,6 @@
-﻿namespace Service.Contracts.Position
+﻿using Common.Models.Enums;
+
+namespace Service.Contracts.Position
 {
     /// <summary>
     /// Позиция игрока
@@ -7,6 +9,6 @@
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public PositionName Name { get; set; }
     }
 }

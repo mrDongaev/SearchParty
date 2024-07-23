@@ -2,7 +2,7 @@
 using Service.Contracts.Team;
 using WebAPI.Contracts.Team;
 
-namespace WebAPI.Mappings
+namespace WebAPI.Mapping
 {
     public class TeamMappingProfile : Profile
     {

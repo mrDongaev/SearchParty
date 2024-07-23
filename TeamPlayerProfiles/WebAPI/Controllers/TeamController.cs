@@ -3,7 +3,7 @@
 namespace WebAPI.Controllers
 {
     [Route("[controller]")]
-    public class TeamController(I): WebApiController
+    public class TeamController() : WebApiController
     {
     }
 }

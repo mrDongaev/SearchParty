@@ -1,5 +1,5 @@
-﻿using DataAccess.Entities;
-using Common.Models.Enums;
+﻿using Common.Models.Enums;
+using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

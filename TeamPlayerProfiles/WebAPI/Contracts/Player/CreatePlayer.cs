@@ -1,6 +1,4 @@
-﻿using Service.Contracts.Hero;
-using WebAPI.Contracts.Hero;
-using Common.Models.Enums;
+﻿using Common.Models.Enums;
 
 namespace WebAPI.Contracts.Player
 {

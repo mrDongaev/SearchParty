@@ -1,4 +1,5 @@
 ﻿using Common.Models.Enums;
+using System.Text.Json.Serialization;
 
 namespace WebAPI.Contracts.Position
 {
@@ -8,6 +9,7 @@ namespace WebAPI.Contracts.Position
         {
             public int Id { get; set; }
 
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public PositionName Name { get; set; }
         }
     }

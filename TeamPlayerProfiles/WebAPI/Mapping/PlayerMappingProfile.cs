@@ -2,7 +2,7 @@
 using Service.Contracts.Player;
 using WebAPI.Contracts.Player;
 
-namespace WebAPI.Mappings
+namespace WebAPI.Mapping
 {
     public class PlayerMappingProfile : Profile
     {
@@ -12,7 +12,7 @@ namespace WebAPI.Mappings
 
             CreateMap<CreatePlayer.Request, CreatePlayerDto>();
 
-            CreateMap<UpdatePlayer.Request, UpdatePlayerDto>(); 
+            CreateMap<UpdatePlayer.Request, UpdatePlayerDto>();
         }
     }
 }

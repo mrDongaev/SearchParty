@@ -2,7 +2,7 @@
 using Service.Contracts.Hero;
 using WebAPI.Contracts.Hero;
 
-namespace WebAPI.Mappings
+namespace WebAPI.Mapping
 {
     public class HeroMappingProfile : Profile
     {

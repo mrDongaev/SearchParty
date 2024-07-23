@@ -1,10 +1,10 @@
-﻿using DataAccess.Entities.Interfaces;
+﻿using DataAccess.Context;
+using DataAccess.Entities.Interfaces;
 using DataAccess.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public abstract class ProfileRepository<TProfile>(DbContext context) : Repository<TProfile, Guid>(context), IProfileRepository<TProfile> where TProfile : class, IProfile
+    public abstract class ProfileRepository<TProfile>(TeamPlayerProfilesContext context) : Repository<TProfile, Guid>(context), IProfileRepository<TProfile> where TProfile : class, IProfile
     {
         public override async Task<TProfile> Add(TProfile profile, CancellationToken cancellationToken)
         {

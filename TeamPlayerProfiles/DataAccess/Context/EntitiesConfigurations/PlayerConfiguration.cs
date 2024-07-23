@@ -7,9 +7,6 @@ namespace DataAccess.Context.EntitiesConfigurations
     {
         public override void Configure(EntityTypeBuilder<Player> builder)
         {
-            builder.Property(e => e.Position)
-                .IsRequired();
-
             builder.HasOne(e => e.Position)
                 .WithMany()
                 .HasForeignKey(e => e.PositionId)

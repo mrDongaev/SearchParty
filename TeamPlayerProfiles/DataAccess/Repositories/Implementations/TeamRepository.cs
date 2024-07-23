@@ -1,10 +1,11 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Context;
+using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class TeamRepository(DbContext context, IPlayerRepository playerRepo) : ProfileRepository<Team>(context), ITeamRepository
+    public class TeamRepository(TeamPlayerProfilesContext context, IPlayerRepository playerRepo) : ProfileRepository<Team>(context), ITeamRepository
     {
         private readonly DbSet<Team> _teams = context.Set<Team>();
 

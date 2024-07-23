@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using Common.Models.Enums;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using Common.Models.Enums;
 using Service.Contracts.Team;
 using Service.Services.Interfaces;
 
@@ -15,7 +15,7 @@ namespace Service.Services.Implementations
             var players = await playerRepo.GetRange(dto.Players.Select(p => p.PlayerId).ToList(), cancellationToken);
             foreach (var player in players)
             {
-                team.Players.Add(player); 
+                team.Players.Add(player);
                 PositionName pos = dto.Players.Single(tp => tp.PlayerId == player.Id).Position;
                 team.TeamPlayers.Add(new TeamPlayer()
                 {
@@ -67,7 +67,7 @@ namespace Service.Services.Implementations
                 {
                     TeamId = team.Id,
                     PlayerId = player.Id,
-                    PositionId = (int) pos,
+                    PositionId = (int)pos,
                     Position = new Position()
                     {
                         Id = (int)pos,

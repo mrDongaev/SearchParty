@@ -1,10 +1,10 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Context;
+using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class PositionRepository(DbContext context) : Repository<Position, int>(context), IPositionRepository
+    public class PositionRepository(TeamPlayerProfilesContext context) : Repository<Position, int>(context), IPositionRepository
     {
 
     }

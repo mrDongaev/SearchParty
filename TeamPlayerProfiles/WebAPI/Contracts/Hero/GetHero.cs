@@ -1,4 +1,5 @@
 ﻿using Common.Models.Enums;
+using System.Text.Json.Serialization;
 
 namespace WebAPI.Contracts.Hero
 {
@@ -6,10 +7,11 @@ namespace WebAPI.Contracts.Hero
     {
         public sealed class Response
         {
-            public string Id { get; set; }
+            public int Id { get; set; }
 
             public string Name { get; set; }
 
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public MainStat MainStat { get; set; }
         }
     }

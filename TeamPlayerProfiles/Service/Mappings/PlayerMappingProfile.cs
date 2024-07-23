@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using Service.Contracts.Player;
-using Common.Models.Enums;
 
 namespace Service.Mapping
 {
     public class PlayerMappingProfile : Profile
     {
-        PlayerMappingProfile()
+        public PlayerMappingProfile()
         {
             CreateMap<Player, PlayerDto>();
 

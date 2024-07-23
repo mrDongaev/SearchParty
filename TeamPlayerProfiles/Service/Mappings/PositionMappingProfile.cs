@@ -6,7 +6,7 @@ namespace Service.Mapping
 {
     public class PositionMappingProfile : Profile
     {
-        PositionMappingProfile()
+        public PositionMappingProfile()
         {
             CreateMap<Position, PositionDto>();
         }

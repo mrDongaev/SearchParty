@@ -38,7 +38,7 @@ namespace DataAccess.Repositories.Implementations
         /// <returns> Добавленная сущность. </returns>
         public virtual async Task<T> Add(T entity, CancellationToken cancellationToken)
         {
-            return (await _dbSet.AddAsync(entity)).Entity;
+            return (await _dbSet.AddAsync(entity, cancellationToken)).Entity;
         }
 
         /// <summary>

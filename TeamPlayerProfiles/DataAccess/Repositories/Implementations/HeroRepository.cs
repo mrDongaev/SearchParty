@@ -1,10 +1,11 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Context;
+using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class HeroRepository(DbContext context) : Repository<Hero, int>(context), IHeroRepository
+    public class HeroRepository(TeamPlayerProfilesContext context) : Repository<Hero, int>(context), IHeroRepository
     {
         private readonly DbSet<Hero> _heroSet = context.Set<Hero>();
 

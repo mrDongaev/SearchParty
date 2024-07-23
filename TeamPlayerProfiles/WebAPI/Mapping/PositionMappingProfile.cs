@@ -2,7 +2,7 @@
 using Service.Contracts.Position;
 using WebAPI.Contracts.Position;
 
-namespace WebAPI.Mappings
+namespace WebAPI.Mapping
 {
     public class PositionMappingProfile : Profile
     {
