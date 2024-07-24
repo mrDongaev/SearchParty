@@ -18,7 +18,7 @@ namespace WebAPI.Contracts.Team
 
             public DateTime UpdatedAt { get; set; }
 
-            public ISet<PlayerInTeam> Players { get; set; }
+            public ISet<PlayerInTeam> PlayersInTeam { get; set; }
         }
     }
 }

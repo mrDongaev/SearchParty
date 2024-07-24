@@ -19,7 +19,7 @@ namespace DataAccess.Context.EntitiesConfigurations
             SeedData(builder);
         }
 
-        private void SeedData(EntityTypeBuilder<Hero> builder)
+        private static void SeedData(EntityTypeBuilder<Hero> builder)
         {
             builder.HasData(new Hero { Id = 1, Name = "Juggernaut", MainStat = MainStat.Agility });
             builder.HasData(new Hero { Id = 2, Name = "Pudge", MainStat = MainStat.Strength });

@@ -6,11 +6,17 @@ using Service.Services.Interfaces;
 
 namespace Service.Services.Implementations
 {
-    public class PlayerService(IMapper mapper, IPlayerRepository playerRepo) : IPlayerService
+    public class PlayerService(IMapper mapper, IPlayerRepository playerRepo, IHeroRepository heroRepo) : IPlayerService
     {
         public async Task<PlayerDto> Create(CreatePlayerDto dto, CancellationToken cancellationToken = default)
         {
-            var createdPlayer = await playerRepo.Add(mapper.Map<Player>(dto), cancellationToken);
+            var newPlayer = mapper.Map<Player>(dto);
+            var heroes = await heroRepo.GetRange(dto.HeroIds, cancellationToken);
+            foreach (var hero in heroes)
+            {
+                newPlayer.Heroes.Add(hero);
+            }
+            var createdPlayer = await playerRepo.Add(newPlayer, cancellationToken);
             return mapper.Map<PlayerDto>(createdPlayer);
         }
 
@@ -42,9 +48,14 @@ namespace Service.Services.Implementations
             var existingPlayer = await playerRepo.Get(dto.Id, cancellationToken);
             if (existingPlayer == null)
             {
-                throw new Exception($"Профиль игрока с Id = {dto.Id} не найден");
+                return null;
             }
             var player = mapper.Map<Player>(dto);
+            var heroes = await heroRepo.GetRange(dto.HeroIds, cancellationToken);
+            foreach (var hero in heroes)
+            {
+                player.Heroes.Add(hero);
+            }
             var updatedPlayer = await playerRepo.Update(player, cancellationToken);
             return mapper.Map<PlayerDto>(updatedPlayer);
         }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces;
+using WebAPI.Contracts.Hero;
 using WebAPI.Contracts.Position;
 
 namespace WebAPI.Controllers
@@ -10,6 +11,8 @@ namespace WebAPI.Controllers
     public class PositionController(IPositionService positionService, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
+        [ProducesResponseType<GetPosition.Response>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<Ok<GetPosition.Response>, NotFound>> Get(int id, CancellationToken cancellationToken)
         {
             var position = await positionService.Get(id, cancellationToken);
@@ -17,6 +20,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType<IEnumerable<GetPosition.Response>>(StatusCodes.Status200OK)]
         public async Task<IResult> GetAll(CancellationToken cancellationToken)
         {
             var positions = await positionService.GetAll(cancellationToken);

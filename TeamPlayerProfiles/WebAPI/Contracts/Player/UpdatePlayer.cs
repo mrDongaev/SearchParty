@@ -14,7 +14,7 @@ namespace WebAPI.Contracts.Player
 
             public PositionName Position { get; set; }
 
-            public ISet<int> Heroes { get; set; }
+            public ISet<int> HeroIds { get; set; }
         }
     }
 }

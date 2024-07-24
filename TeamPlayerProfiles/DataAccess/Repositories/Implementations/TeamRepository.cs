@@ -5,9 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class TeamRepository(TeamPlayerProfilesContext context, IPlayerRepository playerRepo) : ProfileRepository<Team>(context), ITeamRepository
+    public class TeamRepository : ProfileRepository<Team>, ITeamRepository
     {
-        private readonly DbSet<Team> _teams = context.Set<Team>();
+        private readonly DbSet<Team> _teams;
+        private readonly IPlayerRepository _playerRepo;
+
+        public TeamRepository(TeamPlayerProfilesContext context, IPlayerRepository playerRepo): base(context)
+        {
+            _teams = _context.Set<Team>();
+            _playerRepo = playerRepo;
+        }
 
         public override async Task<ICollection<Team>> GetAll(CancellationToken cancellationToken)
         {
@@ -15,6 +22,8 @@ namespace DataAccess.Repositories.Implementations
                 .AsNoTracking()
                 .Include(t => t.Players)
                 .ThenInclude(p => p.Heroes)
+                .Include(t => t.Players)
+                .ThenInclude(p => p.Position)
                 .Include(t => t.TeamPlayers)
                 .ThenInclude(tp => tp.Position)
                 .ToListAsync(cancellationToken);
@@ -26,6 +35,8 @@ namespace DataAccess.Repositories.Implementations
                 .AsNoTracking()
                 .Include(t => t.Players)
                 .ThenInclude(p => p.Heroes)
+                .Include(t => t.Players)
+                .ThenInclude(p => p.Position)
                 .Include(t => t.TeamPlayers)
                 .ThenInclude(tp => tp.Position)
                 .SingleAsync(t => t.Id == id, cancellationToken);
@@ -59,7 +70,7 @@ namespace DataAccess.Repositories.Implementations
                 {
                     existingTeam.Players.Remove(player);
                 }
-                context.ChangeTracker.DetectChanges();
+                _context.ChangeTracker.DetectChanges();
                 var teamPlayersToRemove = existingTeam.TeamPlayers
                     .Where(tp => playerIdsToRemove.Contains(tp.PlayerId))
                     .ToList();
@@ -70,12 +81,12 @@ namespace DataAccess.Repositories.Implementations
             }
             if (playerIdsToAdd.Count != 0)
             {
-                var playersToAdd = await playerRepo.GetRange(playerIdsToAdd, cancellationToken);
+                var playersToAdd = await _playerRepo.GetRange(playerIdsToAdd, cancellationToken);
                 foreach (var player in playersToAdd)
                 {
                     existingTeam.Players.Add(player);
                 }
-                context.ChangeTracker.DetectChanges();
+                _context.ChangeTracker.DetectChanges();
                 var teamPlayersToAdd = team.TeamPlayers
                     .Where(tp => playerIdsToAdd.Contains(tp.PlayerId))
                     .ToList();
@@ -89,7 +100,7 @@ namespace DataAccess.Repositories.Implementations
                     });
                 }
             }
-            await context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
             return existingTeam;
         }
     }

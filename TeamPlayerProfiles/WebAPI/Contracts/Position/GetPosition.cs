@@ -9,7 +9,6 @@ namespace WebAPI.Contracts.Position
         {
             public int Id { get; set; }
 
-            [JsonConverter(typeof(JsonStringEnumConverter))]
             public PositionName Name { get; set; }
         }
     }

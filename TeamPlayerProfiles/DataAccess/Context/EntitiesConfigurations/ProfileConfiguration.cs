@@ -14,12 +14,12 @@ namespace DataAccess.Context.EntitiesConfigurations
             builder.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(30)
-                .HasDefaultValue(String.Empty);
+                .HasDefaultValue(string.Empty);
 
             builder.Property(e => e.Description)
                 .IsRequired()
                 .HasMaxLength(150)
-                .HasDefaultValue(String.Empty);
+                .HasDefaultValue(string.Empty);
 
             builder.Property(e => e.Displayed)
                 .IsRequired()
@@ -27,8 +27,7 @@ namespace DataAccess.Context.EntitiesConfigurations
 
             builder.Property(e => e.UpdatedAt)
                 .IsRequired()
-                .ValueGeneratedOnAddOrUpdate()
-                .HasDefaultValue(DateTime.UtcNow);
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
 }

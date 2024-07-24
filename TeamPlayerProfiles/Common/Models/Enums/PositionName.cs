@@ -1,5 +1,9 @@
-﻿namespace Common.Models.Enums
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
+namespace Common.Models.Enums
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum PositionName
     {
         Carry = 1,

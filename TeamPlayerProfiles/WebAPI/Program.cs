@@ -4,6 +4,7 @@ using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Service.Services.Implementations;
 using Service.Services.Interfaces;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using WebAPI.Mapping;
 using RepoMapping = Service.Mapping;
@@ -18,13 +19,14 @@ builder.Services.AddScoped<IPositionRepository, PositionRepository>()
     .AddScoped<IPlayerRepository, PlayerRepository>()
     .AddScoped<ITeamRepository, TeamRepository>();
 
-builder.Services.AddAutoMapper(typeof(RepoMapping.HeroMappingProfile), typeof(RepoMapping.PositionMappingProfile), typeof(RepoMapping.PlayerMappingProfile), typeof(RepoMapping.TeamMappingProfile))
+builder.Services.AddAutoMapper(typeof(RepoMapping.HeroMappingProfile), typeof(RepoMapping.PositionMappingProfile), 
+    typeof(RepoMapping.PlayerMappingProfile), typeof(RepoMapping.TeamMappingProfile),
+    typeof(HeroMappingProfile), typeof(PositionMappingProfile), 
+    typeof(PlayerMappingProfile), typeof(TeamMappingProfile))
     .AddScoped<IPositionService, PositionService>()
     .AddScoped<IHeroService, HeroService>()
     .AddScoped<IPlayerService, PlayerService>()
     .AddScoped<ITeamService, TeamService>();
-
-builder.Services.AddAutoMapper(typeof(HeroMappingProfile), typeof(PositionMappingProfile), typeof(PlayerMappingProfile), typeof(TeamMappingProfile));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers()
@@ -33,7 +35,16 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(type =>
+    {
+        var name = type.Name;
+        var declaringName = type.DeclaringType?.Name ?? string.Empty;
+        if (declaringName != string.Empty) declaringName += ".";
+        return declaringName + name;
+    });
+});
 
 var app = builder.Build();
 

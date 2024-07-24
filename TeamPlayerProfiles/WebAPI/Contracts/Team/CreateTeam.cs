@@ -12,7 +12,7 @@ namespace WebAPI.Contracts.Team
 
             public string Description { get; set; }
 
-            public ISet<PlayerInTeam> Players { get; set; }
+            public ISet<PlayerInTeam> PlayersInTeam { get; set; }
         }
     }
 }

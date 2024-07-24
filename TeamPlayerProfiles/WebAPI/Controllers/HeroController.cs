@@ -10,6 +10,8 @@ namespace WebAPI.Controllers
     public class HeroController(IHeroService heroService, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
+        [ProducesResponseType<GetHero.Response>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<Ok<GetHero.Response>, NotFound>> Get(int id, CancellationToken cancellationToken)
         {
             var hero = await heroService.Get(id, cancellationToken);
@@ -17,6 +19,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
         public async Task<IResult> GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {
             var heroes = await heroService.GetRange(ids, cancellationToken);
@@ -24,6 +27,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
         public async Task<IResult> GetAll(CancellationToken cancellationToken)
         {
             var heroes = await heroService.GetAll(cancellationToken);

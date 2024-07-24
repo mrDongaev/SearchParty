@@ -1,13 +1,20 @@
-﻿using DataAccess.Entities.Interfaces;
+﻿using DataAccess.Context;
+using DataAccess.Entities.Interfaces;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public abstract class Repository<T, TId>(DbContext context) : IRepository<T, TId> where T
+    public abstract class Repository<T, TId> : IRepository<T, TId> where T
         : class, IEntity<TId>
     {
-        private readonly DbSet<T> _dbSet = context.Set<T>();
+        protected TeamPlayerProfilesContext _context;
+        private readonly DbSet<T> _dbSet;
+        public Repository(TeamPlayerProfilesContext context)
+        {
+            _context = context;
+            _dbSet = _context.Set<T>();
+        }
 
         /// <summary>
         /// Получить сущность по Id.
@@ -38,7 +45,9 @@ namespace DataAccess.Repositories.Implementations
         /// <returns> Добавленная сущность. </returns>
         public virtual async Task<T> Add(T entity, CancellationToken cancellationToken)
         {
-            return (await _dbSet.AddAsync(entity, cancellationToken)).Entity;
+            var addedEntity = (await _dbSet.AddAsync(entity, cancellationToken)).Entity;
+            await _context.SaveChangesAsync(cancellationToken);
+            return addedEntity;
         }
 
         /// <summary>
@@ -53,6 +62,7 @@ namespace DataAccess.Repositories.Implementations
                 return false;
             }
             await _dbSet.AddRangeAsync(entities, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
             return true;
         }
 
@@ -62,9 +72,9 @@ namespace DataAccess.Repositories.Implementations
         /// <param name="entity"> Сущность для изменения. </param>
         public virtual async Task<T> Update(T entity, CancellationToken cancellationToken)
         {
-            var entry = context.Entry(entity);
+            var entry = _context.Entry(entity);
             entry.State = EntityState.Modified;
-            await context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
             return entry.Entity;
         }
 
@@ -81,7 +91,7 @@ namespace DataAccess.Repositories.Implementations
                 return false;
             }
             _dbSet.Remove(obj);
-            await context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
             return true;
         }
 
@@ -97,7 +107,7 @@ namespace DataAccess.Repositories.Implementations
                 return false;
             }
             _dbSet.RemoveRange(entities);
-            await context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

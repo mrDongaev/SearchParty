@@ -16,12 +16,12 @@ namespace DataAccess.Context
 
         public TeamPlayerProfilesContext(DbContextOptions<TeamPlayerProfilesContext> options) : base(options)
         {
-            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new PositionConfiguration());
             modelBuilder.ApplyConfiguration(new HeroConfiguration());
             modelBuilder.ApplyConfiguration(new PlayerConfiguration());

@@ -11,7 +11,6 @@ namespace WebAPI.Contracts.Hero
 
             public string Name { get; set; }
 
-            [JsonConverter(typeof(JsonStringEnumConverter))]
             public MainStat MainStat { get; set; }
         }
     }
