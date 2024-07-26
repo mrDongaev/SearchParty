@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.TeamInterfaces;
 using WebAPI.Contracts.Team;
 
-namespace WebAPI.Controllers
+namespace WebAPI.Controllers.Team
 {
     [Route("api/[controller]/[action]")]
     public class TeamController(ITeamService teamService, IMapper mapper) : WebApiController

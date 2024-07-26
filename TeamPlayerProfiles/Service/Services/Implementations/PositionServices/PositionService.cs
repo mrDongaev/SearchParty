@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.Position;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.PositionInterfaces;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.PositionServices
 {
     public class PositionService(IMapper mapper, IPositionRepository posRepo) : IPositionService
     {

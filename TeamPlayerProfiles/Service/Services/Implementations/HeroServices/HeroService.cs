@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.Hero;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.HeroInterfaces;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.HeroServices
 {
     public class HeroService(IMapper mapper, IHeroRepository heroRepo) : IHeroService
     {

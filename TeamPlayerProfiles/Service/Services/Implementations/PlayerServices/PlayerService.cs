@@ -2,9 +2,9 @@
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.Player;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.PlayerInterfaces;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.PlayerServices
 {
     public class PlayerService(IMapper mapper, IPlayerRepository playerRepo) : IPlayerService
     {

@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Player;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.PlayerInterfaces;
 using WebAPI.Contracts.Player;
 
-namespace WebAPI.Controllers
+namespace WebAPI.Controllers.Player
 {
     [Route("api/[controller]/[action]")]
     public class PlayerController(IPlayerService playerService, IMapper mapper) : WebApiController

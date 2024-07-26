@@ -1,4 +1,4 @@
-﻿namespace Service.Services.Interfaces
+﻿namespace Service.Services.Interfaces.Common
 {
     /// <summary>
     /// Базовый интерфейс сервиса профилей
@@ -11,7 +11,7 @@
         /// <summary>
         /// Получить сущность по ID
         /// </summary>
-        /// <param name="id"> Идентификатор</param>
+        /// <param name="id">Идентификатор</param>
         /// <returns> ДТО удалённого профиля</returns>
         Task<bool> Delete(Guid id, CancellationToken cancellationToken);
 

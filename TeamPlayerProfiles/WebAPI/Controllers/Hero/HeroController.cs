@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.HeroInterfaces;
 using WebAPI.Contracts.Hero;
 
-namespace WebAPI.Controllers
+namespace WebAPI.Controllers.Hero
 {
     [Route("api/[controller]/[action]")]
     public class HeroController(IHeroService heroService, IMapper mapper) : WebApiController

@@ -2,11 +2,11 @@
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.Team;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.TeamInterfaces;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.TeamServices
 {
-    public class TeamService(IMapper mapper, ITeamRepository teamRepo, IPlayerRepository playerRepo, IPositionRepository positionRepo) : ITeamService
+    public class TeamService(IMapper mapper, ITeamRepository teamRepo) : ITeamService
     {
         public async Task<TeamDto> Create(CreateTeamDto dto, CancellationToken cancellationToken = default)
         {
@@ -30,6 +30,14 @@ namespace Service.Services.Implementations
         {
             var teams = await teamRepo.GetAll(cancellationToken);
             return mapper.Map<ICollection<TeamDto>>(teams);
+        }
+
+        public async Task<TeamDto> SetDisplay(Guid id, bool displayed, CancellationToken cancellationToken)
+        {
+            var team = await teamRepo.Get(id, cancellationToken);
+            team.Displayed = displayed;
+            var updatedPlayer = await teamRepo.Update(team, cancellationToken);
+            return mapper.Map<TeamDto>(updatedPlayer);
         }
 
         public async Task<TeamDto> Update(UpdateTeamDto dto, CancellationToken cancellationToken = default)

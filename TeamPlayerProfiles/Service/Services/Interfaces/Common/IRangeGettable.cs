@@ -1,4 +1,4 @@
-﻿namespace Service.Services.Interfaces
+﻿namespace Service.Services.Interfaces.Common
 {
     public interface IRangeGettable<TGetDto, TId>
     {

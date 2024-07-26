@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.PositionInterfaces;
 using WebAPI.Contracts.Position;
 
-namespace WebAPI.Controllers
+namespace WebAPI.Controllers.Position
 {
     [Route("api/[controller]/[action]")]
     public class PositionController(IPositionService positionService, IMapper mapper) : WebApiController
