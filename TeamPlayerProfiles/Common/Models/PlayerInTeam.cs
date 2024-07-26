@@ -1,5 +1,4 @@
 ﻿using Common.Models.Enums;
-using System.Text.Json.Serialization;
 
 namespace Common.Models
 {
@@ -11,14 +10,12 @@ namespace Common.Models
 
         public override bool Equals(object? obj)
         {
-            return obj is PlayerInTeam team &&
-                Position == team.Position &&
-                PlayerId.Equals(team.PlayerId);
+            return obj is PlayerInTeam pit && PlayerId.Equals(pit.PlayerId);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Position, PlayerId);
+            return HashCode.Combine(PlayerId);
         }
     }
 }

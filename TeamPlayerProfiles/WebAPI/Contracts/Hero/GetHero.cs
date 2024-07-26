@@ -1,5 +1,4 @@
 ﻿using Common.Models.Enums;
-using System.Text.Json.Serialization;
 
 namespace WebAPI.Contracts.Hero
 {

@@ -2,7 +2,7 @@
 
 namespace Service.Services.Interfaces
 {
-    public interface IPositionService : IService<PositionDto, int>
+    public interface IPositionService : IService<PositionDto, int>, IRangeGettable<PositionDto, int>
     {
     }
 }

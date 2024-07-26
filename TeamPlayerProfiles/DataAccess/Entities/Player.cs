@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entities
 {
@@ -21,6 +22,9 @@ namespace DataAccess.Entities
         public Position Position { get; set; }
 
         public ICollection<Hero> Heroes { get; protected set; } = [];
+
+        [NotMapped]
+        public ICollection<int> HeroIds { get; set; } = [];
 
         public ICollection<Team> Teams { get; protected set; } = [];
 

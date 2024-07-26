@@ -10,6 +10,6 @@ namespace Service.Contracts.Team
 
         public string Description { get; set; }
 
-        public ICollection<PlayerInTeam> Players { get; set; }
+        public ICollection<PlayerInTeam> PlayersInTeam { get; set; }
     }
 }

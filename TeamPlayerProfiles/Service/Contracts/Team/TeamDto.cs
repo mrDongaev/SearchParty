@@ -16,6 +16,6 @@ namespace Service.Contracts.Team
 
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<PlayerInTeam> Players { get; set; }
+        public ICollection<PlayerInTeam> PlayersInTeam { get; set; }
     }
 }

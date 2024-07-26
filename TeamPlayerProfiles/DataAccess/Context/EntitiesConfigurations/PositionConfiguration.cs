@@ -18,11 +18,13 @@ namespace DataAccess.Context.EntitiesConfigurations
 
         private void SeedData(EntityTypeBuilder<Position> builder)
         {
-            builder.HasData(new Position { Id = 1, Name = PositionName.Carry });
-            builder.HasData(new Position { Id = 2, Name = PositionName.Midlane });
-            builder.HasData(new Position { Id = 3, Name = PositionName.Offlane });
-            builder.HasData(new Position { Id = 4, Name = PositionName.Roamer });
-            builder.HasData(new Position { Id = 5, Name = PositionName.Support });
+            int id = 1;
+            Func<int> getId = () => id++;
+            builder.HasData(new Position { Id = getId(), Name = PositionName.Carry });
+            builder.HasData(new Position { Id = getId(), Name = PositionName.Midlane });
+            builder.HasData(new Position { Id = getId(), Name = PositionName.Offlane });
+            builder.HasData(new Position { Id = getId(), Name = PositionName.Roamer });
+            builder.HasData(new Position { Id = getId(), Name = PositionName.Support });
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using DataAccess.Entities.Interfaces;
+﻿using Common.Models;
+using DataAccess.Entities.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entities
 {
@@ -19,6 +21,9 @@ namespace DataAccess.Entities
         public int PlayerCount { get; set; }
 
         public ICollection<Player> Players { get; protected set; } = [];
+
+        [NotMapped]
+        public ICollection<PlayerInTeam> PlayersInTeam { get; set; } = [];
 
         public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
     }

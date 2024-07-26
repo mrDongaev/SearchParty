@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using DataAccess.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Player;
 using Service.Services.Interfaces;
-using WebAPI.Contracts.Hero;
 using WebAPI.Contracts.Player;
 
 namespace WebAPI.Controllers

@@ -24,7 +24,7 @@ namespace DataAccess.Repositories.Implementations
         /// <returns> Cущность. </returns>
         public virtual async Task<T> Get(TId id, CancellationToken cancellationToken)
         {
-            return await _dbSet.FindAsync(id, cancellationToken);
+            return await _dbSet.AsNoTracking().SingleOrDefaultAsync(e => e.Id.Equals(id), cancellationToken);
         }
 
         /// <summary>
@@ -45,9 +45,10 @@ namespace DataAccess.Repositories.Implementations
         /// <returns> Добавленная сущность. </returns>
         public virtual async Task<T> Add(T entity, CancellationToken cancellationToken)
         {
-            var addedEntity = (await _dbSet.AddAsync(entity, cancellationToken)).Entity;
+            var addedModel = (await _dbSet.AddAsync(entity, cancellationToken));
             await _context.SaveChangesAsync(cancellationToken);
-            return addedEntity;
+            addedModel.State = EntityState.Detached;
+            return addedModel.Entity;
         }
 
         /// <summary>
@@ -75,6 +76,7 @@ namespace DataAccess.Repositories.Implementations
             var entry = _context.Entry(entity);
             entry.State = EntityState.Modified;
             await _context.SaveChangesAsync(cancellationToken);
+            entry.State = EntityState.Detached;
             return entry.Entity;
         }
 
@@ -85,7 +87,7 @@ namespace DataAccess.Repositories.Implementations
         /// <returns> Была ли сущность удалена. </returns>
         public virtual async Task<bool> Delete(TId id, CancellationToken cancellationToken)
         {
-            var obj = _dbSet.Find(id);
+            var obj = await _dbSet.FindAsync(id);
             if (obj == null)
             {
                 return false;
