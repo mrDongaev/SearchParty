@@ -8,6 +8,10 @@ namespace DataAccess.Context.EntitiesConfigurations
     {
         public void Configure(EntityTypeBuilder<TeamPlayer> builder)
         {
+            builder
+                .HasIndex(tp => new { tp.TeamId, tp.PositionId })
+                .IsUnique();
+
             builder.HasOne(e => e.Position)
                 .WithMany()
                 .HasForeignKey(e => e.PositionId)

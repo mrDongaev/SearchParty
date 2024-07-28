@@ -11,7 +11,7 @@ namespace DataAccess.Repositories.Implementations
 
         public PositionRepository(TeamPlayerProfilesContext context) : base(context)
         {
-            _positions = _context.Set<Position>();
+            _positions = _context.Positions;
         }
 
         public async Task<ICollection<Position>> GetRange(ICollection<int> ids, CancellationToken cancellationToken)

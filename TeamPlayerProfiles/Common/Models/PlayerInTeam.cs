@@ -2,7 +2,7 @@
 
 namespace Common.Models
 {
-    public class PlayerInTeam
+    public class PlayerInTeam : IEquatable<PlayerInTeam?>
     {
         public PositionName Position { get; set; }
 
@@ -10,7 +10,13 @@ namespace Common.Models
 
         public override bool Equals(object? obj)
         {
-            return obj is PlayerInTeam pit && PlayerId.Equals(pit.PlayerId);
+            return Equals(obj as PlayerInTeam);
+        }
+
+        public bool Equals(PlayerInTeam? other)
+        {
+            return other is not null &&
+                PlayerId.Equals(other.PlayerId);
         }
 
         public override int GetHashCode()

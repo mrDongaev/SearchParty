@@ -8,13 +8,13 @@ namespace WebAPI.Contracts.Player
         {
             public Guid UserId { get; set; }
 
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
-            public string Description { get; set; }
+            public string? Description { get; set; }
 
             public PositionName Position { get; set; }
 
-            public ISet<int> HeroIds { get; set; }
+            public ISet<int> HeroIds { get; set; } = new HashSet<int>();
         }
     }
 }

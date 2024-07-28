@@ -8,14 +8,10 @@ namespace DataAccess.Repositories.Implementations
     public class TeamRepository : Repository<Team, Guid>, ITeamRepository
     {
         private readonly DbSet<Team> _teams;
-        private readonly DbSet<Player> _players;
-        private readonly DbSet<Position> _positions;
 
         public TeamRepository(TeamPlayerProfilesContext context) : base(context)
         {
-            _teams = _context.Set<Team>();
-            _players = _context.Set<Player>();
-            _positions = _context.Set<Position>();
+            _teams = _context.Teams;
         }
 
         public override async Task<ICollection<Team>> GetAll(CancellationToken cancellationToken)
@@ -45,14 +41,9 @@ namespace DataAccess.Repositories.Implementations
         public override async Task<Team> Add(Team team, CancellationToken cancellationToken)
         {
             team.Id = Guid.NewGuid();
-            foreach (var pit in team.PlayersInTeam)
+            foreach (var tp in team.TeamPlayers)
             {
-                team.TeamPlayers.Add(new TeamPlayer()
-                {
-                    TeamId = team.Id,
-                    PlayerId = pit.PlayerId,
-                    PositionId = (int)pit.Position
-                });
+                tp.TeamId = team.Id;
             }
             await base.Add(team, cancellationToken);
             return await Get(team.Id, cancellationToken);
@@ -72,9 +63,10 @@ namespace DataAccess.Repositories.Implementations
             existingTeam.Displayed = team.Displayed;
             existingTeam.UpdatedAt = DateTime.UtcNow;
             var existingPlayerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId).ToList();
-            var updatedPlayerIds = team.PlayersInTeam.Select(tp => tp.PlayerId).ToList();
+            var updatedPlayerIds = team.TeamPlayers.Select(tp => tp.PlayerId).ToList();
             var playerIdsToAdd = updatedPlayerIds.Except(existingPlayerIds).ToList();
             var playerIdsToRemove = existingPlayerIds.Except(updatedPlayerIds);
+            var playerIdsToUpdate = existingPlayerIds.Except(playerIdsToRemove);
             if (playerIdsToRemove.Any())
             {
                 var teamPlayersToRemove = existingTeam.TeamPlayers
@@ -88,7 +80,7 @@ namespace DataAccess.Repositories.Implementations
             }
             if (playerIdsToAdd.Count != 0)
             {
-                var teamPlayersToAdd = team.PlayersInTeam
+                var teamPlayersToAdd = team.TeamPlayers
                     .Where(tp => playerIdsToAdd.Contains(tp.PlayerId))
                     .ToList();
                 foreach (var teamPlayer in teamPlayersToAdd)
@@ -97,8 +89,20 @@ namespace DataAccess.Repositories.Implementations
                     {
                         TeamId = existingTeam.Id,
                         PlayerId = teamPlayer.PlayerId,
-                        PositionId = (int)teamPlayer.Position
+                        PositionId = teamPlayer.PositionId,
                     });
+                }
+                _context.ChangeTracker.DetectChanges();
+            }
+            if (playerIdsToUpdate.Any())
+            {
+                var updatedPlayers = team.TeamPlayers
+                    .Where(tp => playerIdsToUpdate.Contains(tp.PlayerId))
+                    .ToList();
+                foreach (var updatedPlayer in updatedPlayers)
+                {
+                    var player = existingTeam.TeamPlayers.SingleOrDefault(tp => tp.PlayerId.Equals(updatedPlayer.PlayerId));
+                    if (player != null) player.PositionId = updatedPlayer.PositionId;
                 }
                 _context.ChangeTracker.DetectChanges();
             }

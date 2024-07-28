@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Common.Models;
+using Common.Models.Enums;
 using DataAccess.Entities;
 using Service.Contracts.Team;
 
@@ -13,20 +14,25 @@ namespace Service.Mapping
                 .ForMember(d => d.PlayersInTeam, m => m.MapFrom(src => src.TeamPlayers));
 
             CreateMap<TeamPlayer, PlayerInTeam>()
-                .ForMember(d => d.PlayerId, m => m.MapFrom(src => src.PlayerId))
-                .ForMember(d => d.Position, m => m.MapFrom(src => src.Position.Name));
+                .ForMember(d => d.Position, m => m.MapFrom(src => (PositionName)src.PositionId))
+                .ReverseMap()
+                .ForMember(d => d.PositionId, m => m.MapFrom(src => (int)src.Position))
+                .ForMember(d => d.Player, m => m.Ignore())
+                .ForMember(d => d.TeamId, m => m.MapFrom(src => Guid.Empty))
+                .ForMember(d => d.Position, m => m.Ignore());
 
             CreateMap<CreateTeamDto, Team>()
-                .ForMember(d => d.Displayed, m => m.Ignore())
+                .ForMember(d => d.TeamPlayers, m => m.MapFrom(src => src.PlayersInTeam))
                 .ForMember(d => d.PlayerCount, m => m.MapFrom(src => src.PlayersInTeam.Count))
-                .ForMember(d => d.Players, m => m.Ignore())
-                .ForMember(d => d.TeamPlayers, m => m.Ignore());
+                .ForMember(d => d.Displayed, m => m.Ignore())
+                .ForMember(d => d.Players, m => m.Ignore());
 
             CreateMap<UpdateTeamDto, Team>()
-                .ForMember(d => d.UserId, m => m.Ignore())
+                .ForMember(d => d.TeamPlayers, m => m.MapFrom(src => src.PlayersInTeam))
                 .ForMember(d => d.PlayerCount, m => m.MapFrom(src => src.PlayersInTeam.Count))
-                .ForMember(d => d.Players, m => m.Ignore())
-                .ForMember(d => d.TeamPlayers, m => m.Ignore());
+                .ForMember(d => d.UserId, m => m.Ignore())
+                .ForMember(d => d.Players, m => m.Ignore());
+
         }
     }
 }

@@ -23,9 +23,6 @@ namespace DataAccess.Entities
 
         public ICollection<Hero> Heroes { get; protected set; } = [];
 
-        [NotMapped]
-        public ICollection<int> HeroIds { get; set; } = [];
-
         public ICollection<Team> Teams { get; protected set; } = [];
 
         public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];

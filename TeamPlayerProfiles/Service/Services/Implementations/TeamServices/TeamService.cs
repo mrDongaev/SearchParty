@@ -32,14 +32,6 @@ namespace Service.Services.Implementations.TeamServices
             return mapper.Map<ICollection<TeamDto>>(teams);
         }
 
-        public async Task<TeamDto> SetDisplay(Guid id, bool displayed, CancellationToken cancellationToken)
-        {
-            var team = await teamRepo.Get(id, cancellationToken);
-            team.Displayed = displayed;
-            var updatedPlayer = await teamRepo.Update(team, cancellationToken);
-            return mapper.Map<TeamDto>(updatedPlayer);
-        }
-
         public async Task<TeamDto> Update(UpdateTeamDto dto, CancellationToken cancellationToken = default)
         {
             var existingTeam = await teamRepo.Get(dto.Id, cancellationToken);

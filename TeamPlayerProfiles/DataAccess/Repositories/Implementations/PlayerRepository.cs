@@ -13,9 +13,9 @@ namespace DataAccess.Repositories.Implementations
 
         public PlayerRepository(TeamPlayerProfilesContext context) : base(context)
         {
-            _players = _context.Set<Player>();
-            _heroes = _context.Set<Hero>();
-            _positions = _context.Set<Position>();
+            _players = _context.Players;
+            _heroes = _context.Heroes;
+            _positions = _context.Positions;
         }
 
         public override async Task<ICollection<Player>> GetAll(CancellationToken cancellationToken)
@@ -48,14 +48,16 @@ namespace DataAccess.Repositories.Implementations
 
         public override async Task<Player> Add(Player player, CancellationToken cancellationToken)
         {
+            var heroIds = player.Heroes.Select(h => h.Id).ToList();
             var heroes = await _heroes
-                .Where(h => player.HeroIds.Contains(h.Id))
-                .ToListAsync();
-            var position = await _positions.SingleAsync(p => p.Id == player.PositionId);
+                .Where(h => heroIds.Contains(h.Id))
+                .ToListAsync(cancellationToken);
+            player.Heroes.Clear();
             foreach (var hero in heroes)
             {
                 player.Heroes.Add(hero);
             }
+            var position = await _positions.SingleAsync(p => p.Id == player.PositionId);
             player.Position = position;
             var newPlayer = await base.Add(player, cancellationToken);
             return newPlayer;
@@ -78,14 +80,14 @@ namespace DataAccess.Repositories.Implementations
             existingPlayer.Position = position;
             existingPlayer.UpdatedAt = DateTime.UtcNow;
             var existingHeroIds = existingPlayer.Heroes.Select(p => p.Id).ToList();
-            var updatedHeroIds = player.HeroIds;
+            var updatedHeroIds = player.Heroes.Select(p => p.Id).ToList();
             var heroIdsToAdd = updatedHeroIds.Except(existingHeroIds).ToList();
             var heroIdsToRemove = existingHeroIds.Except(updatedHeroIds);
             if (heroIdsToRemove.Any())
             {
                 var heroesToRemove = await _heroes
                     .Where(h => heroIdsToRemove.Contains(h.Id))
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
                 foreach (var hero in heroesToRemove)
                 {
                     existingPlayer.Heroes.Remove(hero);
@@ -96,7 +98,7 @@ namespace DataAccess.Repositories.Implementations
             {
                 var heroesToAdd = await _heroes
                     .Where(h => heroIdsToAdd.Contains(h.Id))
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
                 foreach (var hero in heroesToAdd)
                 {
                     existingPlayer.Heroes.Add(hero);

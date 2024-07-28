@@ -71,6 +71,7 @@ if (app.Environment.IsDevelopment())
         var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
         dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
+        await TestDataSeeder.SeedTestData(dbContext);
     }
 }
 

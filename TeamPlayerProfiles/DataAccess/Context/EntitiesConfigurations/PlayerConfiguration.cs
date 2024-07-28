@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Context.EntitiesConfigurations
@@ -13,7 +14,8 @@ namespace DataAccess.Context.EntitiesConfigurations
                 .IsRequired();
 
             builder.HasMany(e => e.Heroes)
-                .WithMany();
+                .WithMany()
+                .UsingEntity(e => e.ToTable("PlayerHero"));
 
             base.Configure(builder);
         }
