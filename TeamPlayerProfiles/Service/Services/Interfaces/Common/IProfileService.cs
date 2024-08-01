@@ -27,6 +27,6 @@
         /// </summary>
         /// <param name="dto">ДТО обновляемого профиля</param>
         /// <returns>ДТО обновлённого профиля</returns>
-        Task<TGetDto> Update(TUpdateDto dto, CancellationToken cancellationToken);
+        Task<TGetDto?> Update(TUpdateDto dto, CancellationToken cancellationToken);
     }
 }

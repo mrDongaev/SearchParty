@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Common.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
+using WebAPI.Contracts.Team;
 using WebAPI.Contracts.Team;
 
 namespace WebAPI.Controllers.Team
@@ -42,6 +44,15 @@ namespace WebAPI.Controllers.Team
         public async Task<Results<Ok<GetTeam.Response>, NotFound>> Update(UpdateTeam.Request request, CancellationToken cancellationToken)
         {
             var updatedTeam = await teamService.Update(mapper.Map<UpdateTeamDto>(request), cancellationToken);
+            return updatedTeam == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedTeam));
+        }
+
+        [HttpPost("{id}")]
+        [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok<GetTeam.Response>, NotFound>> UpdateTeamPlayer(Guid id, [FromBody] ISet<TeamPlayerApi.Request> request, CancellationToken cancellationToken)
+        {
+            var updatedTeam = await teamService.UpdateTeamPlayers(id, mapper.Map<ISet<TeamPlayerService.Write>>(request), cancellationToken);
             return updatedTeam == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedTeam));
         }
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Models.Enums;
 using DataAccess.Entities;
 using Service.Contracts.Player;
 
@@ -14,17 +15,25 @@ namespace Service.Mapping
             CreateMap<CreatePlayerDto, Player>()
                 .ForMember(d => d.Heroes, m => m.MapFrom(src => src.HeroIds))
                 .ForMember(d => d.PositionId, m => m.MapFrom(src => (int)src.Position))
-                .ForMember(d => d.Position, m => m.MapFrom(src => new Position() { Id = (int)src.Position, Name = src.Position }))
+                .ForMember(d => d.Position, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
                 .ForMember(d => d.TeamPlayers, m => m.Ignore());
 
             CreateMap<UpdatePlayerDto, Player>()
                 .ForMember(d => d.UserId, m => m.Ignore())
-                .ForMember(d => d.Heroes, m => m.MapFrom(src => src.HeroIds))
-                .ForMember(d => d.PositionId, m => m.MapFrom(src => (int)src.Position))
-                .ForMember(d => d.Position, m => m.MapFrom(src => new Position() { Id = (int)src.Position, Name = src.Position }))
+                .ForMember(d => d.Heroes, m => m.Ignore())
+                .ForMember(d => d.PositionId, m => m.MapFrom(new UpdatePositionResolver()))
+                .ForMember(d => d.Position, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
                 .ForMember(d => d.TeamPlayers, m => m.Ignore());
+        }
+
+        private class UpdatePositionResolver : IValueResolver<UpdatePlayerDto, Player, int?>
+        {
+            public int? Resolve(UpdatePlayerDto source, Player destination, int? destMember, ResolutionContext context)
+            {
+                return source.Position == null ? null : (int?)source.Position;
+            }
         }
     }
 }

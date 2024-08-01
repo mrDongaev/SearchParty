@@ -10,6 +10,10 @@ namespace WebAPI.Mapping
         {
             CreateMap<TeamDto, GetTeam.Response>();
 
+            CreateMap<TeamPlayerService.Read, TeamPlayerApi.Response>();
+
+            CreateMap<TeamPlayerApi.Request, TeamPlayerService.Write>();
+
             CreateMap<CreateTeam.Request, CreateTeamDto>();
 
             CreateMap<UpdateTeam.Request, UpdateTeamDto>();

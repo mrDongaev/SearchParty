@@ -1,4 +1,5 @@
 ﻿using Common.Models;
+using WebAPI.Contracts.Player;
 
 namespace WebAPI.Contracts.Team
 {
@@ -18,7 +19,7 @@ namespace WebAPI.Contracts.Team
 
             public DateTime UpdatedAt { get; set; }
 
-            public ISet<PlayerInTeam> PlayersInTeam { get; set; }
+            public ISet<TeamPlayerApi.Response> PlayersInTeam { get; set; } = new HashSet<TeamPlayerApi.Response>();
         }
     }
 }

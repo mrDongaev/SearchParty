@@ -20,10 +20,10 @@ namespace Service.Services.Implementations.PlayerServices
             return await playerRepo.Delete(id, cancellationToken);
         }
 
-        public async Task<PlayerDto> Get(Guid id, CancellationToken cancellationToken = default)
+        public async Task<PlayerDto?> Get(Guid id, CancellationToken cancellationToken = default)
         {
             var player = await playerRepo.Get(id, cancellationToken);
-            return mapper.Map<PlayerDto>(player);
+            return player == null ? null : mapper.Map<PlayerDto>(player);
         }
 
         public async Task<ICollection<PlayerDto>> GetAll(CancellationToken cancellationToken = default)
@@ -38,16 +38,17 @@ namespace Service.Services.Implementations.PlayerServices
             return mapper.Map<ICollection<PlayerDto>>(players);
         }
 
-        public async Task<PlayerDto> Update(UpdatePlayerDto dto, CancellationToken cancellationToken = default)
+        public async Task<PlayerDto?> Update(UpdatePlayerDto dto, CancellationToken cancellationToken = default)
         {
-            var existingPlayer = await playerRepo.Get(dto.Id, cancellationToken);
-            if (existingPlayer == null)
-            {
-                return null;
-            }
             var player = mapper.Map<Player>(dto);
             var updatedPlayer = await playerRepo.Update(player, cancellationToken);
-            return mapper.Map<PlayerDto>(updatedPlayer);
+            return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
+        }
+
+        public async Task<PlayerDto?> UpdatePlayerHeroes(Guid id, ISet<int> heroIds, CancellationToken cancellationToken)
+        {
+            var updatedPlayer = await playerRepo.UpdatePlayerHeroes(id, heroIds, cancellationToken);
+            return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
         }
     }
 }

@@ -8,6 +8,6 @@
         /// <param name="id">Идентификатор</param>
         /// <param name="displayed">Выставить/убрать</param>
         /// <returns></returns>
-        Task<TGetDto> SetDisplay(Guid id, bool displayed, CancellationToken cancellationToken);
+        Task<TGetDto?> SetDisplay(Guid id, bool displayed, CancellationToken cancellationToken);
     }
 }

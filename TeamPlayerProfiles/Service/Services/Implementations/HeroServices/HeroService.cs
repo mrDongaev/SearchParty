@@ -7,10 +7,10 @@ namespace Service.Services.Implementations.HeroServices
 {
     public class HeroService(IMapper mapper, IHeroRepository heroRepo) : IHeroService
     {
-        public async Task<HeroDto> Get(int id, CancellationToken cancellationToken = default)
+        public async Task<HeroDto?> Get(int id, CancellationToken cancellationToken = default)
         {
             var hero = await heroRepo.Get(id, cancellationToken);
-            return mapper.Map<HeroDto>(hero);
+            return hero == null ? null : mapper.Map<HeroDto>(hero);
         }
 
         public async Task<ICollection<HeroDto>> GetAll(CancellationToken cancellationToken = default)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.Team;
@@ -20,10 +21,10 @@ namespace Service.Services.Implementations.TeamServices
             return await teamRepo.Delete(id, cancellationToken);
         }
 
-        public async Task<TeamDto> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<TeamDto?> Get(Guid id, CancellationToken cancellationToken)
         {
             var team = await teamRepo.Get(id, cancellationToken);
-            return mapper.Map<TeamDto>(team);
+            return team == null ? null : mapper.Map<TeamDto>(team);
         }
 
         public async Task<ICollection<TeamDto>> GetAll(CancellationToken cancellationToken = default)
@@ -32,16 +33,17 @@ namespace Service.Services.Implementations.TeamServices
             return mapper.Map<ICollection<TeamDto>>(teams);
         }
 
-        public async Task<TeamDto> Update(UpdateTeamDto dto, CancellationToken cancellationToken = default)
+        public async Task<TeamDto?> Update(UpdateTeamDto dto, CancellationToken cancellationToken = default)
         {
-            var existingTeam = await teamRepo.Get(dto.Id, cancellationToken);
-            if (existingTeam == null)
-            {
-                return null;
-            }
             var team = mapper.Map<Team>(dto);
             var updatedTeam = await teamRepo.Update(team, cancellationToken);
-            return mapper.Map<TeamDto>(updatedTeam);
+            return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
+        }
+
+        public async Task<TeamDto?> UpdateTeamPlayers(Guid id, ISet<TeamPlayerService.Write> players, CancellationToken cancellationToken = default)
+        {
+            var updatedTeam = await teamRepo.UpdateTeamPlayers(id, mapper.Map<ISet<TeamPlayer>>(players), cancellationToken);
+            return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
         }
     }
 }

@@ -7,10 +7,10 @@ namespace Service.Services.Implementations.PositionServices
 {
     public class PositionService(IMapper mapper, IPositionRepository posRepo) : IPositionService
     {
-        public async Task<PositionDto> Get(int id, CancellationToken cancellationToken = default)
+        public async Task<PositionDto?> Get(int id, CancellationToken cancellationToken = default)
         {
             var position = await posRepo.Get(id, cancellationToken);
-            return mapper.Map<PositionDto>(position);
+            return position == null ? null : mapper.Map<PositionDto>(position);
         }
 
         public async Task<ICollection<PositionDto>> GetAll(CancellationToken cancellationToken = default)
