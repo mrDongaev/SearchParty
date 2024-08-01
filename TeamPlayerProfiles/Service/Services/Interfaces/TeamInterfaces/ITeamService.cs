@@ -1,5 +1,4 @@
-﻿using Common.Models;
-using Service.Contracts.Team;
+﻿using Service.Contracts.Team;
 using Service.Services.Interfaces.Common;
 
 namespace Service.Services.Interfaces.TeamInterfaces

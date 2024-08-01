@@ -5,7 +5,6 @@ using Service.Contracts.Player;
 using Service.Services.Interfaces.Common;
 using WebAPI.Contracts.Board;
 using WebAPI.Contracts.Player;
-using WebAPI.Contracts.Team;
 
 namespace WebAPI.Controllers.Player
 {

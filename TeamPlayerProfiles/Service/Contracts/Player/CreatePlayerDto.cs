@@ -1,5 +1,4 @@
 ﻿using Common.Models.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace Service.Contracts.Player
 {

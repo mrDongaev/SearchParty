@@ -1,6 +1,4 @@
-﻿using Common.Models;
-using DataAccess.Entities.Interfaces;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using DataAccess.Entities.Interfaces;
 
 namespace DataAccess.Entities
 {

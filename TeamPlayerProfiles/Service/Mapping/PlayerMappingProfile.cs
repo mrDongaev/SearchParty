@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Common.Models.Enums;
 using DataAccess.Entities;
 using Service.Contracts.Player;
 

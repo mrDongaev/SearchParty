@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.Team;

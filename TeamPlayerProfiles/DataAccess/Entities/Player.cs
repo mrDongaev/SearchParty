@@ -1,5 +1,4 @@
 ﻿using DataAccess.Entities.Interfaces;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entities
 {

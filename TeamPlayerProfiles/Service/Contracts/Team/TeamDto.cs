@@ -1,7 +1,4 @@
-﻿using Common.Models;
-using Service.Contracts.Player;
-
-namespace Service.Contracts.Team
+﻿namespace Service.Contracts.Team
 {
     public class TeamDto
     {

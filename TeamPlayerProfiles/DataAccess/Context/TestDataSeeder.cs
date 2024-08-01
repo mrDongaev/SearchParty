@@ -1,10 +1,5 @@
 ﻿using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Context
 {
@@ -44,7 +39,7 @@ namespace DataAccess.Context
                 string indexStr = (i + 1).ToString();
                 teams[i] = new Team
                 {
-                    Id = Guid.Parse(emptyGuid[..^indexStr.Length] + indexStr),
+                    Id = Guid.Parse("b" + emptyGuid[1..^indexStr.Length] + indexStr),
                     UserId = Guid.Parse("a" + emptyGuid[1..^indexStr.Length] + indexStr),
                     Name = $"team{i + 1}",
                     Description = $"team-description{i + 1}",

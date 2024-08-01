@@ -3,8 +3,6 @@ using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Numerics;
-using System.Threading;
 
 namespace DataAccess.Repositories.Implementations
 {

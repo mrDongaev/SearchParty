@@ -1,6 +1,4 @@
-﻿using Common.Models;
-using System.ComponentModel.DataAnnotations;
-using WebAPI.Contracts.Team;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Contracts.Team
 {

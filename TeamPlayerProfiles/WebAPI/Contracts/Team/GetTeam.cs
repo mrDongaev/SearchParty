@@ -1,7 +1,4 @@
-﻿using Common.Models;
-using WebAPI.Contracts.Player;
-
-namespace WebAPI.Contracts.Team
+﻿namespace WebAPI.Contracts.Team
 {
     public static class GetTeam
     {

@@ -1,6 +1,4 @@
-﻿using Common.Models;
-
-namespace Service.Contracts.Team
+﻿namespace Service.Contracts.Team
 {
     public class UpdateTeamDto
     {

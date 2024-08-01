@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Common.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
-using WebAPI.Contracts.Team;
 using WebAPI.Contracts.Team;
 
 namespace WebAPI.Controllers.Team
