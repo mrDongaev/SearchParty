@@ -48,12 +48,21 @@ namespace DataAccess.Context
                 var playerList = players.ToList();
                 for (int j = 0; j < max; j++)
                 {
-                    var player = playerList[getRand(0, playerList.Count)]; ;
+                    Player player;
+                    if (j == 0)
+                    {
+                        player = playerList.Find(p => p.UserId == teams[i].UserId);
+
+                    } else
+                    {
+                        player = playerList[getRand(0, playerList.Count)];
+                    }
                     playerList.Remove(player);
                     teams[i].TeamPlayers.Add(new TeamPlayer()
                     {
                         PlayerId = player.Id,
                         TeamId = teams[i].Id,
+                        PlayerUserId = player.UserId,
                         PositionId = j + 1,
                     });
                 }

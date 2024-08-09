@@ -18,6 +18,7 @@ namespace Service.Mapping
             CreateMap<TeamPlayerService.Write, TeamPlayer>()
                 .ForMember(d => d.PositionId, m => m.MapFrom(src => (int)src.Position))
                 .ForMember(d => d.Player, m => m.Ignore())
+                .ForMember(d => d.Team, m => m.Ignore())
                 .ForMember(d => d.TeamId, m => m.MapFrom(src => Guid.Empty))
                 .ForMember(d => d.Position, m => m.Ignore());
 

@@ -8,6 +8,11 @@ namespace DataAccess.Context.EntitiesConfigurations
     {
         public override void Configure(EntityTypeBuilder<Player> builder)
         {
+            builder.HasKey(e => new { e.Id, e.UserId});
+
+            builder.HasIndex(e => e.Id)
+                .IsUnique();
+
             builder.HasOne(e => e.Position)
                 .WithMany()
                 .HasForeignKey(e => e.PositionId)

@@ -9,6 +9,8 @@ namespace Service.Contracts.Team
         {
             public PositionName Position { get; set; }
 
+            public Guid PlayerUserId { get; set; }
+
             public Guid PlayerId { get; set; }
         }
 

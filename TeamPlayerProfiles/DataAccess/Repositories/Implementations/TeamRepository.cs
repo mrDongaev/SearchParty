@@ -52,9 +52,7 @@ namespace DataAccess.Repositories.Implementations
                 tp.TeamId = team.Id;
             }
             await base.Add(team, cancellationToken);
-#pragma warning disable CS8603
             return await Get(team.Id, cancellationToken);
-#pragma warning restore CS8603
         }
 
         public override async Task<Team?> Update(Team team, CancellationToken cancellationToken)

@@ -12,6 +12,9 @@ namespace WebAPI.Contracts.Team
             public PositionName? Position { get; set; }
 
             [Required]
+            public Guid? PlayerUserId { get; set; }
+
+            [Required]
             public Guid? PlayerId { get; set; }
 
             public override bool Equals(object? obj)
