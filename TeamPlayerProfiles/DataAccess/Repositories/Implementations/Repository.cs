@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public abstract class Repository<T, TId> : IRepository<T, TId> where T
-        : class, IEntity<TId>
+    public abstract class Repository<T, TId> : IRepository<T, TId> where T : class, IEntity<TId>
     {
         protected TeamPlayerProfilesContext _context;
         private readonly DbSet<T> _dbSet;

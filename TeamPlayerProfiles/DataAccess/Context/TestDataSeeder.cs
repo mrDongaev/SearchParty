@@ -53,7 +53,8 @@ namespace DataAccess.Context
                     {
                         player = playerList.Find(p => p.UserId == teams[i].UserId);
 
-                    } else
+                    }
+                    else
                     {
                         player = playerList[getRand(0, playerList.Count)];
                     }

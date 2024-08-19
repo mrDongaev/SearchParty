@@ -2,7 +2,10 @@
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using DataAccess.Repositories.Models;
+using DataAccess.Utils;
 using Microsoft.EntityFrameworkCore;
+using static Common.Models.ConditionalQuery;
 
 namespace DataAccess.Repositories.Implementations
 {
@@ -133,6 +136,48 @@ namespace DataAccess.Repositories.Implementations
             }
             var updatedPlayer = await base.Update(existingPlayer, cancellationToken);
             return updatedPlayer;
+        }
+
+        public async Task<ICollection<Player>> GetConditionalPlayerRange(PlayerConditions config, CancellationToken cancellationToken)
+        {
+            return await _players
+                .AsNoTracking()
+                .Include(p => p.Heroes)
+                .Include(p => p.Position)
+                .FilterWith(config)
+                .OrderBy(p => p.Id)
+                .SortWith(config.Sort)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, int page, int pageSize, CancellationToken cancellationToken)
+        {
+            if (page <= 0) page = 1;
+            if (pageSize <= 0) pageSize = 10;
+            int count = _players
+                .AsNoTracking()
+                .FilterWith(config)
+                .OrderBy(p => p.Id)
+                .SortWith(config.Sort)
+                .Count();
+            var list = await _players
+                .AsNoTracking()
+                .Include(p => p.Heroes)
+                .Include(p => p.Position)
+                .FilterWith(config)
+                .OrderBy(p => p.Id)
+                .SortWith(config.Sort)
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+            return new PaginatedResult<Player>
+            {
+                Page = page,
+                PageSize = pageSize,
+                Total = count,
+                PageCount = (int)Math.Ceiling(((double)count) / pageSize),
+                List = list,
+            };
         }
     }
 }

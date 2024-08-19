@@ -15,6 +15,7 @@ using Service.Services.Interfaces.PositionInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
 using System.Text.Json.Serialization;
 using WebAPI.Mapping;
+using static Common.Models.ConditionalQuery;
 using RepoMapping = Service.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,15 +39,15 @@ builder.Services.AddAutoMapper(typeof(RepoMapping.HeroMappingProfile), typeof(Re
     .AddScoped<IHeroService, HeroService>()
     .AddScoped<IPlayerService, PlayerService>()
     .AddScoped<ITeamService, TeamService>()
-    .AddScoped<IBoardService<PlayerDto>, PlayerBoardService>()
-    .AddScoped<IBoardService<TeamDto>, TeamBoardService>();
+    .AddScoped<IBoardService<PlayerDto, PlayerConditions>, PlayerBoardService>()
+    .AddScoped<IBoardService<TeamDto, TeamConditions>, TeamBoardService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+builder.Services.AddControllers();
+    //.AddJsonOptions(options =>
+    //{
+    //    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    //});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
