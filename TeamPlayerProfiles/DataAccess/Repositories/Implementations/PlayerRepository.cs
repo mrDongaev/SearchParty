@@ -5,6 +5,7 @@ using DataAccess.Repositories.Interfaces;
 using DataAccess.Repositories.Models;
 using DataAccess.Utils;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using static Common.Models.ConditionalQuery;
 
 namespace DataAccess.Repositories.Implementations
@@ -150,10 +151,10 @@ namespace DataAccess.Repositories.Implementations
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, int page, int pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
-            if (page <= 0) page = 1;
-            if (pageSize <= 0) pageSize = 10;
+            int intPage = (int) page;
+            int intSize = (int) pageSize;
             int count = _players
                 .AsNoTracking()
                 .FilterWith(config)
@@ -167,15 +168,15 @@ namespace DataAccess.Repositories.Implementations
                 .FilterWith(config)
                 .OrderBy(p => p.Id)
                 .SortWith(config.Sort)
-                .Skip(page * pageSize)
-                .Take(pageSize)
+                .Skip(intPage * intSize)
+                .Take(intSize)
                 .ToListAsync(cancellationToken);
             return new PaginatedResult<Player>
             {
-                Page = page,
-                PageSize = pageSize,
+                Page = intPage,
+                PageSize = intSize,
                 Total = count,
-                PageCount = (int)Math.Ceiling(((double)count) / pageSize),
+                PageCount = (int)Math.Floor(((double)count) / pageSize),
                 List = list,
             };
         }

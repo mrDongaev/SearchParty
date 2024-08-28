@@ -30,6 +30,6 @@ namespace Service.Services.Interfaces.Common
         /// <param name="pageSize"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PaginatedResult<PlayerDto>> GetPaginated(TProfileConditions query, int page, int pageSize, CancellationToken cancellationToken);
+        Task<PaginatedResult<PlayerDto>> GetPaginated(TProfileConditions query, uint page, uint pageSize, CancellationToken cancellationToken);
     }
 }

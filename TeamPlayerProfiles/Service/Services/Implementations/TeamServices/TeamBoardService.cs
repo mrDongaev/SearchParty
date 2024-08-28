@@ -17,7 +17,7 @@ namespace Service.Services.Implementations.TeamServices
             throw new NotImplementedException();
         }
 
-        public Task<PaginatedResult<PlayerDto>> GetPaginated(TeamConditions query, int page, int pageSize, CancellationToken cancellationToken)
+        public Task<PaginatedResult<PlayerDto>> GetPaginated(TeamConditions query, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

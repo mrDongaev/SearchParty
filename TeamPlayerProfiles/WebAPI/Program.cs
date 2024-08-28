@@ -56,7 +56,7 @@ builder.Services.AddSwaggerGen(options =>
         var name = type.Name;
         var declaringName = type.DeclaringType?.Name ?? string.Empty;
         if (declaringName != string.Empty) declaringName += ".";
-        return declaringName + name;
+        return declaringName + Guid.NewGuid().ToString();
     });
 });
 

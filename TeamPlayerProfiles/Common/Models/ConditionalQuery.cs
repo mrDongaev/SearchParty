@@ -12,7 +12,7 @@ namespace Common.Models
 
             public StringFilter? DescriptionFilter { get; set; }
 
-            public SingleValueFilter<bool>? DisplayedFilter { get; set; }
+            public SingleValueFilter<bool?>? DisplayedFilter { get; set; }
 
             public TimeFilter? UpdatedAtStart { get; set; }
 
@@ -28,7 +28,7 @@ namespace Common.Models
 
         public sealed class PlayerConditions : ProfileConditions
         {
-            public ValueFilter<int>? PositionFilter { get; set; }
+            public ValueFilter<int?>? PositionFilter { get; set; }
 
             public ValueFilter<int>? HeroFilter { get; set; }
         }

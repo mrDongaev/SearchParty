@@ -2,8 +2,8 @@
 {
     public interface IPaginatable
     {
-        int? Page {  get; set; }
+        uint? Page {  get; set; }
 
-        int? PageSize { get; set; }
+        uint? PageSize { get; set; }
     }
 }

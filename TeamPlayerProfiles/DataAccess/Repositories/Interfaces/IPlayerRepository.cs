@@ -10,6 +10,6 @@ namespace DataAccess.Repositories.Interfaces
 
         Task<ICollection<Player>> GetConditionalPlayerRange(PlayerConditions query, CancellationToken cancellationToken);
 
-        Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, int page, int pageSize, CancellationToken cancellationToken);
+        Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, uint page, uint pageSize, CancellationToken cancellationToken);
     }
 }

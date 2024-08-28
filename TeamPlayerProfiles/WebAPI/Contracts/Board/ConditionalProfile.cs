@@ -13,7 +13,7 @@ namespace WebAPI.Contracts.Board
 
             public StringFilter? DescriptionFilter { get; set; }
 
-            public SingleValueFilter<bool>? DisplayedFilter { get; set; }
+            public SingleValueFilter<bool?>? DisplayedFilter { get; set; }
 
             public TimeFilter? UpdatedAtStart { get; set; }
 
@@ -24,20 +24,20 @@ namespace WebAPI.Contracts.Board
 
         public class PlayerRequest : Request
         {
-            public ValueFilter<int>? PositionFilter { get; set; }
+            public ValueFilter<int?>? PositionFilter { get; set; }
 
             public ValueFilter<int>? HeroFilter { get; set; }
         }
 
         public class PaginatedPlayerRequest : Request, IPaginatable
         {
-            public ValueFilter<int>? PositionFilter { get; set; }
+            public ValueFilter<int?>? PositionFilter { get; set; }
 
             public ValueFilter<int>? HeroFilter { get; set; }
 
-            public int? Page { get; set; } = 1;
+            public uint? Page { get; set; } = 1;
 
-            public int? PageSize { get; set; } = 10;
+            public uint? PageSize { get; set; } = 10;
         }
 
         public sealed class TeamRequest : Request

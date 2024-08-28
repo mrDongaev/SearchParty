@@ -23,7 +23,7 @@ namespace Service.Services.Implementations.PlayerServices
             return mapper.Map<ICollection<PlayerDto>>(players);
         }
 
-        public async Task<PaginatedResult<PlayerDto>> GetPaginated(PlayerConditions query, int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PaginatedResult<PlayerDto>> GetPaginated(PlayerConditions query, uint page, uint pageSize, CancellationToken cancellationToken = default)
         {
             var players = await playerRepo.GetPaginatedPlayerRange(query, page, pageSize, cancellationToken);
             return mapper.Map<PaginatedResult<PlayerDto>>(players);

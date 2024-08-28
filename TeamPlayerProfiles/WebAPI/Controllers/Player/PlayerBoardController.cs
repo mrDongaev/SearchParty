@@ -36,7 +36,7 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType<PaginatedResult<GetPlayer.Response>>(StatusCodes.Status200OK)]
         public async Task<IResult> GetPaginated(PaginatedPlayerRequest request, CancellationToken cancellationToken)
         {
-            var updatedPlayer = await playerService.GetPaginated(mapper.Map<PlayerConditions>(request), (int) request.Page, (int) request.PageSize, cancellationToken);
+            var updatedPlayer = await playerService.GetPaginated(mapper.Map<PlayerConditions>(request), (uint) request.Page, (uint) request.PageSize, cancellationToken);
             return TypedResults.Ok(mapper.Map<PaginatedResult<GetPlayer.Response>>(updatedPlayer));
         }
     }

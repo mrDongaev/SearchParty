@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
+using DataAccess.Repositories.Models;
 using Service.Contracts.Player;
 
 namespace Service.Mapping
@@ -25,6 +26,8 @@ namespace Service.Mapping
                 .ForMember(d => d.Position, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
                 .ForMember(d => d.TeamPlayers, m => m.Ignore());
+
+            CreateMap<PaginatedResult<Player>, PaginatedResult<PlayerDto>>();
         }
 
         private class UpdatePositionResolver : IValueResolver<UpdatePlayerDto, Player, int?>

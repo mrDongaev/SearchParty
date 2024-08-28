@@ -10,6 +10,11 @@ namespace DataAccess.Context.EntitiesConfigurations
         {
             builder.HasKey(e => new { e.Id, e.UserId });
 
+            builder.Property(e => e.Id)
+                .ValueGeneratedOnAdd();
+
+            builder.HasAlternateKey(e => e.Id);
+
             builder.HasIndex(e => e.Id)
                 .IsUnique();
 
