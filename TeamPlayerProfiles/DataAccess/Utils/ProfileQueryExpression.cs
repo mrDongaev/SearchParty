@@ -11,12 +11,13 @@ namespace DataAccess.Utils
 {
     public static class ProfileQueryExpression
     {
-        public static Expression? GetStringFilteringExpression<TProfile>(StringFilter? filter, string propertyName, ParameterExpression parameter) where TProfile : class, IProfile
+        public static Expression GetStringFilteringExpression<TProfile>(this Expression expr, StringFilter? filter, string propertyName, ParameterExpression parameter) where TProfile : class, IProfile
         {
+            if (filter == null) return expr;
             Type strType = typeof(string);
             Type profileType = typeof(TProfile);
             var property = profileType.GetProperty(propertyName);
-            if (filter == null || property == null || property.PropertyType != strType) return null;
+            if (property == null || property.PropertyType != strType) throw new ArgumentException();
             var inputParam = Expression.Constant(filter.Input, strType);
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             var containsMethodInfo = strType.GetMethod("Contains", [strType]);
@@ -24,12 +25,31 @@ namespace DataAccess.Utils
             var endsWithMethodInfo = strType.GetMethod("EndsWith", [strType]);
             return filter.FilterType switch
             {
-                StringValueFilterType.Equals => Expression.Equal(memberAccess, inputParam),
-                StringValueFilterType.DoesNotEqual => Expression.NotEqual(memberAccess, inputParam),
-                StringValueFilterType.Contains => Expression.Call(memberAccess, containsMethodInfo, inputParam),
-                StringValueFilterType.DoesNotContain => Expression.Not(Expression.Call(memberAccess, containsMethodInfo, inputParam)),
-                StringValueFilterType.StartsWith => Expression.Call(memberAccess, startsWithMethodInfo, inputParam),
-                StringValueFilterType.EndsWith => Expression.Call(memberAccess, endsWithMethodInfo, inputParam),
+                StringValueFilterType.Equal => Expression.AndAlso(expr, Expression.Equal(memberAccess, inputParam)),
+                StringValueFilterType.NotEqual => Expression.AndAlso(expr, Expression.NotEqual(memberAccess, inputParam)),
+                StringValueFilterType.Contains => Expression.AndAlso(expr, Expression.Call(memberAccess, containsMethodInfo, inputParam)),
+                StringValueFilterType.DoesNotContain => Expression.AndAlso(expr, Expression.Not(Expression.Call(memberAccess, containsMethodInfo, inputParam))),
+                StringValueFilterType.StartsWith =>Expression.AndAlso(expr,  Expression.Call(memberAccess, startsWithMethodInfo, inputParam)),
+                StringValueFilterType.EndsWith => Expression.AndAlso(expr, Expression.Call(memberAccess, endsWithMethodInfo, inputParam)),
+                _ => throw new ArgumentException(),
+            };
+        }
+
+        public static Expression GetDateTimeFilteringExpression<TProfile>(this Expression expr, TimeFilter? filter, string timePropertyName, ParameterExpression parameter) where TProfile : class, IProfile
+        {
+            if (filter == null) return expr;
+            var property = typeof(TProfile).GetProperty(timePropertyName);
+            var dateTimeType = typeof(DateTime);
+            if (property == null || property.PropertyType != dateTimeType) throw new ArgumentException();
+            var inputParam = Expression.Constant(filter.DateTime, dateTimeType);
+            var memberAccess = Expression.MakeMemberAccess(parameter, property);
+            return filter.FilterType switch
+            {
+                DateTimeFilter.Before => Expression.AndAlso(expr, Expression.LessThan(memberAccess, inputParam)),
+                DateTimeFilter.AtOrBefore => Expression.AndAlso(expr, Expression.LessThanOrEqual(memberAccess, inputParam)),
+                DateTimeFilter.Exact => Expression.AndAlso(expr, Expression.Equal(memberAccess, inputParam)),
+                DateTimeFilter.AtOrAfter => Expression.AndAlso(expr, Expression.GreaterThanOrEqual(memberAccess, inputParam)),
+                DateTimeFilter.After => Expression.AndAlso(expr, Expression.GreaterThan(memberAccess, inputParam)),
                 _ => throw new ArgumentException(),
             };
         }
@@ -52,11 +72,12 @@ namespace DataAccess.Utils
             };
         }
 
-        public static Expression? GetValueListFilteringExpression<TProfile, TListItemProp>(ValueFilter<TListItemProp> filter, string valuePropertyName, ParameterExpression parameter) where TProfile : class, IProfile
+        public static Expression GetValueListFilteringExpression<TProfile, TListItemProp>(this Expression expr, ValueFilter<TListItemProp> filter, string valuePropertyName, ParameterExpression parameter) where TProfile : class, IProfile
         {
+            if (filter == null) return expr;
             var propertyType = typeof(TListItemProp);
             var property = typeof(TProfile).GetProperty(valuePropertyName);
-            if (filter == null || property == null || property.PropertyType != propertyType) return null;
+            if (property == null || property.PropertyType != propertyType) throw new ArgumentException();
             var valueList = Expression.Constant(filter.ValueList, typeof(IEnumerable<TListItemProp>));
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             var containsMethod = typeof(Enumerable)
@@ -70,18 +91,18 @@ namespace DataAccess.Utils
                 case ValueListFilterType.Exact:
                     {
                         if (filter.ValueList.Count > 1) break;
-                        finalExpression = Expression.Call(containsMethod, valueList, memberAccess);
+                        finalExpression = Expression.AndAlso(expr, Expression.Call(containsMethod, valueList, memberAccess));
                         break;
                     }
                 case ValueListFilterType.Any:
                 case ValueListFilterType.Including:
                     {
-                        finalExpression = Expression.Call(containsMethod, valueList, memberAccess);
+                        finalExpression = Expression.AndAlso(expr, Expression.Call(containsMethod, valueList, memberAccess));
                         break;
                     }
                 case ValueListFilterType.Excluding:
                     {
-                        finalExpression = Expression.Not(Expression.Call(containsMethod, valueList, memberAccess));
+                        finalExpression = Expression.AndAlso(expr, Expression.Not(Expression.Call(containsMethod, valueList, memberAccess)));
                         break;
                     }
                 default:
@@ -90,13 +111,13 @@ namespace DataAccess.Utils
             return finalExpression;
         }
 
-        //ф-ия работает, но не выполняется на бд
-        public static Expression? GetValueListFilteringOnListExpression<TProfile, TListItem, TListItemProp>(ValueFilter<TListItemProp>? filter, string listPropertyName, string listItemPropertyName, ParameterExpression parameter) where TProfile : class, IProfile
+        public static Expression GetValueListFilteringOnListExpression<TProfile, TListItem, TListItemProp>(this Expression expr, ValueFilter<TListItemProp>? filter, string listPropertyName, string listItemPropertyName, ParameterExpression parameter) where TProfile : class, IProfile
         {
+            if (filter == null) return expr;
             var listType = typeof(ICollection<TListItem>);
             var property = typeof(TProfile).GetProperty(listPropertyName);
             var listItemProperty = typeof(TListItem).GetProperty(listItemPropertyName);
-            if (filter == null || property == null || property.PropertyType != listType || listItemProperty == null || listItemProperty.PropertyType != typeof(TListItemProp)) return null;
+            if (property == null || property.PropertyType != listType || listItemProperty == null || listItemProperty.PropertyType != typeof(TListItemProp)) throw new ArgumentException();
             var valueList = Expression.Constant(filter.ValueList, typeof(ICollection<TListItemProp>));
             var memberAccess = Expression.Property(parameter, listPropertyName);
             var asQueryable = typeof(Queryable)
@@ -139,25 +160,25 @@ namespace DataAccess.Utils
                 case ValueListFilterType.Including:
                     {
                         var valueCount = Expression.Constant(filter.ValueList.Count);
-                        finalExpression = Expression.GreaterThanOrEqual(intersectedCount, valueCount);
+                        finalExpression = Expression.AndAlso(expr, Expression.GreaterThanOrEqual(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Exact:
                     {
                         var valueCount = Expression.Constant(filter.ValueList.Count);
-                        finalExpression = Expression.Equal(intersectedCount, valueCount);
+                        finalExpression =  Expression.AndAlso(expr, Expression.Equal(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Excluding:
                     {
                         var valueCount = Expression.Constant(0);
-                        finalExpression = Expression.Equal(intersectedCount, valueCount);
+                        finalExpression =  Expression.AndAlso(expr, Expression.Equal(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Any:
                     {
                         var valueCount = Expression.Constant(0);
-                        finalExpression = Expression.GreaterThan(intersectedCount, valueCount);
+                        finalExpression =  Expression.AndAlso(expr, Expression.GreaterThan(intersectedCount, valueCount));
                         break;
                     }
                 default:
@@ -166,17 +187,18 @@ namespace DataAccess.Utils
             return finalExpression;
         }
 
-        public static Expression? GetSingleValueFilteringExpression<TProfile, TProperty>(SingleValueFilter<TProperty> filter, string propertyName, ParameterExpression parameter) where TProfile : class, IProfile
+        public static Expression GetSingleValueFilteringExpression<TProfile, TProperty>(this Expression expr, SingleValueFilter<TProperty> filter, string propertyName, ParameterExpression parameter) where TProfile : class, IProfile
         {
+            if (filter == null) return expr;
             var propertyType = typeof(TProperty);
             var property = typeof(TProfile).GetProperty(propertyName);
-            if (filter == null || property == null || property.PropertyType != propertyType) return null;
+            if (property == null || property.PropertyType != propertyType) throw new ArgumentException();
             var value = Expression.Constant(filter.Value, propertyType);
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             return filter.FilterType switch
             {
-                SingleValueFilterType.Equals => Expression.Equal(value, memberAccess),
-                SingleValueFilterType.DoesNotEqual => Expression.NotEqual(value, memberAccess),
+                SingleValueFilterType.Equals => Expression.AndAlso(expr, Expression.Equal(value, memberAccess)),
+                SingleValueFilterType.DoesNotEqual =>  Expression.AndAlso(expr, Expression.NotEqual(value, memberAccess)),
                 _ => throw new ArgumentException(),
             };
         }

@@ -2,8 +2,8 @@
 {
     public enum StringValueFilterType
     {
-        Equals = 0,
-        DoesNotEqual,
+        Equal = 0,
+        NotEqual,
         Contains,
         DoesNotContain,
         StartsWith,

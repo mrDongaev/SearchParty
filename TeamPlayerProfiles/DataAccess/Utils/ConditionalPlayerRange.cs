@@ -14,41 +14,13 @@ namespace DataAccess.Utils
         {
             var parameter = Expression.Parameter(typeof(Player), "profile");
             Expression expr = Expression.Constant(true);
-            if (queryConfig.NameFilter != null)
-            {
-                var condExpr = GetStringFilteringExpression<Player>(queryConfig.NameFilter, "Name", parameter);
-                if (condExpr != null) expr = Expression.AndAlso(expr, condExpr);
-            }
-            if (queryConfig.DescriptionFilter != null)
-            {
-                var condExpr = GetStringFilteringExpression<Player>(queryConfig.DescriptionFilter, "Description", parameter);
-                if (condExpr != null) expr = Expression.AndAlso(expr, condExpr);
-            }
-            if (queryConfig.PositionFilter != null)
-            {
-                var condExpr = GetValueListFilteringExpression<Player, int?>(queryConfig.PositionFilter, "PositionId", parameter);
-                if (condExpr != null) expr = Expression.AndAlso(expr, condExpr);
-            }
-            if (queryConfig.HeroFilter != null)
-            {
-                var condExpr = GetValueListFilteringOnListExpression<Player, Hero, int>(queryConfig.HeroFilter, "Heroes", "Id", parameter);
-                if (condExpr != null) expr = Expression.AndAlso(expr, condExpr);
-            }
-            if (queryConfig.DisplayedFilter != null)
-            {
-                var condExpr = GetSingleValueFilteringExpression<Player, bool?>(queryConfig.DisplayedFilter, "Displayed", parameter);
-                if (condExpr != null) expr = Expression.AndAlso(expr, condExpr);
-            }
-            if (queryConfig.UpdatedAtStart != null)
-            {
-                var condExpr = GetDateTimeFilteringExpression<Player>(queryConfig.UpdatedAtStart, "UpdatedAt", parameter);
-                if (condExpr != null) expr = Expression.AndAlso(expr, condExpr);
-            }
-            if (queryConfig.UpdatedAtEnd != null)
-            {
-                var condExpr = GetDateTimeFilteringExpression<Player>(queryConfig.UpdatedAtEnd, "UpdatedAt", parameter);
-                if (condExpr != null) expr = Expression.AndAlso(expr, condExpr);
-            }
+            expr.GetStringFilteringExpression<Player>(queryConfig.NameFilter, "Name", parameter)
+                .GetStringFilteringExpression<Player>(queryConfig.DescriptionFilter, "Description", parameter)
+                .GetValueListFilteringExpression<Player, int?>(queryConfig.PositionFilter, "PositionId", parameter)
+                .GetValueListFilteringOnListExpression<Player, Hero, int>(queryConfig.HeroFilter, "Heroes", "Id", parameter)
+                .GetSingleValueFilteringExpression<Player, bool?>(queryConfig.DisplayedFilter, "Displayed", parameter)
+                .GetDateTimeFilteringExpression<Player>(queryConfig.UpdatedAtStart, "UpdatedAt", parameter)
+                .GetDateTimeFilteringExpression<Player>(queryConfig.UpdatedAtEnd, "UpdatedAt", parameter);
             Expression<Func<Player, bool>> finalLambda = Expression.Lambda<Func<Player, bool>>(expr, parameter);
             return query.Where(finalLambda);
         }
