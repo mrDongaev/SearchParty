@@ -6,7 +6,7 @@ using static Common.Models.ConditionalQuery;
 using static Common.Models.ConditionalQuery.Filter;
 using static DataAccess.Utils.ProfileQueryExpression;
 
-namespace DataAccess.Repositories.Models
+namespace DataAccess.Utils
 {
     public static class ConditionalPlayerRange
     {

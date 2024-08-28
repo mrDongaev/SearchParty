@@ -22,6 +22,8 @@ namespace DataAccess.Entities
 
         public ICollection<Hero> Heroes { get; protected set; } = [];
 
+        public ICollection<PlayerHero> PlayerHeroes { get; protected set; } = [];
+
         public ICollection<Team> Teams { get; protected set; } = [];
 
         public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];

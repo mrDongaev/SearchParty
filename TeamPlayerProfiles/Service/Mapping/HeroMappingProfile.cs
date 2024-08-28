@@ -13,7 +13,9 @@ namespace Service.Mapping
             CreateMap<int, Hero>()
                 .ForMember(d => d.Id, m => m.MapFrom(src => src))
                 .ForMember(d => d.Name, m => m.Ignore())
-                .ForMember(d => d.MainStat, m => m.Ignore());
+                .ForMember(d => d.MainStat, m => m.Ignore())
+                .ForMember(d => d.Players, m => m.Ignore())
+                .ForMember(d => d.PlayerHeroes, m => m.Ignore());
 
         }
     }

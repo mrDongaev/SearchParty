@@ -10,6 +10,8 @@ namespace DataAccess.Context.EntitiesConfigurations
         {
             builder.HasKey(e => new { e.Id, e.UserId });
 
+            builder.HasAlternateKey(e => e.Id);
+
             builder.Property(e => e.Id)
                 .ValueGeneratedOnAdd();
 
@@ -24,8 +26,10 @@ namespace DataAccess.Context.EntitiesConfigurations
                 .IsRequired();
 
             builder.HasMany(e => e.Heroes)
-                .WithMany()
-                .UsingEntity(e => e.ToTable("PlayerHero"));
+                .WithMany(e => e.Players)
+                .UsingEntity<PlayerHero>(
+                e => e.HasOne<Hero>(e => e.Hero).WithMany(e => e.PlayerHeroes).HasForeignKey(e => e.HeroId),
+                e => e.HasOne<Player>(e => e.Player).WithMany(e => e.PlayerHeroes).HasPrincipalKey(e => e.Id));
 
             base.Configure(builder);
         }
