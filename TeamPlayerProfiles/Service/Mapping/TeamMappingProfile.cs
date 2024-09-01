@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Common.Models.Enums;
 using DataAccess.Entities;
+using DataAccess.Repositories.Models;
 using Service.Contracts.Team;
 
 namespace Service.Mapping
@@ -32,6 +33,8 @@ namespace Service.Mapping
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
                 .ForMember(d => d.UserId, m => m.Ignore())
                 .ForMember(d => d.Players, m => m.Ignore());
+
+            CreateMap<PaginatedResult<Team>, PaginatedResult<TeamDto>>();
         }
     }
 }

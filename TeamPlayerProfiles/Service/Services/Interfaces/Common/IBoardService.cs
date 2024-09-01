@@ -1,5 +1,4 @@
 ﻿using DataAccess.Repositories.Models;
-using Service.Contracts.Player;
 using static Common.Models.ConditionalQuery;
 
 namespace Service.Services.Interfaces.Common
@@ -20,7 +19,7 @@ namespace Service.Services.Interfaces.Common
         /// <param name="query"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ICollection<PlayerDto>> GetFiltered(TProfileConditions query, CancellationToken cancellationToken);
+        Task<ICollection<TGetDto>> GetFiltered(TProfileConditions query, CancellationToken cancellationToken);
 
         /// <summary>
         /// Получить отфильтрованный и отсортированный список соответствующих профилей с пагинацией
@@ -30,6 +29,6 @@ namespace Service.Services.Interfaces.Common
         /// <param name="pageSize"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PaginatedResult<PlayerDto>> GetPaginated(TProfileConditions query, uint page, uint pageSize, CancellationToken cancellationToken);
+        Task<PaginatedResult<TGetDto>> GetPaginated(TProfileConditions query, uint page, uint pageSize, CancellationToken cancellationToken);
     }
 }

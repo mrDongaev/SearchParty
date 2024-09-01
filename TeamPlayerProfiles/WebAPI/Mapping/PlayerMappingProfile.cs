@@ -19,8 +19,6 @@ namespace WebAPI.Mapping
 
             CreateMap<ConditionalProfile.PlayerRequest, ConditionalQuery.PlayerConditions>();
 
-            CreateMap<ConditionalProfile.PaginatedPlayerRequest, ConditionalQuery.PlayerConditions>();
-
             CreateMap<PaginatedResult<PlayerDto>, PaginatedResult<GetPlayer.Response>>();
         }
     }

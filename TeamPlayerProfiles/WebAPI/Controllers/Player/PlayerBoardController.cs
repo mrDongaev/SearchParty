@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Common.Models;
 using DataAccess.Repositories.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -28,16 +27,16 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
         public async Task<IResult> GetFiltered(PlayerRequest request, CancellationToken cancellationToken)
         {
-            var updatedPlayer = await playerService.GetFiltered(mapper.Map<PlayerConditions>(request), cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(updatedPlayer));
+            var players = await playerService.GetFiltered(mapper.Map<PlayerConditions>(request), cancellationToken);
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
         }
 
         [HttpPost]
         [ProducesResponseType<PaginatedResult<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetPaginated(PaginatedPlayerRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> GetPaginated([FromQuery(Name = "page")] uint page, [FromQuery(Name = "page-size")] uint pageSize, PlayerRequest request, CancellationToken cancellationToken)
         {
-            var updatedPlayer = await playerService.GetPaginated(mapper.Map<PlayerConditions>(request), (uint) request.Page, (uint) request.PageSize, cancellationToken);
-            return TypedResults.Ok(mapper.Map<PaginatedResult<GetPlayer.Response>>(updatedPlayer));
+            var players = await playerService.GetPaginated(mapper.Map<PlayerConditions>(request), page, pageSize, cancellationToken);
+            return TypedResults.Ok(mapper.Map<PaginatedResult<GetPlayer.Response>>(players));
         }
     }
 }

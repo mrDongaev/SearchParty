@@ -5,7 +5,6 @@ using DataAccess.Repositories.Interfaces;
 using DataAccess.Repositories.Models;
 using DataAccess.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using static Common.Models.ConditionalQuery;
 
 namespace DataAccess.Repositories.Implementations
@@ -25,29 +24,21 @@ namespace DataAccess.Repositories.Implementations
 
         public override async Task<ICollection<Player>> GetAll(CancellationToken cancellationToken)
         {
-            return await _players
-                .AsNoTracking()
-                .Include(p => p.Heroes)
-                .Include(p => p.Position)
+            return await _players.GetEntities(true)
                 .ToListAsync(cancellationToken);
         }
 
         public override async Task<Player?> Get(Guid id, CancellationToken cancellationToken)
         {
-            return await _players
-                .AsNoTracking()
-                .Include(p => p.Heroes)
+            return await _players.GetEntities(true)
                 .Include(p => p.Position)
                 .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
         }
 
         public async Task<ICollection<Player>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
-            return await _players
-                .AsNoTracking()
+            return await _players.GetEntities(true)
                 .Where(p => ids.Contains(p.Id))
-                .Include(p => p.Heroes)
-                .Include(p => p.Position)
                 .ToListAsync(cancellationToken);
         }
 
@@ -74,9 +65,7 @@ namespace DataAccess.Repositories.Implementations
 
         public override async Task<Player?> Update(Player player, CancellationToken cancellationToken)
         {
-            var existingPlayer = await _players
-                .Include(p => p.Heroes)
-                .Include(p => p.Position)
+            var existingPlayer = await _players.GetEntities(false)
                 .SingleOrDefaultAsync(p => p.Id == player.Id, cancellationToken);
             if (existingPlayer == null)
             {
@@ -97,9 +86,7 @@ namespace DataAccess.Repositories.Implementations
 
         public async Task<Player?> UpdatePlayerHeroes(Guid id, ISet<int> heroIds, CancellationToken cancellationToken)
         {
-            var existingPlayer = await _players
-                .Include(p => p.Heroes)
-                .Include(p => p.Position)
+            var existingPlayer = await _players.GetEntities(false)
                 .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
             if (existingPlayer == null)
             {
@@ -141,34 +128,25 @@ namespace DataAccess.Repositories.Implementations
 
         public async Task<ICollection<Player>> GetConditionalPlayerRange(PlayerConditions config, CancellationToken cancellationToken)
         {
-            return await _players
-                .AsNoTracking()
-                .Include(p => p.Heroes)
-                .Include(p => p.Position)
+            return await _players.GetEntities(true)
                 .FilterWith(config)
-                .OrderBy(p => p.Id)
                 .SortWith(config.Sort)
                 .ToListAsync(cancellationToken);
         }
 
         public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
-            int intPage = (int) page;
-            int intSize = (int) pageSize;
+            int intPage = (int)page;
+            int intSize = (int)pageSize;
             int count = _players
                 .AsNoTracking()
                 .FilterWith(config)
-                .OrderBy(p => p.Id)
-                .SortWith(config.Sort)
                 .Count();
-            var list = await _players
-                .AsNoTracking()
-                .Include(p => p.Heroes)
-                .Include(p => p.Position)
+            var list = await _players.GetEntities(true)
                 .FilterWith(config)
                 .OrderBy(p => p.Id)
                 .SortWith(config.Sort)
-                .Skip(intPage * intSize)
+                .Skip((intPage - 1) * intSize)
                 .Take(intSize)
                 .ToListAsync(cancellationToken);
             return new PaginatedResult<Player>
@@ -176,7 +154,7 @@ namespace DataAccess.Repositories.Implementations
                 Page = intPage,
                 PageSize = intSize,
                 Total = count,
-                PageCount = (int)Math.Floor(((double)count) / pageSize),
+                PageCount = (int)Math.Ceiling(((double)count) / pageSize),
                 List = list,
             };
         }

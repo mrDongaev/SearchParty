@@ -1,5 +1,6 @@
 ﻿using Common.Models.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Numerics;
 using static Common.Models.ConditionalQuery.Filter;
 
 namespace Common.Models
@@ -23,7 +24,13 @@ namespace Common.Models
 
         public sealed class TeamConditions : ProfileConditions
         {
+            public NumericFilter<int>? PlayerCountStart { get; set; }
 
+            public NumericFilter<int>? PlayerCountEnd { get; set; }
+
+            public ValueFilter<int>? HeroFilter { get; set; }
+
+            public ValueFilter<int>? PositionFilter { get; set; }
         }
 
         public sealed class PlayerConditions : ProfileConditions
@@ -53,6 +60,13 @@ namespace Common.Models
                 public StringValueFilterType FilterType { get; set; }
             }
 
+            public sealed class NumericFilter<T> where T : INumber<T>
+            {
+                public T Input { get; set; }
+
+                public NumericFilterType FilterType { get; set; }
+            }
+
             public sealed class ValueFilter<T>
             {
                 [Required]
@@ -61,7 +75,7 @@ namespace Common.Models
                 [Required]
                 public ValueListFilterType FilterType { get; set; }
             }
-            
+
             public sealed class SingleValueFilter<T>
             {
                 [Required]

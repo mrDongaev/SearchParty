@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using WebAPI.Contracts.Interfaces;
-using static Common.Models.ConditionalQuery;
+﻿using static Common.Models.ConditionalQuery;
 using static Common.Models.ConditionalQuery.Filter;
 
 namespace WebAPI.Contracts.Board
@@ -29,20 +27,15 @@ namespace WebAPI.Contracts.Board
             public ValueFilter<int>? HeroFilter { get; set; }
         }
 
-        public class PaginatedPlayerRequest : Request, IPaginatable
+        public class TeamRequest : Request
         {
-            public ValueFilter<int?>? PositionFilter { get; set; }
+            public NumericFilter<int>? PlayerCountStart { get; set; }
+
+            public NumericFilter<int>? PlayerCountEnd { get; set; }
 
             public ValueFilter<int>? HeroFilter { get; set; }
 
-            public uint? Page { get; set; } = 1;
-
-            public uint? PageSize { get; set; } = 10;
-        }
-
-        public sealed class TeamRequest : Request
-        {
-
+            public ValueFilter<int>? PositionFilter { get; set; }
         }
     }
 }

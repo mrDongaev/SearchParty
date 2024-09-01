@@ -1,6 +1,9 @@
-﻿using DataAccess.Context;
+﻿using Common.Models;
+using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using DataAccess.Repositories.Models;
+using DataAccess.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
@@ -16,31 +19,13 @@ namespace DataAccess.Repositories.Implementations
 
         public override async Task<ICollection<Team>> GetAll(CancellationToken cancellationToken)
         {
-            return await _teams
-                .AsNoTracking()
-                .Include(t => t.TeamPlayers)
-                .ThenInclude(p => p.Player)
-                .ThenInclude(p => p.Heroes)
-                .Include(t => t.TeamPlayers)
-                .ThenInclude(p => p.Player)
-                .ThenInclude(p => p.Position)
-                .Include(t => t.TeamPlayers)
-                .ThenInclude(tp => tp.Position)
+            return await _teams.GetEntities(true)
                 .ToListAsync(cancellationToken);
         }
 
         public override async Task<Team?> Get(Guid id, CancellationToken cancellationToken)
         {
-            return await _teams
-                .AsNoTracking()
-                .Include(t => t.TeamPlayers)
-                .ThenInclude(p => p.Player)
-                .ThenInclude(p => p.Heroes)
-                .Include(t => t.TeamPlayers)
-                .ThenInclude(p => p.Player)
-                .ThenInclude(p => p.Position)
-                .Include(t => t.TeamPlayers)
-                .ThenInclude(tp => tp.Position)
+            return await _teams.GetEntities(true)
                 .SingleAsync(t => t.Id == id, cancellationToken);
         }
 
@@ -51,6 +36,7 @@ namespace DataAccess.Repositories.Implementations
             {
                 tp.TeamId = team.Id;
             }
+            team.PlayerCount = team.TeamPlayers.Count;
             await base.Add(team, cancellationToken);
             return await Get(team.Id, cancellationToken);
         }
@@ -128,8 +114,40 @@ namespace DataAccess.Repositories.Implementations
             {
                 existingTeam.UpdatedAt = DateTime.UtcNow;
             }
+            existingTeam.PlayerCount = existingTeam.TeamPlayers.Count;
             await _context.SaveChangesAsync(cancellationToken);
             return await Get(existingTeam.Id, cancellationToken);
+        }
+
+        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalQuery.TeamConditions config, CancellationToken cancellationToken)
+        {
+            return await _teams.GetEntities(true)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalQuery.TeamConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
+        {
+            int intPage = (int)page;
+            int intSize = (int)pageSize;
+            int count = _teams
+                .AsNoTracking()
+                .FilterWith(config)
+                .Count();
+
+            var list = await _teams.GetEntities(true)
+                .FilterWith(config)
+                .SortWith(config.Sort)
+                .Skip((intPage - 1) * intSize)
+                .Take(intSize)
+                .ToListAsync(cancellationToken);
+            return new PaginatedResult<Team>
+            {
+                Page = intPage,
+                PageSize = intSize,
+                Total = count,
+                PageCount = (int)Math.Ceiling((double)count / pageSize),
+                List = list
+            };
         }
     }
 }

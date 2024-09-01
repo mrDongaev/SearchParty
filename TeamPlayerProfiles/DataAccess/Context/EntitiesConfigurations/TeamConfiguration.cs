@@ -16,7 +16,7 @@ namespace DataAccess.Context.EntitiesConfigurations
                 .WithMany(e => e.Teams)
                 .UsingEntity<TeamPlayer>(
                     e => e.HasOne<Player>(e => e.Player).WithMany(e => e.TeamPlayers).HasPrincipalKey(e => e.Id),
-                    e => e.HasOne<Team>(e => e.Team).WithMany(e =>e.TeamPlayers).HasForeignKey(e => e.TeamId));
+                    e => e.HasOne<Team>(e => e.Team).WithMany(e => e.TeamPlayers).HasForeignKey(e => e.TeamId));
 
             base.Configure(builder);
         }

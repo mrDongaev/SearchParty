@@ -70,6 +70,7 @@ namespace DataAccess.Context
             }
             foreach (var team in teams)
             {
+                team.PlayerCount = team.TeamPlayers.Count;
                 context.Add(team);
             }
             await context.SaveChangesAsync();
