@@ -1,0 +1,17 @@
+C:\MyProjects\WebSearchPartyApi\EFData\bin\Debug\net8.0\EFData.deps.json
+C:\MyProjects\WebSearchPartyApi\EFData\bin\Debug\net8.0\EFData.runtimeconfig.json
+C:\MyProjects\WebSearchPartyApi\EFData\bin\Debug\net8.0\EFData.dll
+C:\MyProjects\WebSearchPartyApi\EFData\bin\Debug\net8.0\EFData.pdb
+C:\MyProjects\WebSearchPartyApi\EFData\bin\Debug\net8.0\Domain.dll
+C:\MyProjects\WebSearchPartyApi\EFData\bin\Debug\net8.0\Domain.pdb
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.csproj.AssemblyReference.cache
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.GeneratedMSBuildEditorConfig.editorconfig
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.AssemblyInfoInputs.cache
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.AssemblyInfo.cs
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.csproj.CoreCompileInputs.cache
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.csproj.Up2Date
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.dll
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\refint\EFData.dll
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.pdb
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\EFData.genruntimeconfig.cache
+C:\MyProjects\WebSearchPartyApi\EFData\obj\Debug\net8.0\ref\EFData.dll
