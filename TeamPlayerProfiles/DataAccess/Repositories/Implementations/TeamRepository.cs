@@ -122,6 +122,8 @@ namespace DataAccess.Repositories.Implementations
         public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalQuery.TeamConditions config, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
+                .FilterWith(config)
+                .SortWith(config.Sort)
                 .ToListAsync(cancellationToken);
         }
 

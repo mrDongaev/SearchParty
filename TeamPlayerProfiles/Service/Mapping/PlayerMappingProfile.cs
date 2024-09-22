@@ -17,7 +17,11 @@ namespace Service.Mapping
                 .ForMember(d => d.PositionId, m => m.MapFrom(src => (int)src.Position))
                 .ForMember(d => d.Position, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
-                .ForMember(d => d.TeamPlayers, m => m.Ignore());
+                .ForMember(d => d.TeamPlayers, m => m.Ignore())
+                .ForMember(d => d.Id, m => m.Ignore())
+                .ForMember(d => d.Displayed, m => m.Ignore())
+                .ForMember(d => d.UpdatedAt, m => m.Ignore())
+                .ForMember(d => d.PlayerHeroes, m => m.Ignore());
 
             CreateMap<UpdatePlayerDto, Player>()
                 .ForMember(d => d.UserId, m => m.Ignore())
@@ -25,7 +29,10 @@ namespace Service.Mapping
                 .ForMember(d => d.PositionId, m => m.MapFrom(new UpdatePositionResolver()))
                 .ForMember(d => d.Position, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
-                .ForMember(d => d.TeamPlayers, m => m.Ignore());
+                .ForMember(d => d.TeamPlayers, m => m.Ignore())
+                .ForMember(d => d.Displayed, m => m.Ignore())
+                .ForMember(d => d.UpdatedAt, m => m.Ignore())
+                .ForMember(d => d.PlayerHeroes, m => m.Ignore());
 
             CreateMap<PaginatedResult<Player>, PaginatedResult<PlayerDto>>();
         }

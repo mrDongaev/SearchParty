@@ -27,12 +27,17 @@ namespace Service.Mapping
                 .ForMember(d => d.TeamPlayers, m => m.MapFrom(src => src.PlayersInTeam))
                 .ForMember(d => d.PlayerCount, m => m.MapFrom(src => src.PlayersInTeam.Count))
                 .ForMember(d => d.Displayed, m => m.Ignore())
-                .ForMember(d => d.Players, m => m.Ignore());
+                .ForMember(d => d.Players, m => m.Ignore())
+                .ForMember(d => d.Id, m => m.Ignore())
+                .ForMember(d => d.UpdatedAt, m => m.Ignore());
 
             CreateMap<UpdateTeamDto, Team>()
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
                 .ForMember(d => d.UserId, m => m.Ignore())
-                .ForMember(d => d.Players, m => m.Ignore());
+                .ForMember(d => d.Players, m => m.Ignore())
+                .ForMember(d => d.Displayed, m => m.Ignore())
+                .ForMember(d => d.UpdatedAt, m => m.Ignore())
+                .ForMember(d => d.PlayerCount, m => m.Ignore());
 
             CreateMap<PaginatedResult<Team>, PaginatedResult<TeamDto>>();
         }

@@ -1,6 +1,7 @@
 ﻿using Common.Models.Enums;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using static Common.Models.ConditionalQuery;
 
@@ -35,15 +36,14 @@ namespace DataAccess.Utils
                     teamPlayerParameter);
                 query = queryConfig.PositionFilter.FilterType switch
                 {
-                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.Count() == count &&
-                    t.TeamPlayers.AsQueryable().Where(teamPlayerLambda).Count() == count),
+                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.Count() == count && t.TeamPlayers.AsQueryable().Where(teamPlayerLambda).Count() == count),
                     ValueListFilterType.Including => query.Where(t => t.TeamPlayers.AsQueryable()
                         .Where(teamPlayerLambda).Count() == count),
                     ValueListFilterType.Excluding => query.Where(t => t.TeamPlayers.AsQueryable()
                         .Where(teamPlayerLambda).Count() == 0),
                     ValueListFilterType.Any => query.Where(t => t.TeamPlayers.AsQueryable()
                         .Where(teamPlayerLambda).Count() > 0),
-                    _ => throw new ArgumentException(),
+                    _ => throw new InvalidEnumArgumentException($"{queryConfig.PositionFilter.FilterType} does not exist on {typeof(ValueListFilterType).Name} type"),
                 };
             }
             if (queryConfig.HeroFilter != null)
@@ -69,7 +69,7 @@ namespace DataAccess.Utils
                     .SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() == 0),
                     ValueListFilterType.Any => query.Where(t => t.TeamPlayers.AsQueryable()
                     .SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() > 0),
-                    _ => throw new ArgumentException(),
+                    _ => throw new InvalidEnumArgumentException($"{queryConfig.HeroFilter.FilterType} does not exist on {typeof(ValueListFilterType).Name} type"),
                 };
             }
             return query.Where(finalLambda);
