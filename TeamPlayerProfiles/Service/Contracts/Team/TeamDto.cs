@@ -14,6 +14,6 @@
 
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<TeamPlayerService.Read> PlayersInTeam { get; set; }
+        public ICollection<TeamPlayerDto.Read> PlayersInTeam { get; set; }
     }
 }

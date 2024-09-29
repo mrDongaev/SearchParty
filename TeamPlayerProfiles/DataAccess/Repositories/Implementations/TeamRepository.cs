@@ -11,10 +11,12 @@ namespace DataAccess.Repositories.Implementations
     public class TeamRepository : Repository<Team, Guid>, ITeamRepository
     {
         private readonly DbSet<Team> _teams;
-
+        private readonly DbSet<Player> _players;
+        private const int maxCount = 5;
         public TeamRepository(TeamPlayerProfilesContext context) : base(context)
         {
             _teams = _context.Teams;
+            _players = _context.Players;
         }
 
         public override async Task<ICollection<Team>> GetAll(CancellationToken cancellationToken)
@@ -32,11 +34,15 @@ namespace DataAccess.Repositories.Implementations
         public override async Task<Team> Add(Team team, CancellationToken cancellationToken)
         {
             team.Id = Guid.NewGuid();
+            var playerIds = team.TeamPlayers.Select(tp => tp.PlayerId).ToList();
+            var players = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
             foreach (var tp in team.TeamPlayers)
             {
                 tp.TeamId = team.Id;
+                tp.PlayerUserId = players.Single(p => p.Id == tp.PlayerId).UserId;
             }
             team.PlayerCount = team.TeamPlayers.Count;
+            team.CheckTeamValidity(maxCount);
             await base.Add(team, cancellationToken);
             return await Get(team.Id, cancellationToken);
         }
@@ -57,6 +63,7 @@ namespace DataAccess.Repositories.Implementations
             {
                 existingTeam.UpdatedAt = DateTime.UtcNow;
             }
+            team.CheckTeamValidity(maxCount);
             await _context.SaveChangesAsync(cancellationToken);
             return await Get(team.Id, cancellationToken);
         }
@@ -114,6 +121,13 @@ namespace DataAccess.Repositories.Implementations
             {
                 existingTeam.UpdatedAt = DateTime.UtcNow;
             }
+            var playerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId).ToList();
+            var finalPlayers = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
+            foreach (var tp in existingTeam.TeamPlayers)
+            {
+                tp.PlayerUserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
+            }
+            existingTeam.CheckTeamValidity(maxCount);
             existingTeam.PlayerCount = existingTeam.TeamPlayers.Count;
             await _context.SaveChangesAsync(cancellationToken);
             return await Get(existingTeam.Id, cancellationToken);

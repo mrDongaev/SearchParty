@@ -13,11 +13,12 @@ namespace Service.Mapping
             CreateMap<Team, TeamDto>()
                 .ForMember(d => d.PlayersInTeam, m => m.MapFrom(src => src.TeamPlayers));
 
-            CreateMap<TeamPlayer, TeamPlayerService.Read>()
+            CreateMap<TeamPlayer, TeamPlayerDto.Read>()
                 .ForMember(d => d.Position, m => m.MapFrom(src => (PositionName)src.PositionId));
 
-            CreateMap<TeamPlayerService.Write, TeamPlayer>()
+            CreateMap<TeamPlayerDto.Write, TeamPlayer>()
                 .ForMember(d => d.PositionId, m => m.MapFrom(src => (int)src.Position))
+                .ForMember(d => d.PlayerUserId, m => m.Ignore())
                 .ForMember(d => d.Player, m => m.Ignore())
                 .ForMember(d => d.Team, m => m.Ignore())
                 .ForMember(d => d.TeamId, m => m.MapFrom(src => Guid.Empty))

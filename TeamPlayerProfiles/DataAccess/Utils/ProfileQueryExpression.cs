@@ -1,4 +1,5 @@
-﻿using Common.Models.Enums;
+﻿using Common.Exceptions;
+using Common.Models.Enums;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel;
 using System.Linq.Expressions;
@@ -17,7 +18,7 @@ namespace DataAccess.Utils
             Type strType = typeof(string);
             Type profileType = typeof(T);
             var property = profileType.GetProperty(propertyName);
-            if (property == null || property.PropertyType != strType) throw new ArgumentException($"{propertyName} property does not exist on {profileType.Name} type or the property type doesn't match the class member");
+            if (property == null || property.PropertyType != strType) throw new InvalidClassMemberException(propertyName, profileType.Name);
             var inputParam = Expression.Constant(filter.Input, strType);
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             var containsMethodInfo = strType.GetMethod("Contains", [strType]);
@@ -31,7 +32,7 @@ namespace DataAccess.Utils
                 StringValueFilterType.DoesNotContain => Expression.AndAlso(expr, Expression.Not(Expression.Call(memberAccess, containsMethodInfo, inputParam))),
                 StringValueFilterType.StartsWith => Expression.AndAlso(expr, Expression.Call(memberAccess, startsWithMethodInfo, inputParam)),
                 StringValueFilterType.EndsWith => Expression.AndAlso(expr, Expression.Call(memberAccess, endsWithMethodInfo, inputParam)),
-                _ => throw new InvalidEnumArgumentException($"{filter.FilterType} does not exist on {typeof(StringValueFilterType).Name} type"),
+                _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(StringValueFilterType).Name),
             };
         }
 
@@ -41,7 +42,7 @@ namespace DataAccess.Utils
             if (filter == null) return expr;
             var property = typeof(T).GetProperty(timePropertyName);
             var dateTimeType = typeof(DateTime);
-            if (property == null || property.PropertyType != dateTimeType) throw new ArgumentException($"{timePropertyName} property does not exist on {typeof(T).Name} type or the property type doesn't match the class member");
+            if (property == null || property.PropertyType != dateTimeType) throw new InvalidClassMemberException(timePropertyName, typeof(T).Name);
             var inputParam = Expression.Constant(filter.DateTime, dateTimeType);
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             return filter.FilterType switch
@@ -51,7 +52,7 @@ namespace DataAccess.Utils
                 DateTimeFilter.Exact => Expression.AndAlso(expr, Expression.Equal(memberAccess, inputParam)),
                 DateTimeFilter.AtOrAfter => Expression.AndAlso(expr, Expression.GreaterThanOrEqual(memberAccess, inputParam)),
                 DateTimeFilter.After => Expression.AndAlso(expr, Expression.GreaterThan(memberAccess, inputParam)),
-                _ => throw new InvalidEnumArgumentException($"{filter.FilterType} does not exist on {typeof(DateTimeFilter).Name} type"),
+                _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(DateTimeFilter).Name),
             };
         }
 
@@ -62,7 +63,7 @@ namespace DataAccess.Utils
             if (filter == null) return expr;
             var property = typeof(T).GetProperty(numberPropertyName);
             var numberType = typeof(TNumber);
-            if (property == null || property.PropertyType != numberType) throw new ArgumentException($"{numberPropertyName} property does not exist on {typeof(T).Name} type or the property type doesn't match the class member");
+            if (property == null || property.PropertyType != numberType) throw new InvalidClassMemberException(numberPropertyName, typeof(T).Name);
             var inputParam = Expression.Constant(filter.Input, numberType);
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             return filter.FilterType switch
@@ -73,7 +74,7 @@ namespace DataAccess.Utils
                 NumericFilterType.LessOrEqual => Expression.AndAlso(expr, Expression.LessThanOrEqual(memberAccess, inputParam)),
                 NumericFilterType.Greater => Expression.AndAlso(expr, Expression.GreaterThan(memberAccess, inputParam)),
                 NumericFilterType.GreaterOrEqual => Expression.AndAlso(expr, Expression.GreaterThanOrEqual(memberAccess, inputParam)),
-                _ => throw new InvalidEnumArgumentException($"{filter.FilterType} does not exist on {typeof(NumericFilterType).Name} type"),
+                _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(NumericFilterType).Name),
             };
         }
 
@@ -83,7 +84,7 @@ namespace DataAccess.Utils
             if (filter == null) return expr;
             var propertyType = typeof(TListItemProp);
             var property = typeof(T).GetProperty(valuePropertyName);
-            if (property == null || property.PropertyType != propertyType) throw new ArgumentException($"{valuePropertyName} property does not exist on {typeof(T).Name} type or the property type doesn't match the class member");
+            if (property == null || property.PropertyType != propertyType) throw new InvalidClassMemberException(valuePropertyName, typeof(T).Name);
             var valueList = Expression.Constant(filter.ValueList, typeof(IEnumerable<TListItemProp>));
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             var containsMethod = typeof(Enumerable)
@@ -118,7 +119,7 @@ namespace DataAccess.Utils
                         break;
                     }
                 default:
-                    throw new InvalidEnumArgumentException($"{filter.FilterType} does not exist on {typeof(ValueListFilterType).Name} type");
+                    throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(ValueListFilterType).Name);
             }
             return finalExpression;
         }
@@ -134,9 +135,9 @@ namespace DataAccess.Utils
             var property = typeof(T).GetProperty(listPropertyName);
             var listItemProperty = typeof(TMemberListItem).GetProperty(listItemPropertyName);
             if (property == null || property.PropertyType != listType) 
-                throw new ArgumentException($"{listPropertyName} property does not exist on {typeof(T).Name} type or the property type doesn't match the class member");
+                throw new InvalidClassMemberException(listPropertyName, typeof(T).Name);
             if (listItemProperty == null || listItemProperty.PropertyType != typeof(TListItemProp))
-                throw new ArgumentException($"{listItemPropertyName} property does not exist on {typeof(TMemberListItem).Name} type or the property type doesn't match the class member");
+                throw new InvalidClassMemberException(listItemPropertyName, typeof(TMemberListItem).Name);
             var valueList = Expression.Constant(filter.ValueList, typeof(ICollection<TListItemProp>));
             var memberAccess = Expression.Property(parameter, listPropertyName);
             var asQueryable = typeof(Queryable)
@@ -200,7 +201,7 @@ namespace DataAccess.Utils
                         break;
                     }
                 default:
-                    throw new InvalidEnumArgumentException($"{filter.FilterType} does not exist on {typeof(ValueListFilterType).Name} type");
+                    throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(ValueListFilterType).Name);
             }
             return finalExpression;
         }
@@ -211,14 +212,14 @@ namespace DataAccess.Utils
             if (filter == null) return expr;
             var propertyType = typeof(TProperty);
             var property = typeof(T).GetProperty(propertyName);
-            if (property == null || property.PropertyType != propertyType) throw new ArgumentException($"{propertyName} property does not exist on {typeof(T).Name} type or the property type doesn't match the class member");
+            if (property == null || property.PropertyType != propertyType) throw new InvalidClassMemberException(propertyName, typeof(T).Name);
             var value = Expression.Constant(filter.Value, propertyType);
             var memberAccess = Expression.MakeMemberAccess(parameter, property);
             return filter.FilterType switch
             {
                 SingleValueFilterType.Equals => Expression.AndAlso(expr, Expression.Equal(value, memberAccess)),
                 SingleValueFilterType.DoesNotEqual => Expression.AndAlso(expr, Expression.NotEqual(value, memberAccess)),
-                _ => throw new InvalidEnumArgumentException($"{filter.FilterType} does not exist on {typeof(ValueListFilterType).Name} type"),
+                _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(ValueListFilterType).Name),
             };
         }
 
@@ -229,7 +230,7 @@ namespace DataAccess.Utils
             {
                 SortDirection.Asc => "OrderBy",
                 SortDirection.Desc => "OrderByDescending",
-                _ => throw new InvalidEnumArgumentException($"{config.SortDirection} does not exist on {typeof(SortDirection).Name} type"),
+                _ => throw new InvalidEnumMemberException($"{config.SortDirection}", typeof(SortDirection).Name),
             };
             var type = typeof(T);
             var property = type.GetProperty(config.SortBy);

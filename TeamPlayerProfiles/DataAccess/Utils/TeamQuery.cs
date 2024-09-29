@@ -1,4 +1,5 @@
-﻿using Common.Models.Enums;
+﻿using Common.Exceptions;
+using Common.Models.Enums;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
@@ -43,7 +44,7 @@ namespace DataAccess.Utils
                         .Where(teamPlayerLambda).Count() == 0),
                     ValueListFilterType.Any => query.Where(t => t.TeamPlayers.AsQueryable()
                         .Where(teamPlayerLambda).Count() > 0),
-                    _ => throw new InvalidEnumArgumentException($"{queryConfig.PositionFilter.FilterType} does not exist on {typeof(ValueListFilterType).Name} type"),
+                    _ => throw new InvalidEnumMemberException($"{queryConfig.PositionFilter.FilterType}", typeof(ValueListFilterType).Name),
                 };
             }
             if (queryConfig.HeroFilter != null)
@@ -69,7 +70,7 @@ namespace DataAccess.Utils
                     .SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() == 0),
                     ValueListFilterType.Any => query.Where(t => t.TeamPlayers.AsQueryable()
                     .SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() > 0),
-                    _ => throw new InvalidEnumArgumentException($"{queryConfig.HeroFilter.FilterType} does not exist on {typeof(ValueListFilterType).Name} type"),
+                    _ => throw new InvalidEnumMemberException($"{queryConfig.HeroFilter.FilterType}", typeof(ValueListFilterType).Name),
                 };
             }
             return query.Where(finalLambda);

@@ -39,7 +39,7 @@ namespace Service.Services.Implementations.TeamServices
             return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
         }
 
-        public async Task<TeamDto?> UpdateTeamPlayers(Guid id, ISet<TeamPlayerService.Write> players, CancellationToken cancellationToken = default)
+        public async Task<TeamDto?> UpdateTeamPlayers(Guid id, ISet<TeamPlayerDto.Write> players, CancellationToken cancellationToken = default)
         {
             var updatedTeam = await teamRepo.UpdateTeamPlayers(id, mapper.Map<ISet<TeamPlayer>>(players), cancellationToken);
             return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);

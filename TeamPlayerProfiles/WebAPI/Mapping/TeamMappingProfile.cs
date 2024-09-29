@@ -13,9 +13,9 @@ namespace WebAPI.Mapping
         {
             CreateMap<TeamDto, GetTeam.Response>();
 
-            CreateMap<TeamPlayerService.Read, TeamPlayerApi.Response>();
+            CreateMap<TeamPlayerDto.Read, UpdateTeamPlayers.Response>();
 
-            CreateMap<TeamPlayerApi.Request, TeamPlayerService.Write>();
+            CreateMap<UpdateTeamPlayers.Request, TeamPlayerDto.Write>();
 
             CreateMap<CreateTeam.Request, CreateTeamDto>();
 

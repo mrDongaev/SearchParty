@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
+using WebAPI.Validation;
 
 namespace WebAPI.Contracts.Team
 {
@@ -15,7 +17,9 @@ namespace WebAPI.Contracts.Team
             [MaxLength(150)]
             public string? Description { get; set; }
 
-            public ISet<TeamPlayerApi.Request>? PlayersInTeam { get; set; } = new HashSet<TeamPlayerApi.Request>();
+            [MaxLength(5)]
+            [UniqueTeamPositions]
+            public ISet<UpdateTeamPlayers.Request>? PlayersInTeam { get; set; } = new HashSet<UpdateTeamPlayers.Request>();
         }
     }
 }
