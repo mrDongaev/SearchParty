@@ -1,5 +1,4 @@
-﻿using DataAccess.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using WebAPI.Contracts.Team;
 
 namespace WebAPI.Validation
@@ -20,7 +19,8 @@ namespace WebAPI.Validation
                 if (players.Select(p => p.Position).ToHashSet().Count == players.Count())
                 {
                     return ValidationResult.Success;
-                } else
+                }
+                else
                 {
                     return new ValidationResult("Players in team must have unique positions");
                 }

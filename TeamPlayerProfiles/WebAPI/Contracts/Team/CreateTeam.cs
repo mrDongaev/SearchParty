@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 using WebAPI.Validation;
 
 namespace WebAPI.Contracts.Team

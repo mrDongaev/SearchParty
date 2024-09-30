@@ -1,11 +1,8 @@
 using DataAccess.Context;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
-using Serilog;
-using System.Text.Json;
-using System.Text;
 
 Log.Logger = new Serilog.LoggerConfiguration()
     .WriteTo.Console()
@@ -31,7 +28,7 @@ try
 
     builder.Host
         .AddSerilog();
-   
+
     var app = builder.Build();
     if (app.Environment.IsDevelopment())
     {

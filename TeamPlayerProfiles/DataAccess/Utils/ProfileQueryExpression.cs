@@ -1,7 +1,5 @@
 ﻿using Common.Exceptions;
 using Common.Models.Enums;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Numerics;
 using static Common.Models.ConditionalQuery;
@@ -134,7 +132,7 @@ namespace DataAccess.Utils
             var listType = typeof(ICollection<TMemberListItem>);
             var property = typeof(T).GetProperty(listPropertyName);
             var listItemProperty = typeof(TMemberListItem).GetProperty(listItemPropertyName);
-            if (property == null || property.PropertyType != listType) 
+            if (property == null || property.PropertyType != listType)
                 throw new InvalidClassMemberException(listPropertyName, typeof(T).Name);
             if (listItemProperty == null || listItemProperty.PropertyType != typeof(TListItemProp))
                 throw new InvalidClassMemberException(listItemPropertyName, typeof(TMemberListItem).Name);

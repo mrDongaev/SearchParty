@@ -31,7 +31,7 @@ namespace WebAPI.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var statusCode = (HttpStatusCode) context.Response.StatusCode;
+            var statusCode = (HttpStatusCode)context.Response.StatusCode;
             var errorMsg = exception.Message.Equals(string.Empty) ? "An unforeseen error has occurred" : exception.Message;
             if (exception is InvalidEnumMemberException)
             {

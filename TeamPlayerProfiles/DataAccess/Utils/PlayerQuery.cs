@@ -22,7 +22,7 @@ namespace DataAccess.Utils
             return query.Where(finalLambda);
         }
 
-        public static IQueryable<Player> GetEntities(this IQueryable<Player> query, bool asNoTracking) 
+        public static IQueryable<Player> GetEntities(this IQueryable<Player> query, bool asNoTracking)
         {
             var first = asNoTracking ? query.AsNoTracking() : query;
             return first
