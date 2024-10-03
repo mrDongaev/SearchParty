@@ -1,8 +1,35 @@
-version: '3.4'
+name: search_party
 
 services:
-  webapi:
-    image: ${DOCKER_REGISTRY-}webapi
-    build:
-      context: .
-      dockerfile: TeamPlayerProfiles/Dockerfile
+  team_player_profiles_webapi:
+    container_name: team_player_profiles_webapi_c
+    depends_on:
+      team_player_profiles_db:
+        condition: service_healthy
+    build: TeamPlayerProfiles
+    ports: 
+    - 8080:8081
+    environment:
+      - CONNECTION_STRING:Host=localhost;Port=5432;Database=team_player_profiles;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - SEED_DATABASE:true
+  team_player_profiles_db:
+    container_name: team_player_profiles_db_c
+    image: postgres
+    ports:
+    - 5050:5432
+    environment:
+      POSTGRES_DB: team_player_profiles
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes: 
+      - team_player_profiles_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d team_player_profiles"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+volumes:
+  team_player_profiles_pg_data:
+

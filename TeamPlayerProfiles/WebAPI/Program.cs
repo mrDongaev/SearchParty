@@ -7,7 +7,8 @@ using WebAPI.Middleware;
 Log.Logger = new Serilog.LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
-
+Log.Information(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? "none");
+Log.Information(Environment.GetEnvironmentVariable("SEED_DATABASE") ?? "none");
 Log.Information("Starting Team and Player profiles app...");
 
 try
@@ -17,7 +18,7 @@ try
     builder.Services
         .AddDbContext<TeamPlayerProfilesContext>(options =>
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"));
         })
         .AddRepositories()
         .AddServices()
@@ -30,15 +31,13 @@ try
         .AddSerilog();
 
     var app = builder.Build();
-    if (app.Environment.IsDevelopment())
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    if (Environment.GetEnvironmentVariable("SEED_DATABASE") != null && Environment.GetEnvironmentVariable("SEED_DATABASE").Equals("true"))
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
             await TestDataSeeder.SeedTestData(dbContext);
         }
     }
