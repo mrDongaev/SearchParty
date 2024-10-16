@@ -1,4 +1,5 @@
 ﻿using Common.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Contracts.Player
 {
@@ -6,15 +7,16 @@ namespace WebAPI.Contracts.Player
     {
         public sealed class Request
         {
-            public Guid Id { get; set; }
+            [Required]
+            public Guid? Id { get; set; }
 
-            public string Name { get; set; }
+            [MaxLength(30)]
+            public string? Name { get; set; }
 
-            public string Description { get; set; }
+            [MaxLength(150)]
+            public string? Description { get; set; }
 
-            public PositionName Position { get; set; }
-
-            public ISet<int> HeroIds { get; set; }
+            public PositionName? Position { get; set; }
         }
     }
 }

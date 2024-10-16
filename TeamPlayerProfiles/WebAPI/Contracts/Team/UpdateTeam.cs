@@ -1,4 +1,4 @@
-﻿using Common.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Contracts.Team
 {
@@ -6,13 +6,14 @@ namespace WebAPI.Contracts.Team
     {
         public sealed class Request
         {
-            public Guid Id { get; set; }
+            [Required]
+            public Guid? Id { get; set; }
 
-            public string Name { get; set; }
+            [MaxLength(30)]
+            public string? Name { get; set; }
 
-            public string Description { get; set; }
-
-            public ISet<PlayerInTeam> PlayersInTeam { get; set; }
+            [MaxLength(150)]
+            public string? Description { get; set; }
         }
     }
 }

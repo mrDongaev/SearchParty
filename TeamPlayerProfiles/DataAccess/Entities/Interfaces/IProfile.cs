@@ -4,11 +4,11 @@
     {
         Guid UserId { get; set; }
 
-        string Name { get; set; }
+        string? Name { get; set; }
 
-        string Description { get; set; }
+        string? Description { get; set; }
 
-        bool Displayed { get; set; }
+        bool? Displayed { get; set; }
 
     }
 }

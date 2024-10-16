@@ -6,12 +6,10 @@ namespace Service.Contracts.Player
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public PositionName Position { get; set; }
-
-        public ISet<int> HeroIds { get; set; }
+        public PositionName? Position { get; set; }
     }
 }

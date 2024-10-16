@@ -1,6 +1,4 @@
-﻿using Common.Models;
-
-namespace WebAPI.Contracts.Team
+﻿namespace WebAPI.Contracts.Team
 {
     public static class GetTeam
     {
@@ -18,7 +16,7 @@ namespace WebAPI.Contracts.Team
 
             public DateTime UpdatedAt { get; set; }
 
-            public ISet<PlayerInTeam> PlayersInTeam { get; set; }
+            public ISet<TeamPlayerApi.Response> PlayersInTeam { get; set; } = new HashSet<TeamPlayerApi.Response>();
         }
     }
 }

@@ -16,7 +16,6 @@ namespace DataAccess.Context
 
         public TeamPlayerProfilesContext(DbContextOptions<TeamPlayerProfilesContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

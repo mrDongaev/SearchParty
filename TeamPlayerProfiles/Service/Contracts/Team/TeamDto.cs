@@ -1,6 +1,4 @@
-﻿using Common.Models;
-
-namespace Service.Contracts.Team
+﻿namespace Service.Contracts.Team
 {
     public class TeamDto
     {
@@ -16,6 +14,6 @@ namespace Service.Contracts.Team
 
         public DateTime UpdatedAt { get; set; }
 
-        public ICollection<PlayerInTeam> PlayersInTeam { get; set; }
+        public ICollection<TeamPlayerService.Read> PlayersInTeam { get; set; }
     }
 }
