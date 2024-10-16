@@ -1,27 +1,21 @@
+using Common.Utils;
 using DataAccess.Context;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Service.Services.Interfaces.Common;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
-using Serilog;
-using System.Text.Json;
-using System.Text;
 
 Log.Logger = new Serilog.LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
-
 Log.Information("Starting Team and Player profiles app...");
-
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-
+    
     builder.Services
-        .AddDbContext<TeamPlayerProfilesContext>(options =>
-        {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-        })
+        .AddDbContext(builder.Configuration.GetConnectionString("DefaultConnection"))
         .AddRepositories()
         .AddServices()
         .AddAutoMapper()
@@ -31,18 +25,17 @@ try
 
     builder.Host
         .AddSerilog();
-   
+
     var app = builder.Build();
-    if (app.Environment.IsDevelopment())
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    if (CommonUtils.GetEnvVariable("SEED_DATABASE").Equals("true"))
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
             await TestDataSeeder.SeedTestData(dbContext);
+            Log.Information("Team Player Profiles test data seeded");
         }
     }
     app.UseSerilogRequestLogging();
@@ -56,7 +49,8 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "An unhandled exception has occured during bootstrapping.");
+    if (ex is not HostAbortedException)
+        Log.Fatal(ex, "An unhandled exception has occured during bootstrapping.");
     return 1;
 }
 finally

@@ -4,15 +4,12 @@ using WebAPI.Contracts.Player;
 
 namespace WebAPI.Contracts.Team
 {
-    public static class TeamPlayerApi
+    public static class UpdateTeamPlayers
     {
         public sealed class Request : IEquatable<Request?>
         {
             [Required]
             public PositionName? Position { get; set; }
-
-            [Required]
-            public Guid? PlayerUserId { get; set; }
 
             [Required]
             public Guid? PlayerId { get; set; }

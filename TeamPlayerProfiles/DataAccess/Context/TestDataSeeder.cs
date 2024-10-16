@@ -10,7 +10,7 @@ namespace DataAccess.Context
             Random random = new Random();
             var getRand = (int a, int b) => random.Next(a, b);
             Player[] players = new Player[20];
-            Team[] teams = new Team[5];
+            Team[] teams = new Team[10];
             List<Hero> heroes = await context.Heroes.ToListAsync();
             string emptyGuid = Guid.Empty.ToString();
             for (int i = 0; i < players.Length; i++)

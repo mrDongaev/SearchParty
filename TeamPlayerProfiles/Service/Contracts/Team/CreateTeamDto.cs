@@ -8,6 +8,6 @@
 
         public string? Description { get; set; }
 
-        public ICollection<TeamPlayerService.Write> PlayersInTeam { get; set; } = [];
+        public ICollection<TeamPlayerDto.Write> PlayersInTeam { get; set; } = [];
     }
 }

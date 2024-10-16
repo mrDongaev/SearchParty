@@ -3,13 +3,11 @@ using Service.Contracts.Player;
 
 namespace Service.Contracts.Team
 {
-    public static class TeamPlayerService
+    public static class TeamPlayerDto
     {
         public sealed class Write
         {
             public PositionName Position { get; set; }
-
-            public Guid PlayerUserId { get; set; }
 
             public Guid PlayerId { get; set; }
         }

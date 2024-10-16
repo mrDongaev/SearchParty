@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Common.Exceptions;
+using System.Net;
 using System.Text.Json;
 using ILogger = Serilog.ILogger;
 
@@ -30,23 +31,41 @@ namespace WebAPI.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var code = HttpStatusCode.BadRequest;
-            var errorMsg = "An unforeseen error has occurred";
-            if (exception is ArgumentException)
+            var statusCode = (HttpStatusCode)context.Response.StatusCode;
+            var errorMsg = exception.Message.Equals(string.Empty) ? "An unforeseen error has occurred" : exception.Message;
+            if (exception is InvalidEnumMemberException)
             {
-                code = HttpStatusCode.InternalServerError;
+                statusCode = HttpStatusCode.BadRequest;
                 errorMsg = exception.Message;
             }
-
+            else if (exception is InvalidClassMemberException)
+            {
+                statusCode = HttpStatusCode.BadRequest;
+                errorMsg = exception.Message;
+            }
+            else if (exception is TeamCountOverflowException)
+            {
+                statusCode = HttpStatusCode.BadRequest;
+                errorMsg = exception.Message;
+            }
+            else if (exception is TeamOwnerNotPresentException)
+            {
+                statusCode = HttpStatusCode.BadRequest;
+                errorMsg = exception.Message;
+            }
+            else if (exception is TeamPositionOverlapException)
+            {
+                statusCode = HttpStatusCode.BadRequest;
+                errorMsg = exception.Message;
+            }
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)code;
-            var statusCode = (int)code;
+            int codeNum = (int)statusCode;
             var result = JsonSerializer.Serialize(new
             {
                 StatusCode = statusCode,
                 ErrorMsg = errorMsg,
             });
-            _logger.Error(exception, "An error has occurred with code {statusCode}: {@code}", statusCode, code);
+            _logger.Error(exception, "An error has occurred with code {codeNum}: {@statusCode}", codeNum, statusCode);
             await context.Response.WriteAsync(result);
         }
     }
