@@ -81,7 +81,7 @@ namespace APIAuth
         {
             // Настройка контекста базы данных с использованием строки подключения
             services.AddDbContext<DataContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             // Настройка Identity для управления пользователями и ролями
             services.AddIdentity<AppUser, IdentityRole>(options =>

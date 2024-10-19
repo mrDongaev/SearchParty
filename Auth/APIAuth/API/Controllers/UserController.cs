@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Application.User.Registration;
 using APIAuth.API.Controllers;
+using Application.Exceptions;
 
 namespace APIAuth.Controllers
 {
@@ -20,6 +21,10 @@ namespace APIAuth.Controllers
                 var res = await Mediator.Send(query);
                 //Вернуть IActionResult
                 return Ok(res);
+            }
+            catch(RestException ex) 
+            {
+                return Unauthorized(ex.Message);
             }
             catch (Exception ex)
             {

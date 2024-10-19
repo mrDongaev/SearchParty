@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Exceptions
 {
-    internal class RestException : Exception
+    public class RestException : Exception
     {
         public RestException(HttpStatusCode code, object errors = null)
         {
