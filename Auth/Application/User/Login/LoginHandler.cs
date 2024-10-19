@@ -17,6 +17,15 @@ namespace Application.User.Login
 
         private readonly IJwtGenerator? _jwtGenerator;
 
+        public LoginHandler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
+        {
+            _userManager = userManager;
+
+            _signInManager = signInManager;
+
+            _jwtGenerator = jwtGenerator;
+        }
+
         public async Task<User> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);

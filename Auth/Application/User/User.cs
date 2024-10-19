@@ -10,7 +10,7 @@ namespace Application.User
     {
         public string? UserId { get; set; }
 
-        public string UserDisplayName { get; set; }
+        public string? UserDisplayName { get; set; }
 
         public string? UserFullName { get; set; }
 
