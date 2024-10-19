@@ -14,7 +14,7 @@ namespace APIAuth.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<User>> LoginAsync(LoginQuery query)
         {
-            
+            //try catch
             try
             {
                 var res = await Mediator.Send(query);
