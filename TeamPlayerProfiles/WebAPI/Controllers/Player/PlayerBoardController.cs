@@ -2,11 +2,7 @@
 using DataAccess.Repositories.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Service.Contracts.Player;
-using Service.Services.Implementations.TeamServices;
-using Service.Services.Interfaces.Common;
 using Service.Services.Interfaces.PlayerInterfaces;
-using WebAPI.Contracts.Board;
 using WebAPI.Contracts.Player;
 using static Common.Models.ConditionalQuery;
 using static WebAPI.Contracts.Board.ConditionalProfile;

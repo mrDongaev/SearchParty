@@ -1,9 +1,6 @@
-﻿using Common.Utils;
-using DataAccess.Context.EntitiesConfigurations;
+﻿using DataAccess.Context.EntitiesConfigurations;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace DataAccess.Context
 {

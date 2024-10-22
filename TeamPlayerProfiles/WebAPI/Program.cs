@@ -1,8 +1,6 @@
 using Common.Utils;
 using DataAccess.Context;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Service.Services.Interfaces.Common;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
 
@@ -13,7 +11,7 @@ Log.Information("Starting Team and Player profiles app...");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    
+
     builder.Services
         .AddDbContext(builder.Configuration)
         .AddRepositories()
@@ -38,7 +36,8 @@ try
             await TestDataSeeder.SeedTestData(dbContext);
             Log.Information("Team Player Profiles test data seeded");
         }
-    } else if (app.Environment.IsDevelopment())
+    }
+    else if (app.Environment.IsDevelopment())
     {
         using (var scope = app.Services.CreateScope())
         {

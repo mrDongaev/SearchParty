@@ -3,7 +3,6 @@ using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.Repositories.Models;
 using Service.Contracts.Team;
-using Service.Services.Interfaces.Common;
 using Service.Services.Interfaces.TeamInterfaces;
 using static Common.Models.ConditionalQuery;
 

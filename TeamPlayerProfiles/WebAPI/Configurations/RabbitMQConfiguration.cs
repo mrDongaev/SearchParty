@@ -6,7 +6,8 @@ namespace WebAPI.Configurations
     {
         public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddMassTransit(x => {
+            services.AddMassTransit(x =>
+            {
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     ConfigureRmq(cfg, configuration);
@@ -24,7 +25,7 @@ namespace WebAPI.Configurations
         private static void ConfigureRmq(IRabbitMqBusFactoryConfigurator configurator, IConfiguration configuration)
         {
             RmqSettings rmqSettings = configuration.GetSection("RmqSettings").Get<RmqSettings>();
-            
+
             configurator.Host(rmqSettings.Host,
                 rmqSettings.VHost,
                 h =>
