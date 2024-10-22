@@ -23,7 +23,7 @@ namespace WebAPI.Configurations
                 .AddScoped<IPlayerService, PlayerService>()
                 .AddScoped<ITeamService, TeamService>()
                 .AddScoped<IBoardService<PlayerDto, PlayerConditions>, PlayerBoardService>()
-                .AddScoped<IBoardService<TeamDto, TeamConditions>, TeamBoardService>();
+                .AddScoped<ITeamBoardService, TeamBoardService>();
             return services;
         }
     }

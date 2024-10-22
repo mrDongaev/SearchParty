@@ -21,6 +21,7 @@ try
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
         .AddSwagger()
+        .AddRabbitMQ(builder.Configuration)
         .AddControllers();
 
     builder.Host
@@ -29,11 +30,21 @@ try
     var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (CommonUtils.GetEnvVariable("SEED_DATABASE").Equals("true"))
+    if (CommonUtils.TryGetEnvVariable("SEED_DATABASE").Equals("true"))
     {
         using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
+            await TestDataSeeder.SeedTestData(dbContext);
+            Log.Information("Team Player Profiles test data seeded");
+        }
+    } else if (app.Environment.IsDevelopment())
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
             await TestDataSeeder.SeedTestData(dbContext);
             Log.Information("Team Player Profiles test data seeded");
         }
