@@ -1,15 +1,11 @@
-﻿using Service.Contracts.Player;
-using Service.Contracts.Team;
-using Service.Services.Implementations.HeroServices;
+﻿using Service.Services.Implementations.HeroServices;
 using Service.Services.Implementations.PlayerServices;
 using Service.Services.Implementations.PositionServices;
 using Service.Services.Implementations.TeamServices;
-using Service.Services.Interfaces.Common;
 using Service.Services.Interfaces.HeroInterfaces;
 using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.PositionInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
-using static Common.Models.ConditionalQuery;
 
 namespace WebAPI.Configurations
 {
@@ -22,8 +18,8 @@ namespace WebAPI.Configurations
                 .AddScoped<IHeroService, HeroService>()
                 .AddScoped<IPlayerService, PlayerService>()
                 .AddScoped<ITeamService, TeamService>()
-                .AddScoped<IBoardService<PlayerDto, PlayerConditions>, PlayerBoardService>()
-                .AddScoped<IBoardService<TeamDto, TeamConditions>, TeamBoardService>();
+                .AddScoped<IPlayerBoardService, PlayerBoardService>()
+                .AddScoped<ITeamBoardService, TeamBoardService>();
             return services;
         }
     }
