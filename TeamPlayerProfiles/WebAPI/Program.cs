@@ -15,7 +15,7 @@ try
     var builder = WebApplication.CreateBuilder(args);
     
     builder.Services
-        .AddDbContext(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .AddDbContext(builder.Configuration)
         .AddRepositories()
         .AddServices()
         .AddAutoMapper()

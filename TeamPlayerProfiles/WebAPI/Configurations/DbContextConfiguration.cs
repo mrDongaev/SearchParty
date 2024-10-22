@@ -6,9 +6,9 @@ namespace WebAPI.Configurations
 {
     public static class DbContextConfiguration
     {
-        public static IServiceCollection AddDbContext(this IServiceCollection services, string? defaultConnectionString)
+        public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = defaultConnectionString;
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
             if (CommonUtils.TryGetEnvVariable("CONTAINER").Equals("true"))
             {
                 string hostname = CommonUtils.GetEnvVariable("DATABASE_HOSTNAME");
