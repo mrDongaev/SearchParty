@@ -16,8 +16,24 @@
 1. Игроки могут сохранять у себя в профиле шаблоны команд и шаблоны своих одиночных профилей (например для разных ролей и героев), и выставлять те или иные шаблоны общую доску.
 1. Общие доски как одиночных игроков, так и групп должны иметь соответствующие возможности фильтрации и сортировки для нахождения подходящей группы/игрока согласно выше приведённым критериям.
 1. Возможна интеграция со Steam API для реализации логина через их JWT токен и автоматическое стягивание информации об MMR игрока для автозаполнения профиля.
-1. Также возможно добавть систему отзывов об игроках и командах, с помощью которой пользователи смогут получать информацию о поведении и настроении игрока или команды, чтобы информировать
-выбор другиз игроков на плафторме.  
 
 ### Ссылка на доску задач:
 https://ru.yougile.com/team/9192842eeb1a/C%23-Professional/Найти-Пати
+
+#### Архитектура приложения
+![Architecture](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/app_schema_v2.png)
+
+#### Схема БД сервиса профилей игроков и команд
+![schema](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/profile_and_teams_schema_v2.png)
+
+#### Сценарии использования системы авторизации и профиля пользователя
+![use-case](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/auth_use_case.png)
+
+#### Сценарии использования управлением собственными профилями команд и игроков
+![use-case](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/profiles_use_case.png)
+
+#### Сценарии использовании системы просмотра досок профилей команд и игроков
+![use-case](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/boards_use_case.png)
+
+#### Сценарии использовании системы взаимодействия с другими пользователями
+![use-case](https://raw.githubusercontent.com/mrDongaev/SearchParty/dev/docs/user_interaction_use_case.png)
