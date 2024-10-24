@@ -14,15 +14,12 @@ namespace Infrastructure.Security
     {
         private readonly SymmetricSecurityKey _key;
 
-        public JwtGenerator(IConfiguration config)
+        public JwtGenerator()
         {
-            var tokenKey = config["TokenKey"];
+            byte[] keyByte = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN_KEY")
+                ?? throw new ArgumentNullException("Token key not found in server environment variables"));
 
-            if (string.IsNullOrEmpty(tokenKey))
-            {
-                throw new ArgumentNullException("TokenKey is not configured in the application settings.");
-            }
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+            _key = new SymmetricSecurityKey(keyByte);
         }
 
         public string CreateToken(AppUser user)
