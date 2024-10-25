@@ -1,4 +1,5 @@
 ﻿using Common.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;
 using ILogger = Serilog.ILogger;
@@ -32,33 +33,22 @@ namespace WebAPI.Middleware
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var statusCode = (HttpStatusCode)context.Response.StatusCode;
-            var errorMsg = exception.Message.Equals(string.Empty) ? "An unforeseen error has occurred" : exception.Message;
-            if (exception is InvalidEnumMemberException)
+            if (exception is InvalidEnumMemberException || exception is InvalidClassMemberException ||
+                exception is TeamCountOverflowException || exception is TeamOwnerNotPresentException ||
+                exception is TeamPositionOverlapException || exception is OperationCanceledException)
             {
                 statusCode = HttpStatusCode.BadRequest;
-                errorMsg = exception.Message;
             }
-            else if (exception is InvalidClassMemberException)
+            else if (exception is DbUpdateException || exception is DbUpdateConcurrencyException)
             {
-                statusCode = HttpStatusCode.BadRequest;
-                errorMsg = exception.Message;
-            }
-            else if (exception is TeamCountOverflowException)
-            {
-                statusCode = HttpStatusCode.BadRequest;
-                errorMsg = exception.Message;
-            }
-            else if (exception is TeamOwnerNotPresentException)
-            {
-                statusCode = HttpStatusCode.BadRequest;
-                errorMsg = exception.Message;
-            }
-            else if (exception is TeamPositionOverlapException)
-            {
-                statusCode = HttpStatusCode.BadRequest;
-                errorMsg = exception.Message;
+                statusCode = HttpStatusCode.InternalServerError;
             }
             context.Response.ContentType = "application/json";
+            if (context.Response.StatusCode < 400)
+            {
+                statusCode = HttpStatusCode.BadRequest;
+            }
+            var errorMsg = string.IsNullOrEmpty(exception.Message) ? "An unforeseen error has occurred" : exception.Message;
             int codeNum = (int)statusCode;
             var result = JsonSerializer.Serialize(new
             {
