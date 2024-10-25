@@ -1,9 +1,11 @@
-﻿using APIAuth.API.Controllers;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class TestController : BaseController
+    [Authorize]
+    [Route("api/[controller]")]
+    public class TestController : ControllerBase
     {
         [HttpGet]
         public string Test()
