@@ -1,4 +1,5 @@
-﻿using Service.Contracts.User;
+﻿using Library.Repositories.Interfaces;
+using Service.Contracts.User;
 using Service.Services.Interfaces.Common;
 
 namespace Service.Services.Interfaces

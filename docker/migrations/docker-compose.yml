@@ -24,13 +24,11 @@ services:
       TEAM_PLAYER_PROFILES__MIGRATION_NAME: ${TEAM_PLAYER_PROFILES__MIGRATION_NAME}
       TEAM_PLAYER_PROFILES__STARTUP_PROJECT_NAME: ${TEAM_PLAYER_PROFILES__STARTUP_PROJECT_NAME}
       TEAM_PLAYER_PROFILES__CONTEXT_PROJECT_NAME: ${TEAM_PLAYER_PROFILES__CONTEXT_PROJECT_NAME}
-
   team_player_profiles_db:
-
     container_name: team_player_profiles_db
     image: postgres:latest
     ports:
-      - "5431:5432"
+      - "5432:5432"
     environment:
       POSTGRES_DB: team_player_profiles
       POSTGRES_USER: ${POSTGRES__USER}
@@ -42,9 +40,53 @@ services:
       interval: 10s
       retries: 5
       start_period: 30s
-      timeout: 10s 
+      timeout: 10s
+  user_profiles_webapi:
+    container_name: user_profiles_webapi
+    depends_on:
+      team_player_profiles_db:
+        condition: service_healthy
+    build: 
+      context: ../../UserProfiles
+      dockerfile: build.Dockerfile
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    ports: 
+      - "8082:8080" 
+      - "8083:8081" 
+    environment:
+      CONTAINER: true
+      DATABASE_HOSTNAME: user_profiles_db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: team_player_profiles
+      DATABASE_USER: ${POSTGRES__USER}
+      DATABASE_PASSWORD: ${POSTGRES__PASSWORD}
+      USER_PROFILES__ADD_MIGRATION: ${USER_PROFILES__ADD_MIGRATION}
+      USER_PROFILES__APPLY_MIGRATION: ${USER_PROFILES__APPLY_MIGRATION}
+      USER_PROFILES__MIGRATION_NAME: ${USER_PROFILES__MIGRATION_NAME}
+      USER_PROFILES__STARTUP_PROJECT_NAME: ${USER_PROFILES__STARTUP_PROJECT_NAME}
+      USER_PROFILES__CONTEXT_PROJECT_NAME: ${USER_PROFILES__CONTEXT_PROJECT_NAME}
+  user_profiles_db:
+    container_name: user_profiles_db
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: user_profiles
+      POSTGRES_USER: ${POSTGRES__USER}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+    volumes: 
+      - user_profiles_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES__USER} -d user_profiles"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
 volumes:
   team_player_profiles_pg_data:
     name: "team_player_profiles_pg_data"
+  user_profiles_pg_data:
+    name: "user_profiles_pg_data"
 

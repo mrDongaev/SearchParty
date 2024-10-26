@@ -1,6 +1,5 @@
 ﻿using Service.Services.Implementations;
 using Service.Services.Interfaces;
-using Service.Services.Interfaces.Common;
 
 namespace WebAPI.Configurations
 {

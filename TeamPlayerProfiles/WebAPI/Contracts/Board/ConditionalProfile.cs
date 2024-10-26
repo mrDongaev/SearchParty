@@ -1,5 +1,4 @@
-﻿using static Common.Models.ConditionalQuery;
-using static Common.Models.ConditionalQuery.Filter;
+﻿using Library.Models.QueryConditions;
 
 namespace WebAPI.Contracts.Board
 {
@@ -13,18 +12,18 @@ namespace WebAPI.Contracts.Board
 
             public SingleValueFilter<bool?>? DisplayedFilter { get; set; }
 
-            public TimeFilter? UpdatedAtStart { get; set; }
+            public DateTimeFilter? UpdatedAtStart { get; set; }
 
-            public TimeFilter? UpdatedAtEnd { get; set; }
+            public DateTimeFilter? UpdatedAtEnd { get; set; }
 
-            public Sort? Sort { get; set; }
+            public SortCondition? Sort { get; set; }
         }
 
         public class PlayerRequest : Request
         {
-            public ValueFilter<int?>? PositionFilter { get; set; }
+            public ValueListFilter<int?>? PositionFilter { get; set; }
 
-            public ValueFilter<int>? HeroFilter { get; set; }
+            public ValueListFilter<int>? HeroFilter { get; set; }
         }
 
         public class TeamRequest : Request
@@ -33,9 +32,9 @@ namespace WebAPI.Contracts.Board
 
             public NumericFilter<int>? PlayerCountEnd { get; set; }
 
-            public ValueFilter<int>? HeroFilter { get; set; }
+            public ValueListFilter<int>? HeroFilter { get; set; }
 
-            public ValueFilter<int>? PositionFilter { get; set; }
+            public ValueListFilter<int>? PositionFilter { get; set; }
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Player;
 using Service.Services.Interfaces.PlayerInterfaces;
-using static Common.Models.ConditionalQuery;
+using static Common.Models.ConditionalProfileQuery;
 
 namespace Service.Services.Implementations.PlayerServices
 {

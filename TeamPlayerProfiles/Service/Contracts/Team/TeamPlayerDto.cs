@@ -1,4 +1,4 @@
-﻿using Common.Models.Enums;
+﻿using Common.Enums;
 using Service.Contracts.Player;
 
 namespace Service.Contracts.Team

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Common.Models;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Team;
 using WebAPI.Contracts.Board;
 using WebAPI.Contracts.Team;
@@ -21,7 +21,7 @@ namespace WebAPI.Mapping
 
             CreateMap<UpdateTeam.Request, UpdateTeamDto>();
 
-            CreateMap<ConditionalProfile.TeamRequest, ConditionalQuery.TeamConditions>();
+            CreateMap<ConditionalProfile.TeamRequest, ConditionalProfileQuery.TeamConditions>();
 
             CreateMap<PaginatedResult<TeamDto>, PaginatedResult<GetTeam.Response>>();
         }

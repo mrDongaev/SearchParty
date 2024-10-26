@@ -1,5 +1,5 @@
-﻿using Common.Models.Enums;
-using DataAccess.Entities.Interfaces;
+﻿using Common.Enums;
+using Library.Entities.Interfaces;
 
 namespace DataAccess.Entities
 {

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Player;
 
 namespace Service.Mapping

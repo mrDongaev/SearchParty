@@ -3,7 +3,6 @@ using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.User;
 using Service.Services.Interfaces;
-using Service.Services.Interfaces.Common;
 
 namespace Service.Services.Implementations
 {

@@ -1,4 +1,5 @@
 ﻿using Common.Exceptions;
+using Library.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;

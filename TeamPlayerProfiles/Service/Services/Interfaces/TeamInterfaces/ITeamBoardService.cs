@@ -1,6 +1,6 @@
 ﻿using Service.Contracts.Team;
 using Service.Services.Interfaces.Common;
-using static Common.Models.ConditionalQuery;
+using static Common.Models.ConditionalProfileQuery;
 
 namespace Service.Services.Interfaces.TeamInterfaces
 {

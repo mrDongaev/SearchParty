@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Common.Models;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Player;
 using WebAPI.Contracts.Board;
 using WebAPI.Contracts.Player;
@@ -17,7 +17,7 @@ namespace WebAPI.Mapping
 
             CreateMap<UpdatePlayer.Request, UpdatePlayerDto>();
 
-            CreateMap<ConditionalProfile.PlayerRequest, ConditionalQuery.PlayerConditions>();
+            CreateMap<ConditionalProfile.PlayerRequest, ConditionalProfileQuery.PlayerConditions>();
 
             CreateMap<PaginatedResult<PlayerDto>, PaginatedResult<GetPlayer.Response>>();
         }

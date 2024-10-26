@@ -1,4 +1,6 @@
-﻿namespace DataAccess.Entities.Interfaces
+﻿using Library.Entities.Interfaces;
+
+namespace DataAccess.Entities.Interfaces
 {
     public interface IProfile : IEntity<Guid>, IUpdateable
     {

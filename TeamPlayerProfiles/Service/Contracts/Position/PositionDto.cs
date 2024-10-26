@@ -1,4 +1,4 @@
-﻿using Common.Models.Enums;
+﻿using Common.Enums;
 
 namespace Service.Contracts.Position
 {

@@ -1,4 +1,5 @@
-﻿using Service.Contracts.Player;
+﻿using Library.Repositories.Interfaces;
+using Service.Contracts.Player;
 using Service.Services.Interfaces.Common;
 
 namespace Service.Services.Interfaces.PlayerInterfaces

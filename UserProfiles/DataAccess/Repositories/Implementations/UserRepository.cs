@@ -1,11 +1,12 @@
 ﻿using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class UserRepository : Repository<User, Guid>, IUserRepository
+    public class UserRepository : Repository<UserProfilesContext, User, Guid>, IUserRepository
     {
         private readonly DbSet<User> _users;
 

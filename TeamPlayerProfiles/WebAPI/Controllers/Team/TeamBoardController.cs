@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.TeamInterfaces;
 using WebAPI.Contracts.Player;
 using WebAPI.Contracts.Team;
-using static Common.Models.ConditionalQuery;
+using static Common.Models.ConditionalProfileQuery;
 using static WebAPI.Contracts.Board.ConditionalProfile;
 
 namespace WebAPI.Controllers.Team

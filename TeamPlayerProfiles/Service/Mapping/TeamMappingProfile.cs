@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Common.Models.Enums;
+using Common.Enums;
 using DataAccess.Entities;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Team;
 
 namespace Service.Mapping

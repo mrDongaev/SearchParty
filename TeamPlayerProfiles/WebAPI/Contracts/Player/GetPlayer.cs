@@ -1,4 +1,4 @@
-﻿using Common.Models.Enums;
+﻿using Common.Enums;
 using WebAPI.Contracts.Hero;
 
 namespace WebAPI.Contracts.Player

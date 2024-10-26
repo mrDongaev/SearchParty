@@ -1,15 +1,17 @@
-﻿using Common.Models.Enums;
+﻿using Common.Enums;
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using DataAccess.Repositories.Models;
 using DataAccess.Utils;
+using Library.Models;
+using Library.Repositories.Implementations;
+using Library.Services.Utils;
 using Microsoft.EntityFrameworkCore;
-using static Common.Models.ConditionalQuery;
+using static Common.Models.ConditionalProfileQuery;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class PlayerRepository : Repository<Player, Guid>, IPlayerRepository
+    public class PlayerRepository : Repository<TeamPlayerProfilesContext, Player, Guid>, IPlayerRepository
     {
         private readonly DbSet<Player> _players;
         private readonly DbSet<Hero> _heroes;

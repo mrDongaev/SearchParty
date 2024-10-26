@@ -1,5 +1,6 @@
-﻿using Service.Contracts.Position;
-using Service.Services.Interfaces.Common;
+﻿using Library.Repositories.Interfaces;
+using Library.Services.Interfaces;
+using Service.Contracts.Position;
 
 namespace Service.Services.Interfaces.PositionInterfaces
 {

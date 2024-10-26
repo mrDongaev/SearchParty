@@ -1,4 +1,4 @@
-﻿using Common.Models.Enums;
+﻿using Common.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Contracts.Player

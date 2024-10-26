@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DataAccess.Entities;
 using Service.Contracts.User;
 using WebAPI.Contracts.User;
 

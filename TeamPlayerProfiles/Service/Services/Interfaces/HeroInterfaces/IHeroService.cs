@@ -1,5 +1,6 @@
-﻿using Service.Contracts.Hero;
-using Service.Services.Interfaces.Common;
+﻿using Library.Repositories.Interfaces;
+using Library.Services.Interfaces;
+using Service.Contracts.Hero;
 
 namespace Service.Services.Interfaces.HeroInterfaces
 {

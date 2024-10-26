@@ -1,5 +1,5 @@
-﻿using DataAccess.Repositories.Models;
-using static Common.Models.ConditionalQuery;
+﻿using Library.Models;
+using static Common.Models.ConditionalProfileQuery;
 
 namespace Service.Services.Interfaces.Common
 {

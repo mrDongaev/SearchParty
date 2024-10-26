@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.User;
 using Service.Services.Interfaces;
-using Service.Services.Interfaces.Common;
 using WebAPI.Contracts.User;
 
 namespace WebAPI.Controllers

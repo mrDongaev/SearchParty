@@ -2,13 +2,15 @@
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using DataAccess.Repositories.Models;
 using DataAccess.Utils;
+using Library.Models;
+using Library.Repositories.Implementations;
+using Library.Services.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class TeamRepository : Repository<Team, Guid>, ITeamRepository
+    public class TeamRepository : Repository<TeamPlayerProfilesContext, Team, Guid>, ITeamRepository
     {
         private readonly DbSet<Team> _teams;
         private readonly DbSet<Player> _players;
@@ -133,7 +135,7 @@ namespace DataAccess.Repositories.Implementations
             return await Get(existingTeam.Id, cancellationToken);
         }
 
-        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalQuery.TeamConditions config, CancellationToken cancellationToken)
+        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalProfileQuery.TeamConditions config, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
                 .FilterWith(config)
@@ -141,7 +143,7 @@ namespace DataAccess.Repositories.Implementations
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalQuery.TeamConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalProfileQuery.TeamConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
