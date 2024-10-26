@@ -1,6 +1,6 @@
 ﻿using DataAccess.Entities;
+using Library.Entities.Interfaces;
 using Library.Models;
-using Library.Repositories.Interfaces;
 using static Common.Models.ConditionalProfileQuery;
 
 namespace DataAccess.Repositories.Interfaces

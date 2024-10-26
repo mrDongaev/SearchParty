@@ -1,4 +1,4 @@
-﻿using Library.Repositories.Interfaces;
+﻿using Library.Entities.Interfaces;
 using Library.Services.Interfaces;
 using Service.Contracts.Hero;
 

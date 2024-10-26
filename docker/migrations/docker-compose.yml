@@ -7,8 +7,8 @@ services:
       team_player_profiles_db:
         condition: service_healthy
     build: 
-      context: ../../TeamPlayerProfiles
-      dockerfile: migrate.Dockerfile
+      context: ../../
+      dockerfile: TeamPlayerProfiles/migrate.Dockerfile
     ports: 
       - "8080:8080" 
       - "8081:8081" 
@@ -41,14 +41,14 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
-  user_profiles_webapi:
-    container_name: user_profiles_webapi
+  user_profiles_migrations:
+    container_name: user_profiles_migrations
     depends_on:
-      team_player_profiles_db:
+      user_profiles_db:
         condition: service_healthy
     build: 
-      context: ../../UserProfiles
-      dockerfile: build.Dockerfile
+      context: ../../
+      dockerfile: UserProfiles/migrate.Dockerfile
       args:
         BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
     ports: 

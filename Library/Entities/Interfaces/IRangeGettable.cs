@@ -1,4 +1,4 @@
-﻿namespace Library.Repositories.Interfaces
+﻿namespace Library.Entities.Interfaces
 {
     public interface IRangeGettable<T, TId>
     {

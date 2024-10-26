@@ -7,8 +7,8 @@ services:
       team_player_profiles_db:
         condition: service_healthy
     build: 
-      context: ../../TeamPlayerProfiles
-      dockerfile: build.Dockerfile
+      context: ../../
+      dockerfile: TeamPlayerProfiles/build.Dockerfile
       args:
         BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
     ports: 
@@ -42,11 +42,11 @@ services:
   user_profiles_webapi:
     container_name: user_profiles_webapi
     depends_on:
-      team_player_profiles_db:
+      user_profiles_db:
         condition: service_healthy
     build: 
-      context: ../../UserProfiles
-      dockerfile: build.Dockerfile
+      context: ../../
+      dockerfile: UserProfiles/build.Dockerfile
       args:
         BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
     ports: 

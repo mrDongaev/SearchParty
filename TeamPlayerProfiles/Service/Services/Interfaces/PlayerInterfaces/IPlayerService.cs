@@ -1,4 +1,4 @@
-﻿using Library.Repositories.Interfaces;
+﻿using Library.Entities.Interfaces;
 using Service.Contracts.Player;
 using Service.Services.Interfaces.Common;
 
