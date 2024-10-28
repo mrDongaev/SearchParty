@@ -10,5 +10,9 @@ namespace DataAccess.Entities
         public string Name { get; set; }
 
         public MainStat MainStat { get; set; }
+
+        public ICollection<Player> Players { get; protected set; } = [];
+
+        public ICollection<PlayerHero> PlayerHeroes { get; protected set; } = [];
     }
 }

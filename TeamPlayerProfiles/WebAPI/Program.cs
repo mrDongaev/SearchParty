@@ -1,72 +1,71 @@
+using Common.Utils;
 using DataAccess.Context;
-using DataAccess.Repositories.Implementations;
-using DataAccess.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Service.Services.Implementations;
-using Service.Services.Interfaces;
-using System.Text.Json.Serialization;
-using WebAPI.Mapping;
-using RepoMapping = Service.Mapping;
+using Serilog;
+using WebAPI.Configurations;
+using WebAPI.Middleware;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddDbContext<TeamPlayerProfilesContext>(options =>
+Log.Logger = new Serilog.LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+Log.Information("Starting Team and Player profiles app...");
+try
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<IPositionRepository, PositionRepository>()
-    .AddScoped<IHeroRepository, HeroRepository>()
-    .AddScoped<IPlayerRepository, PlayerRepository>()
-    .AddScoped<ITeamRepository, TeamRepository>();
+    builder.Services
+        .AddDbContext(builder.Configuration)
+        .AddRepositories()
+        .AddServices()
+        .AddAutoMapper()
+        .AddEndpointsApiExplorer()
+        .AddSwagger()
+        .AddRabbitMQ(builder.Configuration)
+        .AddControllers();
 
-builder.Services.AddAutoMapper(typeof(RepoMapping.HeroMappingProfile), typeof(RepoMapping.PositionMappingProfile),
-    typeof(RepoMapping.PlayerMappingProfile), typeof(RepoMapping.TeamMappingProfile),
-    typeof(HeroMappingProfile), typeof(PositionMappingProfile),
-    typeof(PlayerMappingProfile), typeof(TeamMappingProfile))
-    .AddScoped<IPositionService, PositionService>()
-    .AddScoped<IHeroService, HeroService>()
-    .AddScoped<IPlayerService, PlayerService>()
-    .AddScoped<ITeamService, TeamService>();
+    builder.Host
+        .AddSerilog();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.CustomSchemaIds(type =>
-    {
-        var name = type.Name;
-        var declaringName = type.DeclaringType?.Name ?? string.Empty;
-        if (declaringName != string.Empty) declaringName += ".";
-        return declaringName + name;
-    });
-});
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+    var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
-    using (var scope = app.Services.CreateScope())
+    if (CommonUtils.TryGetEnvVariable("SEED_DATABASE").Equals("true"))
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
+            await TestDataSeeder.SeedTestData(dbContext);
+            Log.Information("Team Player Profiles test data seeded");
+        }
     }
+    else if (app.Environment.IsDevelopment())
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<TeamPlayerProfilesContext>();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+            await TestDataSeeder.SeedTestData(dbContext);
+            Log.Information("Team Player Profiles test data seeded");
+        }
+    }
+    app.UseSerilogRequestLogging();
+    app.UseExceptionHandling();
+    app.UseHttpsRedirection();
+    app.UseAuthorization();
+    app.MapControllers();
+    await app.RunAsync();
+    Log.Information("Clean shutdown.");
+    return 0;
+}
+catch (Exception ex)
+{
+    if (ex is not HostAbortedException)
+        Log.Fatal(ex, "An unhandled exception has occured during bootstrapping.");
+    return 1;
+}
+finally
+{
+    Log.Information("Shut down complete.");
+    Log.CloseAndFlush();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

@@ -7,7 +7,7 @@ namespace DataAccess.Repositories.Implementations
 {
     public class HeroRepository(TeamPlayerProfilesContext context) : Repository<Hero, int>(context), IHeroRepository
     {
-        private readonly DbSet<Hero> _heroSet = context.Set<Hero>();
+        private readonly DbSet<Hero> _heroSet = context.Heroes;
 
         public async Task<ICollection<Hero>> GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {

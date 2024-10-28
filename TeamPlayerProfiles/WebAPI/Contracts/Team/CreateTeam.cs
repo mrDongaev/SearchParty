@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using WebAPI.Validation;
 
 namespace WebAPI.Contracts.Team
 {
@@ -6,13 +7,18 @@ namespace WebAPI.Contracts.Team
     {
         public sealed class Request
         {
-            public Guid UserId { get; set; }
+            [Required]
+            public Guid? UserId { get; set; }
 
-            public string Name { get; set; }
+            [MaxLength(30)]
+            public string? Name { get; set; } = "Профиль команды";
 
-            public string Description { get; set; }
+            [MaxLength(150)]
+            public string? Description { get; set; }
 
-            public ISet<PlayerInTeam> PlayersInTeam { get; set; }
+            [MaxLength(5)]
+            [UniqueTeamPositions]
+            public ISet<UpdateTeamPlayers.Request>? PlayersInTeam { get; set; } = new HashSet<UpdateTeamPlayers.Request>();
         }
     }
 }

@@ -19,9 +19,9 @@ namespace WebAPI.Contracts.Player
 
             public PositionName Position { get; set; }
 
-            public ICollection<GetHero.Response> Heroes { get; set; }
-
             public DateTime UpdatedAt { get; set; }
+
+            public ICollection<GetHero.Response> Heroes { get; set; } = new HashSet<GetHero.Response>();
         }
     }
 }

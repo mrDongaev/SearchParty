@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public abstract class Repository<T, TId> : IRepository<T, TId> where T
-        : class, IEntity<TId>
+    public abstract class Repository<T, TId> : IRepository<T, TId> where T : class, IEntity<TId>
     {
         protected TeamPlayerProfilesContext _context;
         private readonly DbSet<T> _dbSet;
@@ -22,7 +21,7 @@ namespace DataAccess.Repositories.Implementations
         /// <param name="id"> Id сущности. </param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns> Cущность. </returns>
-        public virtual async Task<T> Get(TId id, CancellationToken cancellationToken)
+        public virtual async Task<T?> Get(TId id, CancellationToken cancellationToken)
         {
             return await _dbSet.AsNoTracking().SingleOrDefaultAsync(e => e.Id.Equals(id), cancellationToken);
         }
@@ -58,7 +57,7 @@ namespace DataAccess.Repositories.Implementations
         /// <param name="cancellationToken"> Токен отмены </param>
         public virtual async Task<bool> AddRange(ICollection<T> entities, CancellationToken cancellationToken)
         {
-            if (entities == null || !entities.Any())
+            if (entities == null || entities.Count == 0)
             {
                 return false;
             }
@@ -71,7 +70,7 @@ namespace DataAccess.Repositories.Implementations
         /// Для сущности проставить состояние - что она изменена.
         /// </summary>
         /// <param name="entity"> Сущность для изменения. </param>
-        public virtual async Task<T> Update(T entity, CancellationToken cancellationToken)
+        public virtual async Task<T?> Update(T entity, CancellationToken cancellationToken)
         {
             var entry = _context.Entry(entity);
             entry.State = EntityState.Modified;
@@ -87,7 +86,7 @@ namespace DataAccess.Repositories.Implementations
         /// <returns> Была ли сущность удалена. </returns>
         public virtual async Task<bool> Delete(TId id, CancellationToken cancellationToken)
         {
-            var obj = await _dbSet.FindAsync(id);
+            var obj = await _dbSet.FindAsync(id, cancellationToken);
             if (obj == null)
             {
                 return false;
@@ -104,7 +103,7 @@ namespace DataAccess.Repositories.Implementations
         /// <returns> Была ли операция завершена успешно. </returns>
         public virtual async Task<bool> DeleteRange(ICollection<T> entities, CancellationToken cancellationToken)
         {
-            if (entities == null || !entities.Any())
+            if (entities == null || entities.Count == 0)
             {
                 return false;
             }

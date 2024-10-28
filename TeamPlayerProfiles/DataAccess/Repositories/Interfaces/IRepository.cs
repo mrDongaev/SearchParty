@@ -23,7 +23,7 @@ namespace DataAccess.Repositories.Interfaces
         /// <param name="id"> Id сущности. </param>
         /// <param name="cancellationToken"> Токен отмены </param>
         /// <returns> Cущность. </returns>
-        Task<T> Get(TId id, CancellationToken cancellationToken);
+        Task<T?> Get(TId id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Удалить сущность.
@@ -46,7 +46,7 @@ namespace DataAccess.Repositories.Interfaces
         /// </summary>
         /// <param name="entity"> Сущность для изменения. </param>
         /// <param name="cancellationToken"> Токен отмены </param>
-        Task<T> Update(T entity, CancellationToken cancellationToken);
+        Task<T?> Update(T entity, CancellationToken cancellationToken);
 
         /// <summary>
         /// Добавить в базу одну сущность.
