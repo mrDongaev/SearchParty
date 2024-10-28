@@ -64,7 +64,7 @@ namespace APIAuth
         {
             services.AddDbContext<DataContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-            
+
             // Configure Identity for user and role management
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -110,7 +110,7 @@ namespace APIAuth
 
             var _key = new SymmetricSecurityKey(keyByte);
 
-            // Добавляем аутентификацию
+            // Add authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -121,20 +121,20 @@ namespace APIAuth
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // Указывает, нужно ли проверять подпись токена.
-                    // Если true, токен должен быть подписан ключом, указанным в IssuerSigningKey.
+                    // Indicates whether to validate the token's signature.
+                    // If true, the token must be signed with the key specified in IssuerSigningKey.
                     ValidateIssuerSigningKey = true,
 
-                    // Ключ, который будет использоваться для проверки подписи токена.
-                    // Это должен быть экземпляр класса, реализующий интерфейс SecurityKey.
+                    // The key that will be used to validate the token's signature.
+                    // This should be an instance of a class that implements the SecurityKey interface.
                     IssuerSigningKey = _key,
 
-                    // Указывает, нужно ли проверять издателя токена.
-                    // Если true, будет проверяться, что токен был выдан доверенным издателем.
+                    // Indicates whether to validate the token's issuer.
+                    // If true, it will be checked that the token was issued by a trusted issuer.
                     ValidateIssuer = false,
 
-                    // Указывает, нужно ли проверять аудиторию токена.
-                    // Если true, будет проверяться, что токен предназначен для конкретной аудитории.
+                    // Indicates whether to validate the token's audience.
+                    // If true, it will be checked that the token is intended for a specific audience.
                     ValidateAudience = false
                 };
                 options.Events = new JwtBearerEvents
@@ -149,15 +149,15 @@ namespace APIAuth
                     },
                     OnChallenge = context =>
                     {
-                        // Пропускаем стандартную обработку ответа
+                        // Skip standard response handling
                         context.HandleResponse();
 
-                        // Создаем свой ответ
+                        // Create custom response
                         context.Response.StatusCode = 401;
 
                         context.Response.ContentType = "application/json";
 
-                        var result = JsonSerializer.Serialize(new { message = "Вы не авторизованы. Пожалуйста, предоставьте действительный JWT токен." });
+                        var result = JsonSerializer.Serialize(new { message = "You are not authorized. Please provide a valid JWT token." });
 
                         return context.Response.WriteAsync(result);
                     }
