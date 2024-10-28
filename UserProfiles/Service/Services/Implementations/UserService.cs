@@ -32,6 +32,11 @@ namespace Service.Services.Implementations
             return mapper.Map<ICollection<UserDto>>(users);
         }
 
+        public Task<ICollection<UserDto>> GetFiltered(UserConditionsDto dto, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<ICollection<UserDto>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
             var users = await userRepo.GetRange(ids, cancellationToken);

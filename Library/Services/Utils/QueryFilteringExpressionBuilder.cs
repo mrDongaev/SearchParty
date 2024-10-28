@@ -3,12 +3,26 @@ using Library.Models.Enums;
 using Library.Models.QueryConditions;
 using System.Linq.Expressions;
 using System.Numerics;
+using System.Reflection.Metadata;
 
 namespace Library.Services.Utils
 {
-    public static class QueryExpression
+    public class QueryFilteringExpressionBuilder<T> where T : class
     {
-        public static Expression GetStringFilteringExpression<T>(this Expression expr, StringFilter? filter, string propertyName, ParameterExpression parameter)
+        private ParameterExpression _parameter;
+        private Expression _combindExpression;
+
+        private QueryFilteringExpressionBuilder()
+        {
+            _combindExpression = Expression.Constant(true);
+        }
+
+        public QueryFilteringExpressionBuilder(ParameterExpression parameter) : this()
+        {
+            _parameter = parameter;
+        }
+
+        public Expression GetStringFilteringExpression<T>(this Expression expr, StringFilter? filter, string propertyName, ParameterExpression parameter)
             where T : class
         {
             if (filter == null) return expr;
@@ -220,24 +234,10 @@ namespace Library.Services.Utils
             };
         }
 
-        public static IQueryable<T> SortWith<T>(this IQueryable<T> query, SortCondition? config) where T : class
+        public Expression<Func<T, bool>> GetCombinedLambdaExpression()
         {
-            if (config == null) return query;
-            string command = config.SortDirection switch
-            {
-                SortDirection.Asc => "OrderBy",
-                SortDirection.Desc => "OrderByDescending",
-                _ => throw new InvalidEnumMemberException($"{config.SortDirection}", typeof(SortDirection).Name),
-            };
-            var type = typeof(T);
-            var property = type.GetProperty(config.SortBy);
-            var parameter = Expression.Parameter(type, "entity");
-            if (property == null) return query;
-            var propertyAccess = Expression.MakeMemberAccess(parameter, property);
-            var orderByExpression = Expression.Lambda(propertyAccess, parameter);
-            var resultExpression = Expression.Call(typeof(Queryable), command, [type, property.PropertyType], query.Expression, Expression.Quote(orderByExpression));
-            return query.Provider.CreateQuery<T>(resultExpression);
+            Expression<Func<T, bool>> finalLambda = Expression.Lambda<Func<T, bool>>(_combindExpression, _parameter);
+            return finalLambda;
         }
-
     }
 }

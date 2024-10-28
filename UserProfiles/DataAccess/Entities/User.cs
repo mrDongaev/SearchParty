@@ -10,6 +10,8 @@ namespace DataAccess.Entities
 
         public string? Description { get; set; }
 
+        public uint Mmr { get; set; } = 0;
+
         public string? SteamFriendCode { get; set; }
 
         public string? DiscordName { get; set; }

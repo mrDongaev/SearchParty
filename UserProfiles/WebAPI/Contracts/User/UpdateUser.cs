@@ -6,14 +6,14 @@ namespace WebAPI.Contracts.User
     {
         public sealed class Request
         {
-            [Required]
-            public Guid? Id { get; set; }
-
             [MaxLength(30)]
             public string? Name { get; set; }
 
             [MaxLength(150)]
             public string? Description { get; set; }
+
+            [Range(0, 20000, ErrorMessage = "MMR must be between 0 and 20000")]
+            public uint? Mmr { get; set; }
 
             [Length(8, 8)]
             [RegularExpression(@"^\d{8}$", ErrorMessage = "Invalid Steam friend code")]
