@@ -28,7 +28,7 @@ fi
 if [ "$ADD_MIGRATION" = "true" ]; then
     # Run the migration creation command
     echo "Running migration: dotnet ef migrations add $MIGRATION_NAME -p $CONTEXT_PROJECT_NAME -s $STARTUP_PROJECT_NAME"
-    dotnet ef migrations add "$MIGRATION_NAME" -p "/src/$CONTEXT_PROJECT_NAME" -s "/src/$STARTUP_PROJECT_NAME"
+    dotnet ef migrations add "$MIGRATION_NAME" -p "/src/UserProfiles/$CONTEXT_PROJECT_NAME" -s "/src/UserProfiles/$STARTUP_PROJECT_NAME"
 
     # Check if the migration was successful
     if [ $? -ne 0 ]; then
@@ -43,7 +43,7 @@ fi
 if [ "$APPLY_MIGRATION" = "true" ]; then
     # Run the database update command
     echo "Updating database with migration: $MIGRATION_NAME"
-    dotnet ef database update "$MIGRATION_NAME" --project "/src/$STARTUP_PROJECT_NAME"
+    dotnet ef database update "$MIGRATION_NAME" --project "/src/UserProfiles/$STARTUP_PROJECT_NAME"
 
     # Check if the database update was successful
     if [ $? -ne 0 ]; then

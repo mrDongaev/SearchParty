@@ -58,7 +58,7 @@ services:
       CONTAINER: true
       DATABASE_HOSTNAME: user_profiles_db
       DATABASE_PORT: 5432
-      DATABASE_NAME: team_player_profiles
+      DATABASE_NAME: user_profiles
       DATABASE_USER: ${POSTGRES__USER}
       DATABASE_PASSWORD: ${POSTGRES__PASSWORD}
       USER_PROFILES__ADD_MIGRATION: ${USER_PROFILES__ADD_MIGRATION}
