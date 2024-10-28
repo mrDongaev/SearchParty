@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
+using Application.User.Settings;
 
 namespace Application.Interfaces
 {
     public interface IJwtGenerator
     {
-        string CreateJwtToken(AppUser user);
+         UserToken CreateJwtToken(AppUser user);
     }
 }

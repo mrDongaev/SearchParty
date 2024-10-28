@@ -86,7 +86,7 @@ namespace APIAuth
             // Add sign-in manager as a transient dependency
             services.AddTransient<SignInManager<AppUser>>();
 
-            services.AddTransient<IJwtGenerator, JwtGenerator>();
+            services.AddTransient<IJwtGenerator, TokenGenerator>();
 
             // Add controllers
             services.AddControllers();

@@ -39,11 +39,15 @@ namespace Application.User.Login
 
             if (result.Succeeded)
             {
+                var tokens = _jwtGenerator?.CreateJwtToken(user);
+
                 return new User
                 {
                     UserDisplayName = user.DisplayName,
 
-                    UserToken = _jwtGenerator?.CreateToken(user),
+                    UserJwtToken = tokens?.AccessToken,
+
+                    UserRefreshToken = tokens?.RefreshToken,
 
                     UserFullName = user.UserName,
 

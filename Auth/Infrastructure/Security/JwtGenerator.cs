@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Application.Interfaces;
+using Application.User.Settings;
 using Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Security
 {
@@ -37,7 +37,7 @@ namespace Infrastructure.Security
             _refreshKey = new SymmetricSecurityKey(refreshKeyByte);
         }
 
-        public string CreateJwtToken(AppUser user)
+        public UserToken CreateJwtToken(AppUser user)
         {
             var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.UserName) };
 
@@ -55,7 +55,16 @@ namespace Infrastructure.Security
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            var accessToken = tokenHandler.WriteToken(token);
+
+            var refreshToken = GenerateRefreshToken(user);
+
+            return new Application.User.Settings.UserToken
+            {
+                AccessToken = accessToken,
+
+                RefreshToken = refreshToken
+            };
         }
         public string GenerateRefreshToken(AppUser user)
         {
@@ -107,7 +116,7 @@ namespace Infrastructure.Security
 
                 var newToken = CreateJwtToken(new AppUser { UserName = principal.FindFirstValue(JwtRegisteredClaimNames.NameId) });
 
-                return newToken;
+                return newToken.RefreshToken;
             }
             catch (SecurityTokenException)
             {

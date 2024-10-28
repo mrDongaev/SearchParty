@@ -20,6 +20,8 @@ namespace Application.User
 
         public string? UserImage { get; set; }
 
-        public string? UserToken { get; set; }
+        public string? UserJwtToken { get; set; }
+
+        public string? UserRefreshToken { get; set; }
     }
 }
