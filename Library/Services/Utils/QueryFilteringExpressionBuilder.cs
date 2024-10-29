@@ -10,138 +10,132 @@ namespace Library.Services.Utils
     public class QueryFilteringExpressionBuilder<T> where T : class
     {
         private ParameterExpression _parameter;
-        private Expression _combindExpression;
+        private Expression _combinedExpression;
 
         private QueryFilteringExpressionBuilder()
         {
-            _combindExpression = Expression.Constant(true);
+            _combinedExpression = Expression.Constant(true);
         }
 
-        public QueryFilteringExpressionBuilder(ParameterExpression parameter) : this()
+        public QueryFilteringExpressionBuilder(string parameterName) : this()
         {
-            _parameter = parameter;
+            _parameter = Expression.Parameter(typeof(T), parameterName);
         }
 
-        public Expression GetStringFilteringExpression<T>(this Expression expr, StringFilter? filter, string propertyName, ParameterExpression parameter)
-            where T : class
+        public QueryFilteringExpressionBuilder<T> ApplyStringFiltering(StringFilter? filter, string propertyName)
         {
-            if (filter == null) return expr;
+            if (filter == null) return this;
             Type strType = typeof(string);
             Type profileType = typeof(T);
             var property = profileType.GetProperty(propertyName);
             if (property == null || property.PropertyType != strType) throw new InvalidClassMemberException(propertyName, profileType.Name);
             var inputParam = Expression.Constant(filter.Input, strType);
-            var memberAccess = Expression.MakeMemberAccess(parameter, property);
+            var memberAccess = Expression.MakeMemberAccess(_parameter, property);
             var containsMethodInfo = strType.GetMethod("Contains", [strType]);
             var startsWithMethodInfo = strType.GetMethod("StartsWith", [strType]);
             var endsWithMethodInfo = strType.GetMethod("EndsWith", [strType]);
-            return filter.FilterType switch
+            _combinedExpression = filter.FilterType switch
             {
-                StringValueFilterType.Equal => Expression.AndAlso(expr, Expression.Equal(memberAccess, inputParam)),
-                StringValueFilterType.NotEqual => Expression.AndAlso(expr, Expression.NotEqual(memberAccess, inputParam)),
-                StringValueFilterType.Contains => Expression.AndAlso(expr, Expression.Call(memberAccess, containsMethodInfo, inputParam)),
-                StringValueFilterType.DoesNotContain => Expression.AndAlso(expr, Expression.Not(Expression.Call(memberAccess, containsMethodInfo, inputParam))),
-                StringValueFilterType.StartsWith => Expression.AndAlso(expr, Expression.Call(memberAccess, startsWithMethodInfo, inputParam)),
-                StringValueFilterType.EndsWith => Expression.AndAlso(expr, Expression.Call(memberAccess, endsWithMethodInfo, inputParam)),
+                StringValueFilterType.Equal => Expression.AndAlso(_combinedExpression, Expression.Equal(memberAccess, inputParam)),
+                StringValueFilterType.NotEqual => Expression.AndAlso(_combinedExpression, Expression.NotEqual(memberAccess, inputParam)),
+                StringValueFilterType.Contains => Expression.AndAlso(_combinedExpression, Expression.Call(memberAccess, containsMethodInfo, inputParam)),
+                StringValueFilterType.DoesNotContain => Expression.AndAlso(_combinedExpression, Expression.Not(Expression.Call(memberAccess, containsMethodInfo, inputParam))),
+                StringValueFilterType.StartsWith => Expression.AndAlso(_combinedExpression, Expression.Call(memberAccess, startsWithMethodInfo, inputParam)),
+                StringValueFilterType.EndsWith => Expression.AndAlso(_combinedExpression, Expression.Call(memberAccess, endsWithMethodInfo, inputParam)),
                 _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(StringValueFilterType).Name),
             };
+            return this;
         }
 
-        public static Expression GetDateTimeFilteringExpression<T>(this Expression expr, DateTimeFilter? filter, string timePropertyName, ParameterExpression parameter)
-            where T : class
+        public QueryFilteringExpressionBuilder<T> ApplyDateTimeFiltering(DateTimeFilter? filter, string timePropertyName)
         {
-            if (filter == null) return expr;
+            if (filter == null) return this;
             var property = typeof(T).GetProperty(timePropertyName);
             var dateTimeType = typeof(DateTime);
             if (property == null || property.PropertyType != dateTimeType) throw new InvalidClassMemberException(timePropertyName, typeof(T).Name);
             var inputParam = Expression.Constant(filter.DateTime, dateTimeType);
-            var memberAccess = Expression.MakeMemberAccess(parameter, property);
-            return filter.FilterType switch
+            var memberAccess = Expression.MakeMemberAccess(_parameter, property);
+            _combinedExpression = filter.FilterType switch
             {
-                DateTimeFilterType.Before => Expression.AndAlso(expr, Expression.LessThan(memberAccess, inputParam)),
-                DateTimeFilterType.AtOrBefore => Expression.AndAlso(expr, Expression.LessThanOrEqual(memberAccess, inputParam)),
-                DateTimeFilterType.Exact => Expression.AndAlso(expr, Expression.Equal(memberAccess, inputParam)),
-                DateTimeFilterType.AtOrAfter => Expression.AndAlso(expr, Expression.GreaterThanOrEqual(memberAccess, inputParam)),
-                DateTimeFilterType.After => Expression.AndAlso(expr, Expression.GreaterThan(memberAccess, inputParam)),
+                DateTimeFilterType.Before => Expression.AndAlso(_combinedExpression, Expression.LessThan(memberAccess, inputParam)),
+                DateTimeFilterType.AtOrBefore => Expression.AndAlso(_combinedExpression, Expression.LessThanOrEqual(memberAccess, inputParam)),
+                DateTimeFilterType.Exact => Expression.AndAlso(_combinedExpression, Expression.Equal(memberAccess, inputParam)),
+                DateTimeFilterType.AtOrAfter => Expression.AndAlso(_combinedExpression, Expression.GreaterThanOrEqual(memberAccess, inputParam)),
+                DateTimeFilterType.After => Expression.AndAlso(_combinedExpression, Expression.GreaterThan(memberAccess, inputParam)),
                 _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(DateTimeFilterType).Name),
             };
+            return this;
         }
 
-        public static Expression GetNumericFilteringExpression<T, TNumber>(this Expression expr, NumericFilter<TNumber>? filter, string numberPropertyName, ParameterExpression parameter)
-            where T : class
+        public QueryFilteringExpressionBuilder<T> ApplyNumericFiltering<TNumber>(NumericFilter<TNumber>? filter, string numberPropertyName)
             where TNumber : INumber<TNumber>
         {
-            if (filter == null) return expr;
+            if (filter == null) return this;
             var property = typeof(T).GetProperty(numberPropertyName);
             var numberType = typeof(TNumber);
             if (property == null || property.PropertyType != numberType) throw new InvalidClassMemberException(numberPropertyName, typeof(T).Name);
             var inputParam = Expression.Constant(filter.Input, numberType);
-            var memberAccess = Expression.MakeMemberAccess(parameter, property);
-            return filter.FilterType switch
+            var memberAccess = Expression.MakeMemberAccess(_parameter, property);
+            _combinedExpression = filter.FilterType switch
             {
-                NumericFilterType.Equal => Expression.AndAlso(expr, Expression.Equal(memberAccess, inputParam)),
-                NumericFilterType.NotEqual => Expression.AndAlso(expr, Expression.NotEqual(memberAccess, inputParam)),
-                NumericFilterType.Less => Expression.AndAlso(expr, Expression.LessThan(memberAccess, inputParam)),
-                NumericFilterType.LessOrEqual => Expression.AndAlso(expr, Expression.LessThanOrEqual(memberAccess, inputParam)),
-                NumericFilterType.Greater => Expression.AndAlso(expr, Expression.GreaterThan(memberAccess, inputParam)),
-                NumericFilterType.GreaterOrEqual => Expression.AndAlso(expr, Expression.GreaterThanOrEqual(memberAccess, inputParam)),
+                NumericFilterType.Equal => Expression.AndAlso(_combinedExpression, Expression.Equal(memberAccess, inputParam)),
+                NumericFilterType.NotEqual => Expression.AndAlso(_combinedExpression, Expression.NotEqual(memberAccess, inputParam)),
+                NumericFilterType.Less => Expression.AndAlso(_combinedExpression, Expression.LessThan(memberAccess, inputParam)),
+                NumericFilterType.LessOrEqual => Expression.AndAlso(_combinedExpression, Expression.LessThanOrEqual(memberAccess, inputParam)),
+                NumericFilterType.Greater => Expression.AndAlso(_combinedExpression, Expression.GreaterThan(memberAccess, inputParam)),
+                NumericFilterType.GreaterOrEqual => Expression.AndAlso(_combinedExpression, Expression.GreaterThanOrEqual(memberAccess, inputParam)),
                 _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(NumericFilterType).Name),
             };
+            return this;
         }
 
-        public static Expression GetValueListFilteringExpression<T, TListItemProp>(this Expression expr, ValueListFilter<TListItemProp> filter, string valuePropertyName, ParameterExpression parameter)
-            where T : class
+        public  QueryFilteringExpressionBuilder<T> ApplyValueListFiltering<TListItemProp>(ValueListFilter<TListItemProp> filter, string valuePropertyName)
         {
-            if (filter == null) return expr;
+            if (filter == null) return this;
             var propertyType = typeof(TListItemProp);
             var property = typeof(T).GetProperty(valuePropertyName);
             if (property == null || property.PropertyType != propertyType) throw new InvalidClassMemberException(valuePropertyName, typeof(T).Name);
             var valueList = Expression.Constant(filter.ValueList, typeof(IEnumerable<TListItemProp>));
-            var memberAccess = Expression.MakeMemberAccess(parameter, property);
+            var memberAccess = Expression.MakeMemberAccess(_parameter, property);
             var containsMethod = typeof(Enumerable)
                 .GetMethods()
                 .Where(x => x.Name == "Contains")
                 .Single(x => x.GetParameters().Length == 2)
                 .MakeGenericMethod(typeof(TListItemProp));
-            Expression? finalExpression = null;
             switch (filter.FilterType)
             {
                 case ValueListFilterType.Exact:
                     {
                         if (filter.ValueList.Count > 1)
                         {
-                            finalExpression = Expression.AndAlso(expr, Expression.Constant(false));
+                            _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.Constant(false));
                         }
                         else
                         {
-                            finalExpression = Expression.AndAlso(expr, Expression.Call(containsMethod, valueList, memberAccess));
+                            _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.Call(containsMethod, valueList, memberAccess));
                         }
                         break;
                     }
                 case ValueListFilterType.Any:
                 case ValueListFilterType.Including:
                     {
-                        finalExpression = Expression.AndAlso(expr, Expression.Call(containsMethod, valueList, memberAccess));
+                        _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.Call(containsMethod, valueList, memberAccess));
                         break;
                     }
                 case ValueListFilterType.Excluding:
                     {
-                        finalExpression = Expression.AndAlso(expr, Expression.Not(Expression.Call(containsMethod, valueList, memberAccess)));
+                        _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.Not(Expression.Call(containsMethod, valueList, memberAccess)));
                         break;
                     }
                 default:
                     throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(ValueListFilterType).Name);
             }
-            return finalExpression;
+            return this;
         }
 
-        public static Expression GetValueListOnMemberListFilteringExpression<T, TMemberListItem, TListItemProp>(
-            this Expression expr, ValueListFilter<TListItemProp>? filter,
-            string listPropertyName,
-            string listItemPropertyName,
-            ParameterExpression parameter) where T : class
+        public  QueryFilteringExpressionBuilder<T> ApplyValueListOnMemberListFiltering<TMemberListItem, TListItemProp>(ValueListFilter<TListItemProp>? filter, string listPropertyName, string listItemPropertyName)
         {
-            if (filter == null) return expr;
+            if (filter == null) return this;
             var listType = typeof(ICollection<TMemberListItem>);
             var property = typeof(T).GetProperty(listPropertyName);
             var listItemProperty = typeof(TMemberListItem).GetProperty(listItemPropertyName);
@@ -150,7 +144,7 @@ namespace Library.Services.Utils
             if (listItemProperty == null || listItemProperty.PropertyType != typeof(TListItemProp))
                 throw new InvalidClassMemberException(listItemPropertyName, typeof(TMemberListItem).Name);
             var valueList = Expression.Constant(filter.ValueList, typeof(ICollection<TListItemProp>));
-            var memberAccess = Expression.Property(parameter, listPropertyName);
+            var memberAccess = Expression.Property(_parameter, listPropertyName);
             var asQueryable = typeof(Queryable)
                 .GetMethods()
                 .First(m => m.Name == "AsQueryable" && m.IsGenericMethodDefinition);
@@ -184,59 +178,58 @@ namespace Library.Services.Utils
             var selectExpression = Expression.Call(select, asQueryableExpression, listItemPropertyLambda);
             var intersectExpression = Expression.Call(intersect, selectExpression, valueListAsQueryable);
             var intersectedCount = Expression.Call(count, intersectExpression);
-            Expression? finalExpression = null;
             switch (filter.FilterType)
             {
                 case ValueListFilterType.Including:
                     {
                         var valueCount = Expression.Constant(filter.ValueList.Count);
-                        finalExpression = Expression.AndAlso(expr, Expression.GreaterThanOrEqual(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.GreaterThanOrEqual(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Exact:
                     {
                         var valueCount = Expression.Constant(filter.ValueList.Count);
-                        finalExpression = Expression.AndAlso(expr, Expression.Equal(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.Equal(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Excluding:
                     {
                         var valueCount = Expression.Constant(0);
-                        finalExpression = Expression.AndAlso(expr, Expression.Equal(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.Equal(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Any:
                     {
                         var valueCount = Expression.Constant(0);
-                        finalExpression = Expression.AndAlso(expr, Expression.GreaterThan(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.GreaterThan(intersectedCount, valueCount));
                         break;
                     }
                 default:
                     throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(ValueListFilterType).Name);
             }
-            return finalExpression;
+            return this;
         }
 
-        public static Expression GetSingleValueFilteringExpression<T, TProperty>(this Expression expr, SingleValueFilter<TProperty> filter, string propertyName, ParameterExpression parameter)
-            where T : class
+        public  QueryFilteringExpressionBuilder<T> ApplySingleValueFiltering<TProperty>(SingleValueFilter<TProperty> filter, string propertyName)
         {
-            if (filter == null) return expr;
+            if (filter == null) return this;
             var propertyType = typeof(TProperty);
             var property = typeof(T).GetProperty(propertyName);
             if (property == null || property.PropertyType != propertyType) throw new InvalidClassMemberException(propertyName, typeof(T).Name);
             var value = Expression.Constant(filter.Value, propertyType);
-            var memberAccess = Expression.MakeMemberAccess(parameter, property);
-            return filter.FilterType switch
+            var memberAccess = Expression.MakeMemberAccess(_parameter, property);
+            _combinedExpression = filter.FilterType switch
             {
-                SingleValueFilterType.Equals => Expression.AndAlso(expr, Expression.Equal(value, memberAccess)),
-                SingleValueFilterType.DoesNotEqual => Expression.AndAlso(expr, Expression.NotEqual(value, memberAccess)),
+                SingleValueFilterType.Equals => Expression.AndAlso(_combinedExpression, Expression.Equal(value, memberAccess)),
+                SingleValueFilterType.DoesNotEqual => Expression.AndAlso(_combinedExpression, Expression.NotEqual(value, memberAccess)),
                 _ => throw new InvalidEnumMemberException($"{filter.FilterType}", typeof(ValueListFilterType).Name),
             };
+            return this;
         }
 
-        public Expression<Func<T, bool>> GetCombinedLambdaExpression()
+        public Expression<Func<T, bool>> BuildLambdaExpression()
         {
-            Expression<Func<T, bool>> finalLambda = Expression.Lambda<Func<T, bool>>(_combindExpression, _parameter);
+            Expression<Func<T, bool>> finalLambda = Expression.Lambda<Func<T, bool>>(_combinedExpression, _parameter);
             return finalLambda;
         }
     }

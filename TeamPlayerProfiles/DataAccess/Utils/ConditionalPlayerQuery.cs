@@ -10,16 +10,16 @@ namespace DataAccess.Utils
     {
         public static IQueryable<Player> FilterWith(this IQueryable<Player> query, PlayerConditions queryConfig)
         {
-            var parameter = Expression.Parameter(typeof(Player), "player");
-            Expression expr = Expression.Constant(true)
-                .GetStringFilteringExpression<Player>(queryConfig.NameFilter, "Name", parameter)
-                .GetStringFilteringExpression<Player>(queryConfig.DescriptionFilter, "Description", parameter)
-                .GetSingleValueFilteringExpression<Player, bool?>(queryConfig.DisplayedFilter, "Displayed", parameter)
-                .GetDateTimeFilteringExpression<Player>(queryConfig.UpdatedAtStart, "UpdatedAt", parameter)
-                .GetDateTimeFilteringExpression<Player>(queryConfig.UpdatedAtEnd, "UpdatedAt", parameter)
-                .GetValueListFilteringExpression<Player, int?>(queryConfig.PositionFilter, "PositionId", parameter)
-                .GetValueListOnMemberListFilteringExpression<Player, Hero, int>(queryConfig.HeroFilter, "Heroes", "Id", parameter);
-            Expression<Func<Player, bool>> finalLambda = Expression.Lambda<Func<Player, bool>>(expr, parameter);
+            var builder = new QueryFilteringExpressionBuilder<Player>("player");
+            var finalLambda = builder
+                .ApplyStringFiltering(queryConfig.NameFilter, "Name")
+                .ApplyStringFiltering(queryConfig.DescriptionFilter, "Description")
+                .ApplySingleValueFiltering(queryConfig.DisplayedFilter, "Displayed")
+                .ApplyDateTimeFiltering(queryConfig.UpdatedAtStart, "UpdatedAt")
+                .ApplyDateTimeFiltering(queryConfig.UpdatedAtEnd, "UpdatedAt")
+                .ApplyValueListFiltering(queryConfig.PositionFilter, "PositionId")
+                .ApplyValueListOnMemberListFiltering<Hero, int>(queryConfig.HeroFilter, "Heroes", "Id")
+                .BuildLambdaExpression();
             return query.Where(finalLambda);
         }
 
