@@ -1,9 +1,9 @@
-﻿using Library.Models;
-using static Common.Models.ConditionalProfileQuery;
+﻿using Common.Models;
+using Library.Models;
 
 namespace Service.Services.Interfaces.Common
 {
-    public interface IBoardService<TGetDto, TProfileConditions> where TProfileConditions : ProfileConditions
+    public interface IBoardService<TGetDto, TProfileConditions> where TProfileConditions : ConditionalProfileQuery
     {
         /// <summary>
         /// Выставить профиль на показ

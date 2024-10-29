@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using Common.Models;
 using Library.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.PlayerInterfaces;
 using WebAPI.Contracts.Player;
-using static Common.Models.ConditionalProfileQuery;
-using static WebAPI.Contracts.Board.ConditionalProfile;
 
 namespace WebAPI.Controllers.Player
 {
@@ -32,17 +31,17 @@ namespace WebAPI.Controllers.Player
 
         [HttpPost]
         [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetFiltered(PlayerRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> GetFiltered(GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
-            var players = await playerService.GetFiltered(mapper.Map<PlayerConditions>(request), cancellationToken);
+            var players = await playerService.GetFiltered(mapper.Map<ConditionalPlayerQuery>(request), cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
         }
 
         [HttpPost("{pageSize}/{page}")]
         [ProducesResponseType<PaginatedResult<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetPaginated(uint page, uint pageSize, PlayerRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> GetPaginated(uint page, uint pageSize, GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
-            var players = await playerService.GetPaginated(mapper.Map<PlayerConditions>(request), page, pageSize, cancellationToken);
+            var players = await playerService.GetPaginated(mapper.Map<ConditionalPlayerQuery>(request), page, pageSize, cancellationToken);
             return TypedResults.Ok(mapper.Map<PaginatedResult<GetPlayer.Response>>(players));
         }
     }

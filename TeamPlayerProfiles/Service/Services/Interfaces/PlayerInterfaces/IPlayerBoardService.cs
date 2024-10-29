@@ -1,10 +1,10 @@
-﻿using Service.Contracts.Player;
+﻿using Common.Models;
+using Service.Contracts.Player;
 using Service.Services.Interfaces.Common;
-using static Common.Models.ConditionalProfileQuery;
 
 namespace Service.Services.Interfaces.PlayerInterfaces
 {
-    public interface IPlayerBoardService : IBoardService<PlayerDto, PlayerConditions>
+    public interface IPlayerBoardService : IBoardService<PlayerDto, ConditionalPlayerQuery>
     {
         Task InvitePlayerToTeam(Guid playerId, Guid invitingTeamId, CancellationToken cancellationToken);
     }

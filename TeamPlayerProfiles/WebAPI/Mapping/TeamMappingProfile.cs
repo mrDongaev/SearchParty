@@ -2,7 +2,6 @@
 using Common.Models;
 using Library.Models;
 using Service.Contracts.Team;
-using WebAPI.Contracts.Board;
 using WebAPI.Contracts.Team;
 
 namespace WebAPI.Mapping
@@ -21,7 +20,7 @@ namespace WebAPI.Mapping
 
             CreateMap<UpdateTeam.Request, UpdateTeamDto>();
 
-            CreateMap<ConditionalProfile.TeamRequest, ConditionalProfileQuery.TeamConditions>();
+            CreateMap<GetConditionalTeam.Request, ConditionalTeamQuery>();
 
             CreateMap<PaginatedResult<TeamDto>, PaginatedResult<GetTeam.Response>>();
         }

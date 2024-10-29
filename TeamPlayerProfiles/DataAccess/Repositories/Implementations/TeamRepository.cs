@@ -5,7 +5,6 @@ using DataAccess.Repositories.Interfaces;
 using DataAccess.Utils;
 using Library.Models;
 using Library.Repositories.Implementations;
-using Library.Services.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
@@ -135,7 +134,7 @@ namespace DataAccess.Repositories.Implementations
             return await Get(existingTeam.Id, cancellationToken);
         }
 
-        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalProfileQuery.TeamConditions config, CancellationToken cancellationToken)
+        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalTeamQuery config, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
                 .FilterWith(config)
@@ -143,21 +142,22 @@ namespace DataAccess.Repositories.Implementations
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalProfileQuery.TeamConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalTeamQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
-            int count = _teams
+            var query = _teams
                 .AsNoTracking()
-                .FilterWith(config)
-                .Count();
+                .FilterWith(config);
 
-            var list = await _teams.GetEntities(true)
-                .FilterWith(config)
+            int count = query.Count();
+
+            var list = await query
                 .SortWith(config.Sort)
                 .Skip((intPage - 1) * intSize)
                 .Take(intSize)
                 .ToListAsync(cancellationToken);
+
             return new PaginatedResult<Team>
             {
                 Page = intPage,

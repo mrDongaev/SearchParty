@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Library.Models;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
-using static Common.Models.ConditionalProfileQuery;
 
 namespace Service.Services.Implementations.TeamServices
 {
@@ -23,13 +23,13 @@ namespace Service.Services.Implementations.TeamServices
             throw new NotImplementedException();
         }
 
-        public async Task<ICollection<TeamDto>> GetFiltered(TeamConditions query, CancellationToken cancellationToken)
+        public async Task<ICollection<TeamDto>> GetFiltered(ConditionalTeamQuery query, CancellationToken cancellationToken)
         {
             var teams = await teamRepo.GetConditionalTeamRange(query, cancellationToken);
             return mapper.Map<ICollection<TeamDto>>(teams);
         }
 
-        public async Task<PaginatedResult<TeamDto>> GetPaginated(TeamConditions query, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<TeamDto>> GetPaginated(ConditionalTeamQuery query, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             var teams = await teamRepo.GetPaginatedTeamRange(query, page, pageSize, cancellationToken);
             return mapper.Map<PaginatedResult<TeamDto>>(teams);

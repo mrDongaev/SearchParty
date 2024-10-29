@@ -3,9 +3,8 @@ using Library.Models.Enums;
 using Library.Models.QueryConditions;
 using System.Linq.Expressions;
 using System.Numerics;
-using System.Reflection.Metadata;
 
-namespace Library.Services.Utils
+namespace Library.Repositories.Utils
 {
     public class QueryFilteringExpressionBuilder<T> where T : class
     {
@@ -89,7 +88,7 @@ namespace Library.Services.Utils
             return this;
         }
 
-        public  QueryFilteringExpressionBuilder<T> ApplyValueListFiltering<TListItemProp>(ValueListFilter<TListItemProp> filter, string valuePropertyName)
+        public QueryFilteringExpressionBuilder<T> ApplyValueListFiltering<TListItemProp>(ValueListFilter<TListItemProp> filter, string valuePropertyName)
         {
             if (filter == null) return this;
             var propertyType = typeof(TListItemProp);
@@ -133,7 +132,7 @@ namespace Library.Services.Utils
             return this;
         }
 
-        public  QueryFilteringExpressionBuilder<T> ApplyValueListOnMemberListFiltering<TMemberListItem, TListItemProp>(ValueListFilter<TListItemProp>? filter, string listPropertyName, string listItemPropertyName)
+        public QueryFilteringExpressionBuilder<T> ApplyValueListOnMemberListFiltering<TMemberListItem, TListItemProp>(ValueListFilter<TListItemProp>? filter, string listPropertyName, string listItemPropertyName)
         {
             if (filter == null) return this;
             var listType = typeof(ICollection<TMemberListItem>);
@@ -183,25 +182,25 @@ namespace Library.Services.Utils
                 case ValueListFilterType.Including:
                     {
                         var valueCount = Expression.Constant(filter.ValueList.Count);
-                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.GreaterThanOrEqual(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.GreaterThanOrEqual(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Exact:
                     {
                         var valueCount = Expression.Constant(filter.ValueList.Count);
-                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.Equal(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.Equal(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Excluding:
                     {
                         var valueCount = Expression.Constant(0);
-                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.Equal(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.Equal(intersectedCount, valueCount));
                         break;
                     }
                 case ValueListFilterType.Any:
                     {
                         var valueCount = Expression.Constant(0);
-                        _combinedExpression = Expression.AndAlso(this._combinedExpression, Expression.GreaterThan(intersectedCount, valueCount));
+                        _combinedExpression = Expression.AndAlso(_combinedExpression, Expression.GreaterThan(intersectedCount, valueCount));
                         break;
                     }
                 default:
@@ -210,7 +209,7 @@ namespace Library.Services.Utils
             return this;
         }
 
-        public  QueryFilteringExpressionBuilder<T> ApplySingleValueFiltering<TProperty>(SingleValueFilter<TProperty> filter, string propertyName)
+        public QueryFilteringExpressionBuilder<T> ApplySingleValueFiltering<TProperty>(SingleValueFilter<TProperty> filter, string propertyName)
         {
             if (filter == null) return this;
             var propertyType = typeof(TProperty);

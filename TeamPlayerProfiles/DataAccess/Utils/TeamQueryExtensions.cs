@@ -1,17 +1,16 @@
-﻿using DataAccess.Entities;
+﻿using Common.Models;
+using DataAccess.Entities;
 using Library.Exceptions;
 using Library.Models.Enums;
 using Library.Models.QueryConditions;
-using Library.Services.Utils;
+using Library.Repositories.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using static Common.Models.ConditionalProfileQuery;
 
 namespace DataAccess.Utils
 {
-    public static class ConditionalTeamQuery
+    public static class TeamQueryExtensions
     {
-        public static IQueryable<Team> FilterWith(this IQueryable<Team> query, TeamConditions queryConfig)
+        public static IQueryable<Team> FilterWith(this IQueryable<Team> query, ConditionalTeamQuery queryConfig)
         {
             var finalLambda = new QueryFilteringExpressionBuilder<Team>("team")
                 .ApplyStringFiltering(queryConfig.NameFilter, "Name")
@@ -22,7 +21,7 @@ namespace DataAccess.Utils
                 .ApplyNumericFiltering(queryConfig.PlayerCountStart, "PlayerCount")
                 .ApplyNumericFiltering(queryConfig.PlayerCountEnd, "PlayerCount")
                 .BuildLambdaExpression();
-  
+
             if (queryConfig.PositionFilter != null)
             {
                 int count = queryConfig.PositionFilter.ValueList.Count;
@@ -71,6 +70,15 @@ namespace DataAccess.Utils
                 };
             }
             return query.Where(finalLambda);
+        }
+
+        public static IQueryable<Team> SortWith(this IQueryable<Team> query, SortCondition? sortConfig)
+        {
+            if (sortConfig == null) return query;
+            var builder = new QuerySortingExpressionBuilder<Team>(query)
+                .ApplySort("Id", SortDirection.Asc)
+                .ApplySort(sortConfig);
+            return builder.GetSortedQuery();
         }
 
         public static IQueryable<Team> GetEntities(this IQueryable<Team> query, bool asNoTracking)

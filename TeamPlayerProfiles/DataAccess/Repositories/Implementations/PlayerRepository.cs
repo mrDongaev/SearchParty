@@ -1,13 +1,12 @@
 ﻿using Common.Enums;
+using Common.Models;
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.Utils;
 using Library.Models;
 using Library.Repositories.Implementations;
-using Library.Services.Utils;
 using Microsoft.EntityFrameworkCore;
-using static Common.Models.ConditionalProfileQuery;
 
 namespace DataAccess.Repositories.Implementations
 {
@@ -128,29 +127,32 @@ namespace DataAccess.Repositories.Implementations
             return updatedPlayer;
         }
 
-        public async Task<ICollection<Player>> GetConditionalPlayerRange(PlayerConditions config, CancellationToken cancellationToken)
+        public async Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery config, CancellationToken cancellationToken)
         {
-            return await _players.GetEntities(true)
+            return await _players
+                .GetEntities(true)
                 .FilterWith(config)
                 .SortWith(config.Sort)
                 .ToListAsync(cancellationToken);
+
         }
 
-        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
-            int count = _players
-                .AsNoTracking()
-                .FilterWith(config)
-                .Count();
-            var list = await _players.GetEntities(true)
-                .FilterWith(config)
-                .OrderBy(p => p.Id)
+
+            var query = _players.GetEntities(true)
+                .FilterWith(config);
+
+            int count = query.Count();
+
+            var list = await query
                 .SortWith(config.Sort)
                 .Skip((intPage - 1) * intSize)
                 .Take(intSize)
                 .ToListAsync(cancellationToken);
+
             return new PaginatedResult<Player>
             {
                 Page = intPage,

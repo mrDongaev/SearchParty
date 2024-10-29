@@ -1,15 +1,17 @@
-﻿using DataAccess.Entities;
-using Library.Services.Utils;
+﻿using Common.Models;
+using DataAccess.Entities;
+using Library.Models.Enums;
+using Library.Models.QueryConditions;
+using Library.Repositories.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using static Common.Models.ConditionalProfileQuery;
 
 namespace DataAccess.Utils
 {
-    public static class ConditionalPlayerQuery
+    public static class PlayerQueryExtensions
     {
-        public static IQueryable<Player> FilterWith(this IQueryable<Player> query, PlayerConditions queryConfig)
+        public static IQueryable<Player> FilterWith(this IQueryable<Player> query, ConditionalPlayerQuery? queryConfig)
         {
+            if (queryConfig == null) return query;
             var builder = new QueryFilteringExpressionBuilder<Player>("player");
             var finalLambda = builder
                 .ApplyStringFiltering(queryConfig.NameFilter, "Name")
@@ -21,6 +23,15 @@ namespace DataAccess.Utils
                 .ApplyValueListOnMemberListFiltering<Hero, int>(queryConfig.HeroFilter, "Heroes", "Id")
                 .BuildLambdaExpression();
             return query.Where(finalLambda);
+        }
+
+        public static IQueryable<Player> SortWith(this IQueryable<Player> query, SortCondition? sortConfig)
+        {
+            if (sortConfig == null) return query;
+            var builder = new QuerySortingExpressionBuilder<Player>(query)
+                .ApplySort("Id", SortDirection.Asc)
+                .ApplySort(sortConfig);
+            return builder.GetSortedQuery();
         }
 
         public static IQueryable<Player> GetEntities(this IQueryable<Player> query, bool asNoTracking)

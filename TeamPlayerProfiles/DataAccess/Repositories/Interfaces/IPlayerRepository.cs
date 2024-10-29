@@ -1,7 +1,7 @@
-﻿using DataAccess.Entities;
+﻿using Common.Models;
+using DataAccess.Entities;
 using Library.Entities.Interfaces;
 using Library.Models;
-using static Common.Models.ConditionalProfileQuery;
 
 namespace DataAccess.Repositories.Interfaces
 {
@@ -9,8 +9,8 @@ namespace DataAccess.Repositories.Interfaces
     {
         Task<Player?> UpdatePlayerHeroes(Guid id, ISet<int> heroIds, CancellationToken cancellationToken);
 
-        Task<ICollection<Player>> GetConditionalPlayerRange(PlayerConditions query, CancellationToken cancellationToken);
+        Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery query, CancellationToken cancellationToken);
 
-        Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, uint page, uint pageSize, CancellationToken cancellationToken);
+        Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, uint page, uint pageSize, CancellationToken cancellationToken);
     }
 }
