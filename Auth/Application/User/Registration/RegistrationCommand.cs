@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.User.Registration
 {
-    public class RegistrationCommand : IRequest<User>
+    public class RegistrationCommand : IRequest<UserData>
     {
         public string? DisplayName { get; set; }
 

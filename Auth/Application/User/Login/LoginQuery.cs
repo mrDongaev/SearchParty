@@ -8,7 +8,7 @@ using Application.User;
 
 namespace Application.User.Login
 {
-    public class LoginQuery : IRequest<User>
+    public class LoginQuery : IRequest<UserData>
     {
         public string? Email { get; set; }
 

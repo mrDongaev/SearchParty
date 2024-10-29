@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace Application.User
 {
-    public class User
+    public class UserData
     {
-        public string? UserId { get; set; }
+        public string? DisplayName { get; set; }
 
-        public string? UserDisplayName { get; set; }
+        public string? JwtToken { get; set; }
 
-        public string? UserFullName { get; set; }
+        public string? RefreshToken { get; set; }
 
-        public string? UserNickname { get; set; }
+        //public string? UserId { get; set; }
 
-        public string? UserEmail { get; set; }
+        //public string? UserFullName { get; set; }
 
-        public string? UserImage { get; set; }
+        //public string? UserNickname { get; set; }
 
-        public string? UserJwtToken { get; set; }
+        //public string? UserEmail { get; set; }
 
-        public string? UserRefreshToken { get; set; }
+        //public string? UserImage { get; set; }
     }
 }

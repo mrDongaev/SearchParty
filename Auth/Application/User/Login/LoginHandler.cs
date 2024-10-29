@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.User.Login
 {
-    public class LoginHandler : IRequestHandler<LoginQuery, User>
+    public class LoginHandler : IRequestHandler<LoginQuery, UserData>
     {
         private readonly UserManager<Domain.AppUser>? _userManager;
 
@@ -26,7 +26,7 @@ namespace Application.User.Login
             _jwtGenerator = jwtGenerator;
         }
 
-        public async Task<User> Handle(LoginQuery request, CancellationToken cancellationToken)
+        public async Task<UserData> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -41,17 +41,13 @@ namespace Application.User.Login
             {
                 var tokens = _jwtGenerator?.CreateJwtToken(user);
 
-                return new User
+                return new UserData
                 {
-                    UserDisplayName = user.DisplayName,
+                    DisplayName = user.DisplayName,
 
-                    UserJwtToken = tokens?.AccessToken,
+                    JwtToken = tokens?.AccessToken,
 
-                    UserRefreshToken = tokens?.RefreshToken,
-
-                    UserFullName = user.UserName,
-
-                    UserImage = null
+                    RefreshToken = tokens?.RefreshToken
                 };
             }
 

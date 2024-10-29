@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using Application.User;
 
 namespace Infrastructure.Security
 {
@@ -90,9 +91,13 @@ namespace Infrastructure.Security
 
             return tokenHandler.WriteToken(token);
         }
-        public string RefreshToken(string refreshKey)
+        public UserToken RefreshToken(AppUser reqUserDataSet, string refreshToken)
         {
-            if (!ValidateRefreshToken(refreshKey)) 
+            if (refreshToken == string.Empty)
+            {
+                throw new SecurityTokenException("You did not transfer the refresh token for the update");
+            }
+            if (!ValidateRefreshToken(refreshToken))
             {
                 throw new SecurityTokenException("Invalid refresh token");
             }
@@ -100,7 +105,7 @@ namespace Infrastructure.Security
 
             try
             {
-                var principal = tokenHandler.ValidateToken(refreshKey, new TokenValidationParameters
+                var principal = tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters
                 {
                     ValidateIssuer = false,
 
@@ -114,9 +119,16 @@ namespace Infrastructure.Security
 
                 }, out var validatedToken);
 
-                var newToken = CreateJwtToken(new AppUser { UserName = principal.FindFirstValue(JwtRegisteredClaimNames.NameId) });
+                //var newToken = CreateJwtToken(new AppUser { UserName = principal.FindFirstValue(JwtRegisteredClaimNames.) });
 
-                return newToken.RefreshToken;
+                var newToken = CreateJwtToken(reqUserDataSet);
+
+                return new UserToken
+                {
+                    AccessToken = newToken.AccessToken,
+
+                    RefreshToken = newToken.RefreshToken
+                };
             }
             catch (SecurityTokenException)
             {
@@ -126,6 +138,7 @@ namespace Infrastructure.Security
         public bool ValidateRefreshToken(string refreshToken)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
+
             try
             {
                 var principal = tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters

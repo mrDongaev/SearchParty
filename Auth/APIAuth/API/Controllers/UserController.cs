@@ -13,7 +13,7 @@ namespace APIAuth.Controllers
     public class UserController : BaseController
     {
         [HttpPost("login")]
-        public async Task<ActionResult<User>> LoginAsync(LoginQuery query)
+        public async Task<ActionResult<UserData>> LoginAsync(LoginQuery query)
         {
             //try catch
             try
@@ -37,7 +37,7 @@ namespace APIAuth.Controllers
         }
 
         [HttpPost("registration")]
-        public async Task<ActionResult<User>> RegistrationAsync(RegistrationCommand command)
+        public async Task<ActionResult<UserData>> RegistrationAsync(RegistrationCommand command)
         {
             return await Mediator.Send(command);
         }

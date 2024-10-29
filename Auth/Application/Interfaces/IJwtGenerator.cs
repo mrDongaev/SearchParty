@@ -10,6 +10,8 @@ namespace Application.Interfaces
 {
     public interface IJwtGenerator
     {
-         UserToken CreateJwtToken(AppUser user);
+        UserToken CreateJwtToken(AppUser user);
+
+        UserToken RefreshToken(AppUser reqUserDataSet, string refreshToken);
     }
 }
