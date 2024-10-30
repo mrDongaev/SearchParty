@@ -18,7 +18,8 @@ namespace WebAPI.Mapping
 
             CreateMap<CreateTeam.Request, CreateTeamDto>();
 
-            CreateMap<UpdateTeam.Request, UpdateTeamDto>();
+            CreateMap<UpdateTeam.Request, UpdateTeamDto>()
+                .ForMember(d => d.Id, m => m.Ignore());
 
             CreateMap<GetConditionalTeam.Request, ConditionalTeamQuery>();
 

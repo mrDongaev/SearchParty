@@ -14,7 +14,8 @@ namespace WebAPI.Mapping
 
             CreateMap<CreatePlayer.Request, CreatePlayerDto>();
 
-            CreateMap<UpdatePlayer.Request, UpdatePlayerDto>();
+            CreateMap<UpdatePlayer.Request, UpdatePlayerDto>()
+                .ForMember(d => d.Id, m => m.Ignore());
 
             CreateMap<GetConditionalPlayer.Request, ConditionalPlayerQuery>();
 

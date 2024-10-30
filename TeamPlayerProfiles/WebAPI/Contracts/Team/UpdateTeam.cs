@@ -6,9 +6,6 @@ namespace WebAPI.Contracts.Team
     {
         public sealed class Request
         {
-            [Required]
-            public Guid? Id { get; set; }
-
             [MaxLength(30)]
             public string? Name { get; set; }
 

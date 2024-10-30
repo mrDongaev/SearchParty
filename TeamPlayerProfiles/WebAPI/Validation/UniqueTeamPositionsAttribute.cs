@@ -27,7 +27,7 @@ namespace WebAPI.Validation
             }
             else
             {
-                return new ValidationResult($"Player list is null or does not satisfy type: {typeof(UpdateTeamPlayers.Response).FullName}");
+                return new ValidationResult($"Player list is null or does not satisfy type: {typeof(UpdateTeamPlayers.Request).FullName}");
             }
 
         }

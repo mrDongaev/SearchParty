@@ -16,7 +16,7 @@ namespace WebAPI.Contracts.Board
 
             public DateTimeFilter? UpdatedAtEnd { get; set; }
 
-            public SortCondition? Sort { get; set; }
+            public ICollection<SortCondition>? SortConditions { get; set; }
         }
     }
 }

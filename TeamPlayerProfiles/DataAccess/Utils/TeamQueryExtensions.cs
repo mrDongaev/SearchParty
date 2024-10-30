@@ -81,6 +81,15 @@ namespace DataAccess.Utils
             return builder.GetSortedQuery();
         }
 
+        public static IQueryable<Team> SortWith(this IQueryable<Team> query, ICollection<SortCondition>? sortConfig)
+        {
+            query = query.OrderBy(t => t.Id);
+            if (sortConfig == null) return query;
+            var builder = new QuerySortingExpressionBuilder<Team>(query)
+                .ApplySort(sortConfig);
+            return builder.GetSortedQuery();
+        }
+
         public static IQueryable<Team> GetEntities(this IQueryable<Team> query, bool asNoTracking)
         {
             var first = asNoTracking ? query.AsNoTracking() : query;

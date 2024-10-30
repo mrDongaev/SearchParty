@@ -138,7 +138,7 @@ namespace DataAccess.Repositories.Implementations
         {
             return await _teams.GetEntities(true)
                 .FilterWith(config)
-                .SortWith(config.Sort)
+                .SortWith(config.SortConditions)
                 .ToListAsync(cancellationToken);
         }
 
@@ -153,7 +153,7 @@ namespace DataAccess.Repositories.Implementations
             int count = query.Count();
 
             var list = await query
-                .SortWith(config.Sort)
+                .SortWith(config.SortConditions)
                 .Skip((intPage - 1) * intSize)
                 .Take(intSize)
                 .ToListAsync(cancellationToken);
