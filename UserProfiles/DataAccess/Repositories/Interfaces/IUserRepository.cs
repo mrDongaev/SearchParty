@@ -1,4 +1,5 @@
-﻿using DataAccess.Entities;
+﻿using Common.Models;
+using DataAccess.Entities;
 using Library.Entities.Interfaces;
 using Library.Repositories.Interfaces;
 
@@ -11,6 +12,6 @@ namespace DataAccess.Repositories.Interfaces
         /// </summary>
         /// <param name="cancellationToken"> Токен отмены. </param>
         /// <returns> Список сущностей. </returns>
-        Task<ICollection<T>> GetAll(CancellationToken cancellationToken);
+        Task<ICollection<User>> GetFiltered(ConditionalUserQuery query, CancellationToken cancellationToken);
     }
 }

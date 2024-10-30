@@ -8,7 +8,6 @@ namespace Library.Models.QueryConditions
         [Required]
         public string Input { get; set; }
 
-        [Required]
-        public StringValueFilterType FilterType { get; set; }
+        public StringValueFilterType FilterType { get; set; } = StringValueFilterType.Contains;
     }
 }

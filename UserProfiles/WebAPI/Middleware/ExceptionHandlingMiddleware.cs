@@ -45,14 +45,19 @@ namespace WebAPI.Middleware
                 statusCode = HttpStatusCode.BadRequest;
             }
             var errorMsg = string.IsNullOrEmpty(exception.Message) ? "An unforeseen error has occurred" : exception.Message;
-            context.Response.ContentType = "application/json";
             int codeNum = (int)statusCode;
+
+            context.Response.StatusCode = codeNum;
+            context.Response.ContentType = "application/json";
+
             var result = JsonSerializer.Serialize(new
             {
                 StatusCode = statusCode,
                 ErrorMsg = errorMsg,
             });
+
             _logger.Error(exception, "An error has occurred with code {codeNum}: {@statusCode}", codeNum, statusCode);
+
             await context.Response.WriteAsync(result);
         }
     }

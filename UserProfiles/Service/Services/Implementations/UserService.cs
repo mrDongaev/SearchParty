@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Service.Contracts.User;
@@ -32,9 +33,10 @@ namespace Service.Services.Implementations
             return mapper.Map<ICollection<UserDto>>(users);
         }
 
-        public Task<ICollection<UserDto>> GetFiltered(UserConditionsDto dto, CancellationToken cancellationToken)
+        public async Task<ICollection<UserDto>> GetFiltered(ConditionalUserQuery dto, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var users = await userRepo.GetFiltered(dto, cancellationToken);
+            return mapper.Map<ICollection<UserDto>>(users);
         }
 
         public async Task<ICollection<UserDto>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)

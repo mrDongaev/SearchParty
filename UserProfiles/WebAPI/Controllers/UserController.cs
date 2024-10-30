@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using Library.Models.Enums;
+using Common.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.User;
 using Service.Services.Interfaces;
-using System.ComponentModel.DataAnnotations;
-using System.Formats.Asn1;
 using WebAPI.Contracts.User;
+using WebAPI.Validation;
 
 namespace WebAPI.Controllers
 {
@@ -53,7 +52,7 @@ namespace WebAPI.Controllers
         {
             var user = mapper.Map<UpdateUserDto>(request);
             user.Id = id;
-            var updatedUser = await userService.Update(, cancellationToken);
+            var updatedUser = await userService.Update(user, cancellationToken);
             return updatedUser == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetUser.Response>(updatedUser));
         }
 
@@ -67,17 +66,10 @@ namespace WebAPI.Controllers
         [HttpPost]
         [ProducesResponseType<IEnumerable<GetUser.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<Results<Ok<IEnumerable<GetUser.Response>>, BadRequest>> GetFiltered(ConditionalUser.Request request, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetUser.Response>>, BadRequest>> GetFiltered([MmrValuesValid] GetConditionalUser.Request request, CancellationToken cancellationToken)
         {
-            if (request.MinMmr != null && request.MaxMmr != null && request.MinMmr.Input >= request.MaxMmr.Input)
-            {
-                throw new Exception("Minimum MMR must be lower than maximum MMR");
-            } else
-            {
-                var users = await userService.GetFiltered(mapper.Map<UserConditionsDto>(request), cancellationToken);
-                return TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(users));
-            }
-
+            var users = await userService.GetFiltered(mapper.Map<ConditionalUserQuery>(request), cancellationToken);
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(users));
         }
     }
 }

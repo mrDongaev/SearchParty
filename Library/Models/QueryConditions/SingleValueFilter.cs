@@ -8,7 +8,6 @@ namespace Library.Models.QueryConditions
         [Required]
         public T Value { get; set; }
 
-        [Required]
-        public SingleValueFilterType FilterType { get; set; }
+        public SingleValueFilterType FilterType { get; set; } = SingleValueFilterType.Equals;
     }
 }

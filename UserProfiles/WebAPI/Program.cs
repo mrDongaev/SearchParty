@@ -1,5 +1,5 @@
-using Common.Utils;
 using DataAccess.Context;
+using Library.Utils;
 using Serilog;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
@@ -27,7 +27,7 @@ try
     var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (CommonUtils.TryGetEnvVariable("USER_PROFILES__SEED_DATABASE").Equals("true"))
+    if (EnvironmentUtils.TryGetEnvVariable("USER_PROFILES__SEED_DATABASE").Equals("true"))
     {
         using (var scope = app.Services.CreateScope())
         {

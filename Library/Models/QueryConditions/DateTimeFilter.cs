@@ -8,7 +8,6 @@ namespace Library.Models.QueryConditions
         [Required]
         public DateTime DateTime { get; set; }
 
-        [Required]
-        public DateTimeFilterType FilterType { get; set; }
+        public DateTimeFilterType FilterType { get; set; } = DateTimeFilterType.AtOrAfter;
     }
 }

@@ -8,7 +8,6 @@ namespace Library.Models.QueryConditions
         [Required]
         public ICollection<T> ValueList { get; set; }
 
-        [Required]
-        public ValueListFilterType FilterType { get; set; }
+        public ValueListFilterType FilterType { get; set; } = ValueListFilterType.Including;
     }
 }

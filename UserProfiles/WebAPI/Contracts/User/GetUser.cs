@@ -10,7 +10,7 @@
 
             public string Description { get; set; }
 
-            public uint Mmr {  get; set; }
+            public uint Mmr { get; set; }
 
             public string SteamFriendCode { get; set; }
 

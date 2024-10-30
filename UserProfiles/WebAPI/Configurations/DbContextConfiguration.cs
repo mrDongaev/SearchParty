@@ -1,5 +1,5 @@
-﻿using Common.Utils;
-using DataAccess.Context;
+﻿using DataAccess.Context;
+using Library.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Configurations
@@ -9,13 +9,13 @@ namespace WebAPI.Configurations
         public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            if (CommonUtils.TryGetEnvVariable("CONTAINER").Equals("true"))
+            if (EnvironmentUtils.TryGetEnvVariable("CONTAINER").Equals("true"))
             {
-                string hostname = CommonUtils.GetEnvVariable("DATABASE_HOSTNAME");
-                string portnum = CommonUtils.GetEnvVariable("DATABASE_PORT");
-                string dbname = CommonUtils.GetEnvVariable("DATABASE_NAME");
-                string username = CommonUtils.GetEnvVariable("DATABASE_USER");
-                string password = CommonUtils.GetEnvVariable("DATABASE_PASSWORD");
+                string hostname = EnvironmentUtils.GetEnvVariable("DATABASE_HOSTNAME");
+                string portnum = EnvironmentUtils.GetEnvVariable("DATABASE_PORT");
+                string dbname = EnvironmentUtils.GetEnvVariable("DATABASE_NAME");
+                string username = EnvironmentUtils.GetEnvVariable("DATABASE_USER");
+                string password = EnvironmentUtils.GetEnvVariable("DATABASE_PASSWORD");
                 connectionString = $"Host={hostname};Port={portnum};Database={dbname};Username={username};Password={password}";
             }
             services.AddDbContext<UserProfilesContext>(options =>

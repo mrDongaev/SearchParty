@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Models;
 using Library.Models.QueryConditions;
 using Service.Contracts.User;
 using WebAPI.Contracts.User;
@@ -16,7 +17,7 @@ namespace WebAPI.Mapping
             CreateMap<UpdateUser.Request, UpdateUserDto>()
                 .ForMember(d => d.Id, m => m.Ignore());
 
-            CreateMap<ConditionalUser.Request, UserConditionsDto>()
+            CreateMap<GetConditionalUser.Request, ConditionalUserQuery>()
                 .ForMember(d => d.Sort, m => m.MapFrom(s => new SortCondition()
                 {
                     SortBy = "Mmr",

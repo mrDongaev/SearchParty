@@ -30,14 +30,9 @@ namespace Library.Repositories.Utils
 
         public QuerySortingExpressionBuilder<T> ApplySort(IEnumerable<SortCondition> configList)
         {
-            return ApplySort(configList);
-        }
-
-        public QuerySortingExpressionBuilder<T> ApplySort(IEnumerable<(string parameterName, SortDirection sortDirection)> configList)
-        {
             foreach (var config in configList)
             {
-                ApplySort(config.parameterName, config.sortDirection);
+                ApplySort(config.SortBy, config.SortDirection);
             }
             return this;
         }
@@ -46,11 +41,11 @@ namespace Library.Repositories.Utils
         {
             if (_additionalQuery)
             {
-                _SortAdditional(parameterName, sortDirection);
+                SortAdditional(parameterName, sortDirection);
             }
             else
             {
-                _SortFirst(parameterName, sortDirection);
+                SortFirst(parameterName, sortDirection);
                 _additionalQuery = true;
             }
             return this;
@@ -61,7 +56,7 @@ namespace Library.Repositories.Utils
             return _query.Provider.CreateQuery<T>(_combinedExpression);
         }
 
-        private void _SortFirst(string parameterName, SortDirection sortDirection)
+        private void SortFirst(string parameterName, SortDirection sortDirection)
         {
             string command = sortDirection switch
             {
@@ -75,11 +70,11 @@ namespace Library.Repositories.Utils
             if (property == null) return;
             var propertyAccess = Expression.MakeMemberAccess(parameter, property);
             var orderByExpression = Expression.Lambda(propertyAccess, parameter);
-            var resultExpression = Expression.Call(typeof(Queryable), command, [type, property.PropertyType], _query.Expression, Expression.Quote(orderByExpression));
+            var resultExpression = Expression.Call(typeof(Queryable), command, [type, property.PropertyType], _combinedExpression, Expression.Quote(orderByExpression));
             _combinedExpression = _query.Provider.CreateQuery<T>(resultExpression).Expression;
         }
 
-        private void _SortAdditional(string parameterName, SortDirection sortDirection)
+        private void SortAdditional(string parameterName, SortDirection sortDirection)
         {
             string command = sortDirection switch
             {
@@ -93,7 +88,7 @@ namespace Library.Repositories.Utils
             if (property == null) return;
             var propertyAccess = Expression.MakeMemberAccess(parameter, property);
             var orderByExpression = Expression.Lambda(propertyAccess, parameter);
-            var resultExpression = Expression.Call(typeof(Queryable), command, [type, property.PropertyType], _query.Expression, Expression.Quote(orderByExpression));
+            var resultExpression = Expression.Call(typeof(Queryable), command, [type, property.PropertyType], _combinedExpression, Expression.Quote(orderByExpression));
             _combinedExpression = _query.Provider.CreateQuery<T>(resultExpression).Expression;
         }
     }

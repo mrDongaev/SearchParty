@@ -18,6 +18,7 @@ namespace DataAccess.Context
                     Id = Guid.Parse(emptyGuid[..^indexStr.Length] + indexStr),
                     Name = $"user{i + 1}",
                     Description = $"user-description{i + 1}",
+                    Mmr = (uint)getRand(0, 20001),
                     SteamFriendCode = getRand(1000000, 1000000000).ToString(),
                     DiscordName = $"user{i + 1}",
                     TelegramLink = $"@user{i + 1}",

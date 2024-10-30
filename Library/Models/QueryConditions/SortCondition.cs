@@ -8,7 +8,6 @@ namespace Library.Models.QueryConditions
         [Required]
         public string SortBy { get; set; }
 
-        [Required]
         public SortDirection SortDirection { get; set; } = SortDirection.Asc;
     }
 }

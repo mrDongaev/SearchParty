@@ -1,4 +1,5 @@
-﻿using Library.Entities.Interfaces;
+﻿using Common.Models;
+using Library.Entities.Interfaces;
 using Service.Contracts.User;
 using Service.Services.Interfaces.Common;
 
@@ -32,6 +33,6 @@ namespace Service.Services.Interfaces
         /// </summary>
         /// <param name="dto">ДТО условий фильтрации/сортировки</param>
         /// <returns>Список ДТО подходящий пользователей</returns>
-        Task<ICollection<UserDto>> GetFiltered(UserConditionsDto dto, CancellationToken cancellationToken);
+        Task<ICollection<UserDto>> GetFiltered(ConditionalUserQuery dto, CancellationToken cancellationToken);
     }
 }
