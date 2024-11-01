@@ -4,7 +4,7 @@ using Library.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.PlayerInterfaces;
-using WebAPI.Contracts.Player;
+using WebAPI.Models.Player;
 
 namespace WebAPI.Controllers.Player
 {

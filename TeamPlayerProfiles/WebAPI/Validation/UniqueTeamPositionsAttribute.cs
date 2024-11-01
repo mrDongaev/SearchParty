@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebAPI.Contracts.Team;
+using WebAPI.Models.Team;
 
 namespace WebAPI.Validation
 {

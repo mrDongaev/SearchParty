@@ -1,10 +1,10 @@
-﻿using Common.Enums;
-using Common.Models;
+﻿using Common.Models;
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.Utils;
 using Library.Models;
+using Library.Models.Enums;
 using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 

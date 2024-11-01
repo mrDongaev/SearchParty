@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.HeroInterfaces;
-using WebAPI.Contracts.Hero;
+using WebAPI.Models.Hero;
 
 namespace WebAPI.Controllers.Hero
 {

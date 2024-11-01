@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
 using System.ComponentModel.DataAnnotations;
-using WebAPI.Contracts.Team;
+using WebAPI.Models.Team;
 using WebAPI.Validation;
 
 namespace WebAPI.Controllers.Team

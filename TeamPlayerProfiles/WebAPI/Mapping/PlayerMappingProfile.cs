@@ -2,7 +2,7 @@
 using Common.Models;
 using Library.Models;
 using Service.Contracts.Player;
-using WebAPI.Contracts.Player;
+using WebAPI.Models.Player;
 
 namespace WebAPI.Mapping
 {

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Service.Contracts.Position;
-using WebAPI.Contracts.Position;
+using WebAPI.Models.Position;
 
 namespace WebAPI.Mapping
 {

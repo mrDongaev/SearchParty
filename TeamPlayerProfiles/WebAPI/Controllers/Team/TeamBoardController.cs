@@ -4,8 +4,8 @@ using Library.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.TeamInterfaces;
-using WebAPI.Contracts.Player;
-using WebAPI.Contracts.Team;
+using WebAPI.Models.Player;
+using WebAPI.Models.Team;
 
 namespace WebAPI.Controllers.Team
 {

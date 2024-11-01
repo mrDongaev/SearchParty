@@ -1,5 +1,4 @@
-﻿using Common.Enums;
-
+﻿using Library.Models.Enums;
 namespace Service.Contracts.Player
 {
     public class UpdatePlayerDto
