@@ -17,4 +17,4 @@ COPY ["./Library/", "./Library/"]
 WORKDIR "/src/UserProfiles"
 COPY ["./UserProfiles/migrations.sh", "."]
 RUN chmod +x migrations.sh
-ENTRYPOINT ["./migrations.sh"]
+ENTRYPOINT ["bash", "./migrations.sh"]

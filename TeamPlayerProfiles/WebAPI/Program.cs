@@ -15,11 +15,11 @@ try
     builder.Services
         .AddDbContext(builder.Configuration)
         .AddRepositories()
-        .AddServices()
+        .AddServices(builder.Configuration)
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
-        .AddSwagger()
-        .AddRabbitMQ(builder.Configuration);
+        .AddSwagger();
+        //.AddRabbitMQ(builder.Configuration);
 
     builder.Services
         .AddControllers();

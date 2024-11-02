@@ -4,18 +4,18 @@ namespace Service.Services.Interfaces.UserProfilesInterfaces
 {
     public interface IUserProfileService
     {
-        Task Get(Guid id, CancellationToken cancellationToken);
+        Task<GetUser.Response> Get(Guid id, CancellationToken cancellationToken);
 
-        Task GetRange(ICollection<Guid> ids, CancellationToken cancellationToken);
+        Task<ICollection<GetUser.Response>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken);
 
-        Task GetAll(CancellationToken cancellationToken);
+        Task<ICollection<GetUser.Response>> GetAll(CancellationToken cancellationToken);
 
-        Task Create(CreateUser.Request request, CancellationToken cancellationToken);
+        Task<GetUser.Response> Create(CreateUser.Request request, CancellationToken cancellationToken);
 
-        Task Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken);
+        Task<GetUser.Response> Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken);
 
-        Task Delete(Guid id, CancellationToken cancellationToken);
+        Task<bool> Delete(Guid id, CancellationToken cancellationToken);
 
-        Task GetFiltered(GetConditionalUser.Request request, CancellationToken cancellationToken);
+        Task<ICollection<GetUser.Response>> GetFiltered(GetConditionalUser.Request request, CancellationToken cancellationToken);
     }
 }
