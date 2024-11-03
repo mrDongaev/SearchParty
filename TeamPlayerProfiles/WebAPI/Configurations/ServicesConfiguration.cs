@@ -1,9 +1,11 @@
 ﻿using Library.Utils;
+using Service.Services.Implementations;
 using Service.Services.Implementations.HeroServices;
 using Service.Services.Implementations.PlayerServices;
 using Service.Services.Implementations.PositionServices;
 using Service.Services.Implementations.TeamServices;
 using Service.Services.Implementations.UserProfileServices;
+using Service.Services.Interfaces;
 using Service.Services.Interfaces.HeroInterfaces;
 using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.PositionInterfaces;
@@ -23,6 +25,7 @@ namespace WebAPI.Configurations
                 .AddScoped<ITeamService, TeamService>()
                 .AddScoped<IPlayerBoardService, PlayerBoardService>()
                 .AddScoped<ITeamBoardService, TeamBoardService>()
+                .AddScoped<IUserService, UserService>()
                 .AddHttpClient<IUserProfileService, UserProfilesService>(cfg =>
                 {
                     Uri baseAddress;

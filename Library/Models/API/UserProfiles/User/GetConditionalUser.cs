@@ -1,5 +1,4 @@
-﻿using Library.Models.Enums;
-using Library.Models.QueryConditions;
+﻿using Library.Models.QueryConditions;
 
 namespace Library.Models.API.UserProfiles.User
 {

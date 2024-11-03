@@ -70,7 +70,7 @@ namespace Service.Services.Implementations.PlayerServices
             {
                 var player = playerDtos.SingleOrDefault(p => p.UserId == user.Id);
                 if (user == null) continue;
-                player.Mmr = user.Mmr; 
+                player.Mmr = user.Mmr;
                 filteredPlayerDtos.Add(player);
             }
 

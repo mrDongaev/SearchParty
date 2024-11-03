@@ -35,7 +35,7 @@ namespace DataAccess.Utils
                         .BuildLambdaExpression();
                 query = queryConfig.PositionFilter.FilterType switch
                 {
-                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.Count() == count && 
+                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.Count() == count &&
                                                         t.TeamPlayers.AsQueryable()
                                                             .Where(teamPlayerLambda)
                                                             .Count() == count),

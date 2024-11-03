@@ -1,4 +1,5 @@
-﻿using Common.Exceptions;
+﻿using AutoMapper;
+using Common.Exceptions;
 using Library.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -40,11 +41,11 @@ namespace WebAPI.Middleware
             {
                 statusCode = HttpStatusCode.BadRequest;
             }
-            else if (exception is DbUpdateException || exception is DbUpdateConcurrencyException || exception is HttpRequestException)
+            else if (exception is DbUpdateException || exception is DbUpdateConcurrencyException ||
+                exception is HttpRequestException || exception is AutoMapperMappingException)
             {
                 statusCode = HttpStatusCode.InternalServerError;
             }
-            context.Response.ContentType = "application/json";
             if (context.Response.StatusCode < 400)
             {
                 statusCode = HttpStatusCode.BadRequest;

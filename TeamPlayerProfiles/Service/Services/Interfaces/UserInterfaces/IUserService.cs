@@ -1,5 +1,4 @@
-﻿using Common.Models;
-using Library.Entities.Interfaces;
+﻿using Library.Entities.Interfaces;
 using Library.Services.Interfaces;
 using Service.Contracts.User;
 
@@ -27,12 +26,5 @@ namespace Service.Services.Interfaces
         /// <param name="dto">ДТО обновляемого профиля</param>
         /// <returns>ДТО обновлённого профиля</returns>
         Task<UserDto?> Update(UpdateUserDto dto, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Получить профили с фильтрацией по MMR
-        /// </summary>
-        /// <param name="dto">ДТО условий фильтрации/сортировки</param>
-        /// <returns>Список ДТО подходящий пользователей</returns>
-        Task<ICollection<UserDto>> GetFiltered(ConditionalUserQuery dto, CancellationToken cancellationToken);
     }
 }

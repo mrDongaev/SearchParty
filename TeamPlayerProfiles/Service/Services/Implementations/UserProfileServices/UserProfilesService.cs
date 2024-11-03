@@ -1,7 +1,6 @@
 ﻿using Library.Models.API.UserProfiles.User;
 using Service.Services.Interfaces.UserProfilesInterfaces;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace Service.Services.Implementations.UserProfileServices
 {

@@ -1,8 +1,6 @@
-﻿using Common.Models;
-using DataAccess.Context;
+﻿using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using DataAccess.Utils;
 using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 

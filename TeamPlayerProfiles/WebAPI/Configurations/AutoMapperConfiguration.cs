@@ -21,10 +21,12 @@ namespace WebAPI.Configurations
                 cfg.AddProfile<RepoMapping.PositionMappingProfile>();
                 cfg.AddProfile<RepoMapping.PlayerMappingProfile>();
                 cfg.AddProfile<RepoMapping.TeamMappingProfile>();
+                cfg.AddProfile<RepoMapping.UserMappingProfile>();
                 cfg.AddProfile<HeroMappingProfile>();
                 cfg.AddProfile<PositionMappingProfile>();
                 cfg.AddProfile<PlayerMappingProfile>();
                 cfg.AddProfile<TeamMappingProfile>();
+                cfg.AddProfile<UserMappingProfile>();
             });
 
             configuration.AssertConfigurationIsValid();
