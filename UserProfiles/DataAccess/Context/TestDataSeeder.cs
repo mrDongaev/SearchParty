@@ -15,7 +15,7 @@ namespace DataAccess.Context
                 string indexStr = (i + 1).ToString();
                 users[i] = new User
                 {
-                    Id = Guid.Parse(emptyGuid[..^indexStr.Length] + indexStr),
+                    Id = Guid.Parse("a" + emptyGuid[1..^indexStr.Length] + indexStr),
                     Name = $"user{i + 1}",
                     Description = $"user-description{i + 1}",
                     Mmr = (uint)getRand(0, 20001),

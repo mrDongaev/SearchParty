@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Contracts.User
+﻿namespace WebAPI.Models.User
 {
     public static class GetUser
     {

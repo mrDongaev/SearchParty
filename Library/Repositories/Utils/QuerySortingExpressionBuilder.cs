@@ -28,8 +28,9 @@ namespace Library.Repositories.Utils
             return ApplySort(config.SortBy, config.SortDirection);
         }
 
-        public QuerySortingExpressionBuilder<T> ApplySort(IEnumerable<SortCondition> configList)
+        public QuerySortingExpressionBuilder<T> ApplySort(IEnumerable<SortCondition>? configList)
         {
+            if (configList == null) return this;
             foreach (var config in configList)
             {
                 ApplySort(config.SortBy, config.SortDirection);
@@ -37,7 +38,7 @@ namespace Library.Repositories.Utils
             return this;
         }
 
-        public QuerySortingExpressionBuilder<T> ApplySort(string parameterName, SortDirection sortDirection)
+        private QuerySortingExpressionBuilder<T> ApplySort(string parameterName, SortDirection sortDirection)
         {
             if (_additionalQuery)
             {

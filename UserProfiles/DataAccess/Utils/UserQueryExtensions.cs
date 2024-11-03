@@ -12,6 +12,7 @@ namespace DataAccess.Utils
             if (queryConfig == null) return query;
             var builder = new QueryFilteringExpressionBuilder<User>("user");
             var finalLambda = builder
+                .ApplyValueListFiltering(queryConfig.UserIds, "Id")
                 .ApplyNumericFiltering(queryConfig.MinMmr, "Mmr")
                 .ApplyNumericFiltering(queryConfig.MaxMmr, "Mmr")
                 .BuildLambdaExpression();
@@ -19,6 +20,15 @@ namespace DataAccess.Utils
         }
 
         public static IQueryable<User> SortWith(this IQueryable<User> query, SortCondition? sortConfig)
+        {
+            query = query.OrderBy(u => u.Id);
+            if (sortConfig == null) return query;
+            var builder = new QuerySortingExpressionBuilder<User>(query)
+                .ApplySort(sortConfig);
+            return builder.GetSortedQuery();
+        }
+
+        public static IQueryable<User> SortWith(this IQueryable<User> query, ICollection<SortCondition>? sortConfig)
         {
             query = query.OrderBy(u => u.Id);
             if (sortConfig == null) return query;

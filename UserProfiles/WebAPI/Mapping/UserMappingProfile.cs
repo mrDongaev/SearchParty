@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Common.Models;
+using Library.Models.Enums;
 using Library.Models.QueryConditions;
 using Service.Contracts.User;
-using WebAPI.Contracts.User;
+using WebAPI.Models.User;
 
 namespace WebAPI.Mapping
 {
@@ -17,12 +18,7 @@ namespace WebAPI.Mapping
             CreateMap<UpdateUser.Request, UpdateUserDto>()
                 .ForMember(d => d.Id, m => m.Ignore());
 
-            CreateMap<GetConditionalUser.Request, ConditionalUserQuery>()
-                .ForMember(d => d.Sort, m => m.MapFrom(s => new SortCondition()
-                {
-                    SortBy = "Mmr",
-                    SortDirection = s.SortDirection,
-                }));
+            CreateMap<GetConditionalUser.Request, ConditionalUserQuery>();
         }
     }
 }

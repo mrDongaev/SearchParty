@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebAPI.Contracts.User;
+using WebAPI.Models.User;
 
 namespace WebAPI.Validation
 {
@@ -12,11 +12,11 @@ namespace WebAPI.Validation
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            bool validType = value.GetType() == typeof(GetConditionalUser.Request);
-            if (value != null && validType)
+            bool validType = value != null && value.GetType() == typeof(GetConditionalUser.Request);
+            if (validType)
             {
                 var conditionConfig = value as GetConditionalUser.Request;
-                if (conditionConfig.MinMmr != null && conditionConfig.MaxMmr != null && conditionConfig.MinMmr.Input < conditionConfig.MaxMmr.Input)
+                if ((conditionConfig.MinMmr == null || conditionConfig.MaxMmr == null) || (conditionConfig.MinMmr.Input < conditionConfig.MaxMmr.Input))
                 {
                     return ValidationResult.Success;
                 }

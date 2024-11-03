@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.User;
 using Service.Services.Interfaces;
-using WebAPI.Contracts.User;
+using WebAPI.Models.User;
 using WebAPI.Validation;
 
 namespace WebAPI.Controllers
@@ -69,7 +69,8 @@ namespace WebAPI.Controllers
         public async Task<Results<Ok<IEnumerable<GetUser.Response>>, BadRequest>> GetFiltered([MmrValuesValid] GetConditionalUser.Request request, CancellationToken cancellationToken)
         {
             var users = await userService.GetFiltered(mapper.Map<ConditionalUserQuery>(request), cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(users));
+            var mappedUsers = TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(users));
+            return mappedUsers;
         }
     }
 }

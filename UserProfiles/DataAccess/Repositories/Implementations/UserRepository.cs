@@ -21,7 +21,7 @@ namespace DataAccess.Repositories.Implementations
         {
             return await _users.AsNoTracking()
                 .FilterWith(query)
-                .SortWith(query.Sort)
+                .SortWith(query.SortCondition)
                 .ToListAsync(cancellationToken);
         }
 
