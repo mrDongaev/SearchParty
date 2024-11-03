@@ -17,6 +17,10 @@ namespace WebAPI.Models.Board
             public DateTimeFilter? UpdatedAtEnd { get; set; }
 
             public ICollection<SortCondition>? SortConditions { get; set; }
+
+            public NumericFilter<uint>? MinMmr { get; set; }
+
+            public NumericFilter<uint>? MaxMmr { get; set; }
         }
     }
 }

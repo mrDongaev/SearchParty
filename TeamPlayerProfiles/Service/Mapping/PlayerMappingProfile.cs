@@ -10,7 +10,8 @@ namespace Service.Mapping
         public PlayerMappingProfile()
         {
             CreateMap<Player, PlayerDto>()
-                .ForMember(d => d.Position, m => m.MapFrom(src => src.Position.Name));
+                .ForMember(d => d.Position, m => m.MapFrom(src => src.Position.Name))
+                .ForMember(d => d.Mmr, m => m.Ignore());
 
             CreateMap<CreatePlayerDto, Player>()
                 .ForMember(d => d.Heroes, m => m.MapFrom(src => src.HeroIds))

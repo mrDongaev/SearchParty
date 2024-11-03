@@ -13,6 +13,8 @@ namespace Service.Contracts.Player
 
         public string Description { get; set; }
 
+        public uint Mmr { get; set; }
+
         public bool Displayed { get; set; }
 
         public PositionName Position { get; set; }

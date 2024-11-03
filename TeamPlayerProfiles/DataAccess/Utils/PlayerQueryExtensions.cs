@@ -27,9 +27,9 @@ namespace DataAccess.Utils
 
         public static IQueryable<Player> SortWith(this IQueryable<Player> query, SortCondition? sortConfig)
         {
+            query = query.OrderBy(p => p.Id);
             if (sortConfig == null) return query;
             var builder = new QuerySortingExpressionBuilder<Player>(query)
-                .ApplySort("Id", SortDirection.Asc)
                 .ApplySort(sortConfig);
             return builder.GetSortedQuery();
         }

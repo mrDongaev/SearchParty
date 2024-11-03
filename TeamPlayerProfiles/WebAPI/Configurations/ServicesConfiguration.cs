@@ -1,5 +1,4 @@
 ﻿using Library.Utils;
-using Microsoft.Extensions.Configuration;
 using Service.Services.Implementations.HeroServices;
 using Service.Services.Implementations.PlayerServices;
 using Service.Services.Implementations.PositionServices;
@@ -9,9 +8,7 @@ using Service.Services.Interfaces.HeroInterfaces;
 using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.PositionInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
-using Service.Services.Implementations.UserProfileServices;
 using Service.Services.Interfaces.UserProfilesInterfaces;
-using static WebAPI.Configurations.RabbitMQConfiguration;
 
 namespace WebAPI.Configurations
 {

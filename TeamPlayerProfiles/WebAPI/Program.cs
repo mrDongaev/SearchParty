@@ -19,7 +19,7 @@ try
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
         .AddSwagger();
-        //.AddRabbitMQ(builder.Configuration);
+    //.AddRabbitMQ(builder.Configuration);
 
     builder.Services
         .AddControllers();

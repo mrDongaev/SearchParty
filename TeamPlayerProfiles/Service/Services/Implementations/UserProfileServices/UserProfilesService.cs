@@ -1,12 +1,7 @@
 ﻿using Library.Models.API.UserProfiles.User;
 using Service.Services.Interfaces.UserProfilesInterfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Service.Services.Implementations.UserProfileServices
 {
@@ -22,18 +17,18 @@ namespace Service.Services.Implementations.UserProfileServices
         {
             using var response = await _httpClient.PostAsJsonAsync(FromUser(nameof(Create)), request, cancellationToken);
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<GetUser.Response>(await response.Content.ReadAsStringAsync());
+            return await response.Content.ReadFromJsonAsync<GetUser.Response>(cancellationToken);
         }
 
         public async Task<bool> Delete(Guid id, CancellationToken cancellationToken)
         {
             using var response = await _httpClient.DeleteAsync(FromUser(nameof(Delete), id.ToString()), cancellationToken);
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<bool>(await response.Content.ReadAsStringAsync());
+            return await response.Content.ReadFromJsonAsync<bool>(cancellationToken);
         }
 
-        public async Task<GetUser.Response> Get(Guid id, CancellationToken cancellationToken) 
-        { 
+        public async Task<GetUser.Response> Get(Guid id, CancellationToken cancellationToken)
+        {
             using var response = await _httpClient.GetAsync(FromUser(nameof(Get), id.ToString()), cancellationToken);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<GetUser.Response>(cancellationToken);
@@ -51,7 +46,7 @@ namespace Service.Services.Implementations.UserProfileServices
             using JsonContent jsonContent = JsonContent.Create(request);
             using var response = await _httpClient.PostAsync(FromUser(nameof(GetFiltered)), jsonContent, cancellationToken);
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<ICollection<GetUser.Response>>(await response.Content.ReadAsStringAsync());
+            return await response.Content.ReadFromJsonAsync<ICollection<GetUser.Response>>();
         }
 
         public async Task<ICollection<GetUser.Response>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
@@ -59,7 +54,7 @@ namespace Service.Services.Implementations.UserProfileServices
             using JsonContent jsonContent = JsonContent.Create(ids);
             using var response = await _httpClient.PostAsync(FromUser(nameof(GetRange)), jsonContent, cancellationToken);
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<ICollection<GetUser.Response>>(await response.Content.ReadAsStringAsync());
+            return await response.Content.ReadFromJsonAsync<ICollection<GetUser.Response>>();
         }
 
         public async Task<GetUser.Response> Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken)
@@ -67,19 +62,16 @@ namespace Service.Services.Implementations.UserProfileServices
             using JsonContent jsonContent = JsonContent.Create(request);
             using var response = await _httpClient.PostAsync(FromUser(nameof(Update), id.ToString()), jsonContent, cancellationToken);
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<GetUser.Response>(await response.Content.ReadAsStringAsync());
+            return await response.Content.ReadFromJsonAsync<GetUser.Response>(cancellationToken);
         }
 
         private string FromUser(string method, string requestPath = "")
         {
-            if (string.IsNullOrEmpty(requestPath))
+            if (!string.IsNullOrEmpty(requestPath))
             {
-                return $"/api/User/{method}";
+                requestPath = "/" + requestPath;
             }
-            else
-            {
-                return $"/api/User/{method}/{requestPath}/";
-            }
+            return $"/api/User/{method}{requestPath}/";
         }
     }
 }
