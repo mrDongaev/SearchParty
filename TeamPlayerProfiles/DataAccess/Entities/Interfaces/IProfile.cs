@@ -6,11 +6,13 @@ namespace DataAccess.Entities.Interfaces
     {
         Guid UserId { get; set; }
 
+        User User { get; set; }
+
         string? Name { get; set; }
 
         string? Description { get; set; }
 
-        bool? Displayed { get; set; }
+        bool Displayed { get; set; }
 
     }
 }

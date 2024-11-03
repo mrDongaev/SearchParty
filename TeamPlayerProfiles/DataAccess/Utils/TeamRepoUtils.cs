@@ -7,7 +7,7 @@ namespace DataAccess.Utils
     {
         public static bool TeamOwnerPlayerIsInTeam(this Team team)
         {
-            return team.TeamPlayers.SingleOrDefault(tp => tp.PlayerUserId == team.UserId) != null || team.Players.SingleOrDefault(p => p.UserId == team.UserId) != null;
+            return team.TeamPlayers.SingleOrDefault(tp => tp.UserId == team.UserId) != null || team.Players.SingleOrDefault(p => p.UserId == team.UserId) != null;
         }
 
         public static bool TeamPositionHasNoOverlap(this Team team)

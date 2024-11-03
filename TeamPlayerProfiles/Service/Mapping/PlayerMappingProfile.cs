@@ -22,7 +22,8 @@ namespace Service.Mapping
                 .ForMember(d => d.Id, m => m.Ignore())
                 .ForMember(d => d.Displayed, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
-                .ForMember(d => d.PlayerHeroes, m => m.Ignore());
+                .ForMember(d => d.PlayerHeroes, m => m.Ignore())
+                .ForMember(d => d.User, m => m.Ignore());
 
             CreateMap<UpdatePlayerDto, Player>()
                 .ForMember(d => d.UserId, m => m.Ignore())
@@ -33,11 +34,11 @@ namespace Service.Mapping
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
                 .ForMember(d => d.Displayed, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
-                .ForMember(d => d.PlayerHeroes, m => m.Ignore());
+                .ForMember(d => d.PlayerHeroes, m => m.Ignore())
+                .ForMember(d => d.User, m => m.Ignore());
 
             CreateMap<PaginatedResult<Player>, PaginatedResult<PlayerDto>>();
         }
-
         private class UpdatePositionResolver : IValueResolver<UpdatePlayerDto, Player, int?>
         {
             public int? Resolve(UpdatePlayerDto source, Player destination, int? destMember, ResolutionContext context)

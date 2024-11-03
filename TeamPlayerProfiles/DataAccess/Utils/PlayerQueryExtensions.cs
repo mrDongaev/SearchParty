@@ -45,8 +45,8 @@ namespace DataAccess.Utils
 
         public static IQueryable<Player> GetEntities(this IQueryable<Player> query, bool asNoTracking)
         {
-            var first = asNoTracking ? query.AsNoTracking() : query;
-            return first
+            query = asNoTracking ? query.AsNoTracking() : query;
+            return query
                 .Include(p => p.Heroes)
                 .Include(p => p.Position);
         }

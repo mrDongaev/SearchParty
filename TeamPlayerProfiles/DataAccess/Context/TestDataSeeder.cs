@@ -11,15 +11,31 @@ namespace DataAccess.Context
             var getRand = (int a, int b) => random.Next(a, b);
             Player[] players = new Player[20];
             Team[] teams = new Team[10];
+            User[] users = new User[20];
             List<Hero> heroes = await context.Heroes.ToListAsync();
             string emptyGuid = Guid.Empty.ToString();
+
+            for (int i = 0; i < users.Length; i++)
+            {
+                string indexStr = (i + 1).ToString();
+                users[i] = new User
+                {
+                    Id = Guid.Parse("a" + emptyGuid[1..^indexStr.Length] + indexStr),
+                    Mmr = (uint)getRand(0, 20001),
+                };
+            }
+            foreach (var user in users)
+            {
+                context.Add(user);
+            }
+
             for (int i = 0; i < players.Length; i++)
             {
                 string indexStr = (i + 1).ToString();
                 players[i] = new Player
                 {
                     Id = Guid.Parse(emptyGuid[..^indexStr.Length] + indexStr),
-                    UserId = Guid.Parse("a" + emptyGuid[1..^indexStr.Length] + indexStr),
+                    UserId = users[i].Id,
                     Name = $"player{i + 1}",
                     Description = $"player-description{i + 1}",
                     PositionId = getRand(1, 6),
@@ -34,13 +50,14 @@ namespace DataAccess.Context
             {
                 context.Add(player);
             }
+
             for (int i = 0; i < teams.Length; i++)
             {
                 string indexStr = (i + 1).ToString();
                 teams[i] = new Team
                 {
                     Id = Guid.Parse("b" + emptyGuid[1..^indexStr.Length] + indexStr),
-                    UserId = Guid.Parse("a" + emptyGuid[1..^indexStr.Length] + indexStr),
+                    UserId = users[i].Id,
                     Name = $"team{i + 1}",
                     Description = $"team-description{i + 1}",
                 };
@@ -63,7 +80,7 @@ namespace DataAccess.Context
                     {
                         PlayerId = player.Id,
                         TeamId = teams[i].Id,
-                        PlayerUserId = player.UserId,
+                        UserId = player.UserId,
                         PositionId = j + 1,
                     });
                 }
@@ -73,6 +90,7 @@ namespace DataAccess.Context
                 team.PlayerCount = team.TeamPlayers.Count;
                 context.Add(team);
             }
+
             await context.SaveChangesAsync();
         }
     }

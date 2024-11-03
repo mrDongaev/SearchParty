@@ -47,7 +47,7 @@ namespace Service.Services.Implementations.TeamServices
 
         private async Task<ICollection<TeamDto>> AddUserInfo(ICollection<Team> teams, NumericFilter<uint>? minMmrFilter, NumericFilter<uint>? maxMmrFilter, CancellationToken cancellationToken)
         {
-            var userIds = teams.SelectMany(t => t.TeamPlayers).Select(tp => tp.PlayerUserId).ToList();
+            var userIds = teams.SelectMany(t => t.TeamPlayers).Select(tp => tp.UserId).ToList();
             var teamDtos = mapper.Map<ICollection<TeamDto>>(teams);
 
             GetConditionalUser.Request request = new()

@@ -35,13 +35,23 @@ namespace DataAccess.Utils
                         .BuildLambdaExpression();
                 query = queryConfig.PositionFilter.FilterType switch
                 {
-                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.Count() == count && t.TeamPlayers.AsQueryable().Where(teamPlayerLambda).Count() == count),
+                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.Count() == count && 
+                                                        t.TeamPlayers.AsQueryable()
+                                                            .Where(teamPlayerLambda)
+                                                            .Count() == count),
+
                     ValueListFilterType.Including => query.Where(t => t.TeamPlayers.AsQueryable()
-                        .Where(teamPlayerLambda).Count() == count),
+                                                        .Where(teamPlayerLambda)
+                                                        .Count() == count),
+
                     ValueListFilterType.Excluding => query.Where(t => t.TeamPlayers.AsQueryable()
-                        .Where(teamPlayerLambda).Count() == 0),
+                                                        .Where(teamPlayerLambda)
+                                                        .Count() == 0),
+
                     ValueListFilterType.Any => query.Where(t => t.TeamPlayers.AsQueryable()
-                        .Where(teamPlayerLambda).Count() > 0),
+                                                        .Where(teamPlayerLambda)
+                                                        .Count() > 0),
+
                     _ => throw new InvalidEnumMemberException($"{queryConfig.PositionFilter.FilterType}", typeof(ValueListFilterType).Name),
                 };
             }
@@ -58,14 +68,31 @@ namespace DataAccess.Utils
                     .BuildLambdaExpression();
                 query = queryConfig.HeroFilter.FilterType switch
                 {
-                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.AsQueryable().SelectMany(tp => tp.Player.Heroes).Count() == count &&
-                    t.TeamPlayers.AsQueryable().SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() == count),
+                    ValueListFilterType.Exact => query.Where(t => t.TeamPlayers.AsQueryable()
+                                                        .SelectMany(tp => tp.Player.Heroes)
+                                                        .Count() == count &&
+                                                            t.TeamPlayers.AsQueryable()
+                                                                .SelectMany(tp => tp.Player.Heroes)
+                                                                .AsQueryable()
+                                                                .Where(heroLambda)
+                                                                .Count() == count),
+
                     ValueListFilterType.Including => query.Where(t => t.TeamPlayers.AsQueryable()
-                    .SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() == count),
+                                                        .SelectMany(tp => tp.Player.Heroes)
+                                                        .AsQueryable()
+                                                        .Where(heroLambda)
+                                                        .Count() == count),
+
                     ValueListFilterType.Excluding => query.Where(t => t.TeamPlayers.AsQueryable()
-                    .SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() == 0),
+                                                        .SelectMany(tp => tp.Player.Heroes)
+                                                        .AsQueryable()
+                                                        .Where(heroLambda).Count() == 0),
+
                     ValueListFilterType.Any => query.Where(t => t.TeamPlayers.AsQueryable()
-                    .SelectMany(tp => tp.Player.Heroes).AsQueryable().Where(heroLambda).Count() > 0),
+                                                        .SelectMany(tp => tp.Player.Heroes)
+                                                        .AsQueryable()
+                                                        .Where(heroLambda).Count() > 0),
+
                     _ => throw new InvalidEnumMemberException($"{queryConfig.HeroFilter.FilterType}", typeof(ValueListFilterType).Name),
                 };
             }
@@ -92,8 +119,11 @@ namespace DataAccess.Utils
 
         public static IQueryable<Team> GetEntities(this IQueryable<Team> query, bool asNoTracking)
         {
-            var first = asNoTracking ? query.AsNoTracking() : query;
-            return first
+            query = asNoTracking ? query.AsNoTracking() : query;
+            return query
+                .Include(t => t.TeamPlayers)
+                .ThenInclude(p => p.Player)
+                .ThenInclude(p => p.User)
                 .Include(t => t.TeamPlayers)
                 .ThenInclude(p => p.Player)
                 .ThenInclude(p => p.Heroes)

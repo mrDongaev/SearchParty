@@ -40,7 +40,7 @@ namespace DataAccess.Repositories.Implementations
             foreach (var tp in team.TeamPlayers)
             {
                 tp.TeamId = team.Id;
-                tp.PlayerUserId = players.Single(p => p.Id == tp.PlayerId).UserId;
+                tp.UserId = players.Single(p => p.Id == tp.PlayerId).UserId;
             }
             team.PlayerCount = team.TeamPlayers.Count;
             team.CheckTeamValidity(maxCount);
@@ -126,7 +126,7 @@ namespace DataAccess.Repositories.Implementations
             var finalPlayers = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
             foreach (var tp in existingTeam.TeamPlayers)
             {
-                tp.PlayerUserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
+                tp.UserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
             }
             existingTeam.CheckTeamValidity(maxCount);
             existingTeam.PlayerCount = existingTeam.TeamPlayers.Count;
