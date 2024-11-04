@@ -33,7 +33,8 @@ namespace Service.Mapping
                 .ForMember(d => d.Players, m => m.Ignore())
                 .ForMember(d => d.Id, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
-                .ForMember(d => d.User, d => d.Ignore());
+                .ForMember(d => d.User, m => m.Ignore())
+                .ForMember(d => d.AvgMmr, m => m.Ignore());
 
             CreateMap<UpdateTeamDto, Team>()
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
@@ -42,7 +43,8 @@ namespace Service.Mapping
                 .ForMember(d => d.Players, m => m.Ignore())
                 .ForMember(d => d.Displayed, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
-                .ForMember(d => d.PlayerCount, m => m.Ignore());
+                .ForMember(d => d.PlayerCount, m => m.Ignore())
+                .ForMember(d => d.AvgMmr, m => m.Ignore());
 
             CreateMap<PaginatedResult<Team>, PaginatedResult<TeamDto>>();
         }
@@ -51,7 +53,8 @@ namespace Service.Mapping
         {
             public uint Resolve(Team source, TeamDto destination, uint destMember, ResolutionContext context)
             {
-                return (uint)Math.Round(source.TeamPlayers.Select(tp => tp.Player.User).Average(u => u.Mmr));
+                var avg = source.TeamPlayers.Count == 0 ? 0 : (uint)Math.Round(source.TeamPlayers.Select(tp => tp.Player.User).Average(u => u.Mmr));
+                return avg;
             }
         }
     }

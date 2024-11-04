@@ -13,5 +13,7 @@ namespace DataAccess.Entities
         public ICollection<Player> Players { get; protected set; } = [];
 
         public ICollection<Team> Teams { get; protected set; } = [];
+
+        public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
     }
 }

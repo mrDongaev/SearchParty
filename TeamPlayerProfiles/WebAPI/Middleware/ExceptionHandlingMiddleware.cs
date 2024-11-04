@@ -42,11 +42,11 @@ namespace WebAPI.Middleware
                 statusCode = HttpStatusCode.BadRequest;
             }
             else if (exception is DbUpdateException || exception is DbUpdateConcurrencyException ||
-                exception is HttpRequestException || exception is AutoMapperMappingException)
+                exception is HttpRequestException || exception is AutoMapperMappingException || exception is SystemException)
             {
                 statusCode = HttpStatusCode.InternalServerError;
             }
-            if (context.Response.StatusCode < 400)
+            if ((int)statusCode < 400)
             {
                 statusCode = HttpStatusCode.BadRequest;
             }

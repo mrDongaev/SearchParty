@@ -146,7 +146,7 @@ namespace DataAccess.Repositories.Implementations
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
-            var query = _teams
+            var query = _teams.GetEntities(true)
                 .AsNoTracking()
                 .FilterWith(config);
 

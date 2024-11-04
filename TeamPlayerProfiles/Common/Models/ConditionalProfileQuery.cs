@@ -10,14 +10,14 @@ namespace Common.Models
 
         public SingleValueFilter<bool?>? DisplayedFilter { get; set; }
 
-        public DateTimeFilter? UpdatedAtStart { get; set; }
+        public DateTimeFilter? UpdatedAtFilter { get; set; }
 
-        public DateTimeFilter? UpdatedAtEnd { get; set; }
+        public DateTimeFilter? UpdatedAtAddFilter { get; set; }
+
+        public NumericFilter<uint> MmrFilter { get; set; }
+
+        public NumericFilter<uint> MmrAddFilter { get; set; }
 
         public ICollection<SortCondition>? SortConditions { get; set; }
-
-        public NumericFilter<uint> MinMmr { get; set; }
-
-        public NumericFilter<uint> MaxMmr { get; set; }
     }
 }

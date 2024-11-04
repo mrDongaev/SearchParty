@@ -15,7 +15,7 @@ namespace DataAccess.Context.EntitiesConfigurations
                 .IsUnique();
 
             builder.HasOne(tp => tp.User)
-                .WithMany()
+                .WithMany(u => u.TeamPlayers)
                 .HasForeignKey(tp => tp.UserId);
 
             builder.HasOne(e => e.Position)

@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entities
 {
@@ -14,6 +15,9 @@ namespace DataAccess.Entities
 
         public DateTime UpdatedAt { get; set; }
 
+        [NotMapped]
+        public uint Mmr {  get; set; }
+
         public int? PositionId { get; set; }
 
         public Position? Position { get; set; }
@@ -22,12 +26,12 @@ namespace DataAccess.Entities
 
         public User User { get; set; }
 
-        public ICollection<Hero> Heroes { get; protected set; } = [];
+        public ICollection<Hero> Heroes { get; set; } = [];
 
-        public ICollection<PlayerHero> PlayerHeroes { get; protected set; } = [];
+        public ICollection<PlayerHero> PlayerHeroes { get; set; } = [];
 
-        public ICollection<Team> Teams { get; protected set; } = [];
+        public ICollection<Team> Teams { get; set; } = [];
 
-        public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
+        public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
     }
 }

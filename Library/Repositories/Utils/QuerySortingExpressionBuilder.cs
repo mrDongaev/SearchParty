@@ -8,15 +8,17 @@ namespace Library.Repositories.Utils
     public class QuerySortingExpressionBuilder<T> where T : class
     {
         private IQueryable<T> _query;
-        private Expression _combinedExpression;
-        private bool _additionalQuery;
 
-        private QuerySortingExpressionBuilder()
+        private Expression _combinedExpression;
+
+        public bool AdditionalQuery { get; private set; }
+
+        private QuerySortingExpressionBuilder(bool? additionalQuery = false)
         {
-            _additionalQuery = false;
+            AdditionalQuery = additionalQuery ?? false;
         }
 
-        public QuerySortingExpressionBuilder(IQueryable<T> query)
+        public QuerySortingExpressionBuilder(IQueryable<T> query, bool? additionalQuery = false) : this(additionalQuery)
         {
             _query = query;
             _combinedExpression = _query.Expression;
@@ -40,14 +42,14 @@ namespace Library.Repositories.Utils
 
         private QuerySortingExpressionBuilder<T> ApplySort(string parameterName, SortDirection sortDirection)
         {
-            if (_additionalQuery)
+            if (AdditionalQuery)
             {
                 SortAdditional(parameterName, sortDirection);
             }
             else
             {
                 SortFirst(parameterName, sortDirection);
-                _additionalQuery = true;
+                AdditionalQuery = true;
             }
             return this;
         }

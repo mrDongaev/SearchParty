@@ -2,6 +2,7 @@
 using DataAccess.Entities;
 using Library.Models.QueryConditions;
 using Library.Repositories.Utils;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.Mapping;
 
 namespace DataAccess.Utils
 {
@@ -34,7 +35,13 @@ namespace DataAccess.Utils
             if (sortConfig == null) return query;
             var builder = new QuerySortingExpressionBuilder<User>(query)
                 .ApplySort(sortConfig);
-            return builder.GetSortedQuery();
+            query = builder.GetSortedQuery();
+            query = query.Select(u => new
+            {
+                User = u,
+                Id = u.Id,
+            }).Select(u => u.User).OrderBy(u => 0);
+            return query;
         }
     }
 }

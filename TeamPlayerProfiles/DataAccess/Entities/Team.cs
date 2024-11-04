@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entities
 {
@@ -20,8 +21,11 @@ namespace DataAccess.Entities
 
         public User User { get; set; }
 
-        public ICollection<Player> Players { get; protected set; } = [];
+        [NotMapped]
+        public double AvgMmr { get; set; }
 
-        public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
+        public ICollection<Player> Players { get; set; } = [];
+
+        public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
     }
 }
