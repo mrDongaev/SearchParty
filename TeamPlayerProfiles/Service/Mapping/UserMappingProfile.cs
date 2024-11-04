@@ -20,7 +20,7 @@ namespace Service.Mapping
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
                 .ForMember(d => d.Players, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
-                .ForMember(d => d.TeamPlayers, m => m.Ignore()); 
+                .ForMember(d => d.TeamPlayers, m => m.Ignore());
         }
     }
 }

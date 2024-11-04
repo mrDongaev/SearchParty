@@ -3,12 +3,8 @@ using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Library.Models;
-using Library.Models.API.UserProfiles.User;
-using Library.Models.Enums;
-using Library.Models.QueryConditions;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
-using Service.Services.Interfaces.UserProfilesInterfaces;
 
 namespace Service.Services.Implementations.TeamServices
 {

@@ -19,6 +19,8 @@ namespace Library.Models.API.TeamPlayerProfiles.Player
 
             public PositionName Position { get; set; }
 
+            public uint Mmr { get; set; }
+
             public DateTime UpdatedAt { get; set; }
 
             public ICollection<GetHero.Response> Heroes { get; set; }

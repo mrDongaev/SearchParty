@@ -5,7 +5,6 @@ using Library.Models.Enums;
 using Library.Models.QueryConditions;
 using Library.Repositories.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace DataAccess.Utils
 {

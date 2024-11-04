@@ -61,7 +61,7 @@ namespace DataAccess.Utils
             if (sortConfig.SortBy == "Mmr")
             {
                 return sortConfig.SortDirection == SortDirection.Asc ? query.OrderBy(p => p.User.Mmr) : query.OrderByDescending(p => p.User.Mmr);
-            } 
+            }
             else
             {
                 var builder = new QuerySortingExpressionBuilder<Player>(query)

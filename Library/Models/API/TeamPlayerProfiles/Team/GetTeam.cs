@@ -16,6 +16,8 @@
 
             public DateTime UpdatedAt { get; set; }
 
+            public uint AvgMmr { get; set; }
+
             public ISet<UpdateTeamPlayers.Response> PlayersInTeam { get; set; }
         }
     }

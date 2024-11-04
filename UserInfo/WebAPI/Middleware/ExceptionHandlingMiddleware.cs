@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using Common.Exceptions;
-using Library.Exceptions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;
 using ILogger = Serilog.ILogger;
@@ -35,14 +32,7 @@ namespace WebAPI.Middleware
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var statusCode = (HttpStatusCode)context.Response.StatusCode;
-            if (exception is InvalidEnumMemberException || exception is InvalidClassMemberException ||
-                exception is TeamCountOverflowException || exception is TeamOwnerNotPresentException ||
-                exception is TeamPositionOverlapException)
-            {
-                statusCode = HttpStatusCode.BadRequest;
-            }
-            else if (exception is DbUpdateException || exception is DbUpdateConcurrencyException ||
-                exception is HttpRequestException || exception is AutoMapperMappingException || exception is SystemException)
+            if (exception is DbUpdateException || exception is DbUpdateConcurrencyException || exception is SystemException)
             {
                 statusCode = HttpStatusCode.InternalServerError;
             }

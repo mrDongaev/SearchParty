@@ -16,7 +16,7 @@ namespace DataAccess.Entities
         public DateTime UpdatedAt { get; set; }
 
         [NotMapped]
-        public uint Mmr {  get; set; }
+        public uint Mmr { get; set; }
 
         public int? PositionId { get; set; }
 
