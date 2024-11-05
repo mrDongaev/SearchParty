@@ -7,15 +7,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["./UserProfiles/WebAPI/WebAPI.csproj", "./UserProfiles/WebAPI/"]
-COPY ["./UserProfiles/Common/Common.csproj", "./UserProfiles/Common/"]
-COPY ["./UserProfiles/DataAccess/DataAccess.csproj", "./UserProfiles/DataAccess/"]
-COPY ["./UserProfiles/Service/Service.csproj", "./UserProfiles/Service/"]
+COPY ["./UserInfo/WebAPI/WebAPI.csproj", "./UserInfo/WebAPI/"]
+COPY ["./UserInfo/DataAccess/DataAccess.csproj", "./UserInfo/DataAccess/"]
+COPY ["./UserInfo/Service/Service.csproj", "./UserInfo/Service/"]
 COPY ["./Library/*.csproj", "./Library/"]
-RUN dotnet restore "./UserProfiles/WebAPI/WebAPI.csproj"
-COPY ["./UserProfiles/", "./UserProfiles/"]
+RUN dotnet restore "./UserInfo/WebAPI/WebAPI.csproj"
+COPY ["./UserInfo/", "./UserInfo/"]
 COPY ["./Library/", "./Library/"]
-WORKDIR "/src/UserProfiles/WebAPI"
+WORKDIR "/src/UserInfo/WebAPI"
 RUN dotnet build "./WebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

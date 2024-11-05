@@ -6,15 +6,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ENV ASPNETCORE_URLS="http://*:8080"
 WORKDIR /src
-COPY ["./UserProfiles/WebAPI/WebAPI.csproj", "UserProfiles/WebAPI/"]
-COPY ["./UserProfiles/Common/Common.csproj", "UserProfiles/Common/"]
-COPY ["./UserProfiles/DataAccess/DataAccess.csproj", "UserProfiles/DataAccess/"]
-COPY ["./UserProfiles/Service/Service.csproj", "UserProfiles/Service/"]
+COPY ["./UserInfo/WebAPI/WebAPI.csproj", "UserInfo/WebAPI/"]
+COPY ["./UserInfo/DataAccess/DataAccess.csproj", "UserInfo/DataAccess/"]
+COPY ["./UserInfo/Service/Service.csproj", "UserInfo/Service/"]
 COPY ["./Library/Library.csproj", "Library/"]
-RUN dotnet restore "./UserProfiles/WebAPI/WebAPI.csproj"
-COPY ["./UserProfiles/", "./UserProfiles/"]
+RUN dotnet restore "./UserInfo/WebAPI/WebAPI.csproj"
+COPY ["./UserInfo/", "./UserInfo/"]
 COPY ["./Library/", "./Library/"]
-WORKDIR "/src/UserProfiles"
-COPY ["./UserProfiles/migrations.sh", "."]
+WORKDIR "/src/UserInfo"
+COPY ["./UserInfo/migrations.sh", "."]
 RUN chmod +x migrations.sh
 ENTRYPOINT ["bash", "./migrations.sh"]

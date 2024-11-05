@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Extract arguments passed to migrations.sh with default values
-MIGRATION_NAME="${USER_PROFILES__MIGRATION_NAME:-"InitialCreate"}"
-CONTEXT_PROJECT_NAME="${USER_PROFILES__CONTEXT_PROJECT_NAME:-"DataAccess"}"
-STARTUP_PROJECT_NAME="${USER_PROFILES__STARTUP_PROJECT_NAME:-"WebAPI"}"
-ADD_MIGRATION="${USER_PROFILES__ADD_MIGRATION:-"false"}"
-APPLY_MIGRATION="${USER_PROFILES__APPLY_MIGRATION:-"false"}"
+MIGRATION_NAME="${USER_INFO__MIGRATION_NAME:-"InitialCreate"}"
+CONTEXT_PROJECT_NAME="${USER_INFO__CONTEXT_PROJECT_NAME:-"DataAccess"}"
+STARTUP_PROJECT_NAME="${USER_INFO__STARTUP_PROJECT_NAME:-"WebAPI"}"
+ADD_MIGRATION="${USER_INFO__ADD_MIGRATION:-"false"}"
+APPLY_MIGRATION="${USER_INFO__APPLY_MIGRATION:-"false"}"
 
 echo "addmigr: $ADD_MIGRATION"
 echo "applymigr: $APPLY_MIGRATION"
@@ -27,7 +27,7 @@ fi
 if [[ "$ADD_MIGRATION" == "true" ]]; then
     # Run the migration creation command
     echo "Running migration: dotnet ef migrations add $MIGRATION_NAME -p $CONTEXT_PROJECT_NAME -s $STARTUP_PROJECT_NAME"
-    dotnet ef migrations add "$MIGRATION_NAME" -p "/src/UserProfiles/$CONTEXT_PROJECT_NAME" -s "/src/UserProfiles/$STARTUP_PROJECT_NAME"
+    dotnet ef migrations add "$MIGRATION_NAME" -p "/src/UserInfo/$CONTEXT_PROJECT_NAME" -s "/src/UserInfo/$STARTUP_PROJECT_NAME"
 
     # Check if the migration was successful
     if [[ $? -ne 0 ]]; then
@@ -42,7 +42,7 @@ fi
 if [[ "$APPLY_MIGRATION" == "true" ]]; then
     # Run the database update command
     echo "Updating database with migration: $MIGRATION_NAME"
-    dotnet ef database update "$MIGRATION_NAME" --project "/src/UserProfiles/$STARTUP_PROJECT_NAME"
+    dotnet ef database update "$MIGRATION_NAME" --project "/src/UserInfo/$STARTUP_PROJECT_NAME"
 
     # Check if the database update was successful
     if [[ $? -ne 0 ]]; then
