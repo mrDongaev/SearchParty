@@ -17,8 +17,7 @@ namespace DataAccess.Context
             modelBuilder.Entity<User>()
                 .HasKey(e => e.Id);
             modelBuilder.Entity<User>()
-                .Property(e => e.Id)
-                .ValueGeneratedOnAdd();
+                .Property(e => e.Id);
         }
     }
 }
