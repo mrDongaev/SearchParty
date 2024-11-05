@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using DataAccess.Repositories.Models;
+using Common.Models;
+using Library.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.TeamInterfaces;
-using WebAPI.Contracts.Player;
-using WebAPI.Contracts.Team;
-using static Common.Models.ConditionalQuery;
-using static WebAPI.Contracts.Board.ConditionalProfile;
+using WebAPI.Models.Player;
+using WebAPI.Models.Team;
 
 namespace WebAPI.Controllers.Team
 {
@@ -33,17 +32,17 @@ namespace WebAPI.Controllers.Team
 
         [HttpPost]
         [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetFiltered(TeamRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> GetFiltered(GetConditionalTeam.Request request, CancellationToken cancellationToken)
         {
-            var teams = await teamService.GetFiltered(mapper.Map<TeamConditions>(request), cancellationToken);
+            var teams = await teamService.GetFiltered(mapper.Map<ConditionalTeamQuery>(request), cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetTeam.Response>>(teams));
         }
 
         [HttpPost("{pageSize}/{page}")]
         [ProducesResponseType<PaginatedResult<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetPaginated(uint page, uint pageSize, TeamRequest request, CancellationToken cancellationToken)
+        public async Task<IResult> GetPaginated(uint page, uint pageSize, GetConditionalTeam.Request request, CancellationToken cancellationToken)
         {
-            var teams = await teamService.GetPaginated(mapper.Map<TeamConditions>(request), page, pageSize, cancellationToken);
+            var teams = await teamService.GetPaginated(mapper.Map<ConditionalTeamQuery>(request), page, pageSize, cancellationToken);
             return TypedResults.Ok(mapper.Map<PaginatedResult<GetTeam.Response>>(teams));
         }
     }

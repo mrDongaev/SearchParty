@@ -2,13 +2,14 @@
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using DataAccess.Repositories.Models;
 using DataAccess.Utils;
+using Library.Models;
+using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class TeamRepository : Repository<Team, Guid>, ITeamRepository
+    public class TeamRepository : Repository<TeamPlayerProfilesContext, Team, Guid>, ITeamRepository
     {
         private readonly DbSet<Team> _teams;
         private readonly DbSet<Player> _players;
@@ -39,7 +40,7 @@ namespace DataAccess.Repositories.Implementations
             foreach (var tp in team.TeamPlayers)
             {
                 tp.TeamId = team.Id;
-                tp.PlayerUserId = players.Single(p => p.Id == tp.PlayerId).UserId;
+                tp.UserId = players.Single(p => p.Id == tp.PlayerId).UserId;
             }
             team.PlayerCount = team.TeamPlayers.Count;
             team.CheckTeamValidity(maxCount);
@@ -125,7 +126,7 @@ namespace DataAccess.Repositories.Implementations
             var finalPlayers = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
             foreach (var tp in existingTeam.TeamPlayers)
             {
-                tp.PlayerUserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
+                tp.UserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
             }
             existingTeam.CheckTeamValidity(maxCount);
             existingTeam.PlayerCount = existingTeam.TeamPlayers.Count;
@@ -133,29 +134,30 @@ namespace DataAccess.Repositories.Implementations
             return await Get(existingTeam.Id, cancellationToken);
         }
 
-        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalQuery.TeamConditions config, CancellationToken cancellationToken)
+        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalTeamQuery config, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
                 .FilterWith(config)
-                .SortWith(config.Sort)
+                .SortWith(config.SortConditions)
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalQuery.TeamConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalTeamQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
-            int count = _teams
+            var query = _teams.GetEntities(true)
                 .AsNoTracking()
-                .FilterWith(config)
-                .Count();
+                .FilterWith(config);
 
-            var list = await _teams.GetEntities(true)
-                .FilterWith(config)
-                .SortWith(config.Sort)
+            int count = query.Count();
+
+            var list = await query
+                .SortWith(config.SortConditions)
                 .Skip((intPage - 1) * intSize)
                 .Take(intSize)
                 .ToListAsync(cancellationToken);
+
             return new PaginatedResult<Team>
             {
                 Page = intPage,

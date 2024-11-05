@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entities
 {
@@ -6,20 +7,25 @@ namespace DataAccess.Entities
     {
         public Guid Id { get; set; }
 
-        public Guid UserId { get; set; }
-
         public string? Name { get; set; }
 
         public string? Description { get; set; }
 
-        public bool? Displayed { get; set; }
+        public bool Displayed { get; set; }
 
         public DateTime UpdatedAt { get; set; }
 
         public int PlayerCount { get; set; }
 
-        public ICollection<Player> Players { get; protected set; } = [];
+        public Guid UserId { get; set; }
 
-        public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
+        public User User { get; set; }
+
+        [NotMapped]
+        public double AvgMmr { get; set; }
+
+        public ICollection<Player> Players { get; set; } = [];
+
+        public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
     }
 }

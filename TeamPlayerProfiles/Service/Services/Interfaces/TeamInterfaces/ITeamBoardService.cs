@@ -1,10 +1,10 @@
-﻿using Service.Contracts.Team;
+﻿using Common.Models;
+using Service.Contracts.Team;
 using Service.Services.Interfaces.Common;
-using static Common.Models.ConditionalQuery;
 
 namespace Service.Services.Interfaces.TeamInterfaces
 {
-    public interface ITeamBoardService : IBoardService<TeamDto, TeamConditions>
+    public interface ITeamBoardService : IBoardService<TeamDto, ConditionalTeamQuery>
     {
         Task SendTeamAccessionRequest(Guid teamId, Guid requestingPlayerId, CancellationToken cancellationToken);
     }

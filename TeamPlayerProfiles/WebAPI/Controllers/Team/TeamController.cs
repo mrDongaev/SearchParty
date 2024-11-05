@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
 using System.ComponentModel.DataAnnotations;
-using WebAPI.Contracts.Team;
+using WebAPI.Models.Team;
 using WebAPI.Validation;
 
 namespace WebAPI.Controllers.Team
@@ -34,17 +34,18 @@ namespace WebAPI.Controllers.Team
         public async Task<IResult> Create(CreateTeam.Request request, CancellationToken cancellationToken)
         {
             var team = mapper.Map<CreateTeamDto>(request);
-            //свой атрибут для проверки позиций в команде и один из игроков юзер айди == создатель команды?
             var createdTeam = await teamService.Create(team, cancellationToken);
             return TypedResults.Ok(mapper.Map<GetTeam.Response>(createdTeam));
         }
 
-        [HttpPost]
+        [HttpPost("{id}")]
         [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetTeam.Response>, NotFound>> Update(UpdateTeam.Request request, CancellationToken cancellationToken)
+        public async Task<Results<Ok<GetTeam.Response>, NotFound>> Update(Guid id, [FromBody] UpdateTeam.Request request, CancellationToken cancellationToken)
         {
-            var updatedTeam = await teamService.Update(mapper.Map<UpdateTeamDto>(request), cancellationToken);
+            var tempTeam = mapper.Map<UpdateTeamDto>(request);
+            tempTeam.Id = id;
+            var updatedTeam = await teamService.Update(tempTeam, cancellationToken);
             return updatedTeam == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedTeam));
         }
 

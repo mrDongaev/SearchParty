@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebAPI.Contracts.Team;
+using WebAPI.Models.Team;
 
 namespace WebAPI.Validation
 {
@@ -12,8 +12,8 @@ namespace WebAPI.Validation
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            bool isSet = value.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ISet<>)) && value.GetType().GetGenericArguments().Any(x => x == typeof(UpdateTeamPlayers.Request));
-            if (value != null && isSet)
+            bool isSet = value != null && value.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ISet<>)) && value.GetType().GetGenericArguments().Any(x => x == typeof(UpdateTeamPlayers.Request));
+            if (isSet)
             {
                 var players = value as IEnumerable<UpdateTeamPlayers.Request>;
                 if (players.Select(p => p.Position).ToHashSet().Count == players.Count())
@@ -27,7 +27,7 @@ namespace WebAPI.Validation
             }
             else
             {
-                return new ValidationResult($"Player list is null or does not satisfy type: {typeof(UpdateTeamPlayers.Response).FullName}");
+                return new ValidationResult($"Player list is null or does not satisfy type: {typeof(UpdateTeamPlayers.Request).FullName}");
             }
 
         }

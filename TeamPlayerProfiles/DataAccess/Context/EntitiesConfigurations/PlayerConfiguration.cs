@@ -7,14 +7,10 @@ namespace DataAccess.Context.EntitiesConfigurations
     {
         public override void Configure(EntityTypeBuilder<Player> builder)
         {
-            builder.HasKey(e => new { e.Id, e.UserId });
-
-            builder.HasAlternateKey(e => e.Id);
+            builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Id)
                 .ValueGeneratedOnAdd();
-
-            builder.HasAlternateKey(e => e.Id);
 
             builder.HasIndex(e => e.Id)
                 .IsUnique();
@@ -22,6 +18,11 @@ namespace DataAccess.Context.EntitiesConfigurations
             builder.HasOne(e => e.Position)
                 .WithMany()
                 .HasForeignKey(e => e.PositionId)
+                .IsRequired();
+
+            builder.HasOne(e => e.User)
+                .WithMany(u => u.Players)
+                .HasForeignKey(e => e.UserId)
                 .IsRequired();
 
             builder.HasMany(e => e.Heroes)

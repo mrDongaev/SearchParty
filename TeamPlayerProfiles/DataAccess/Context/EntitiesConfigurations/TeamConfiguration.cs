@@ -12,6 +12,10 @@ namespace DataAccess.Context.EntitiesConfigurations
                 .IsRequired()
                 .HasDefaultValue(0);
 
+            builder.HasOne(e => e.User)
+                .WithMany(e => e.Teams)
+                .HasForeignKey(e => e.UserId);
+
             builder.HasMany(e => e.Players)
                 .WithMany(e => e.Teams)
                 .UsingEntity<TeamPlayer>(
