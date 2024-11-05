@@ -1,7 +1,9 @@
-﻿using Service.Services.Implementations.HeroServices;
+﻿using Service.Services.Implementations;
+using Service.Services.Implementations.HeroServices;
 using Service.Services.Implementations.PlayerServices;
 using Service.Services.Implementations.PositionServices;
 using Service.Services.Implementations.TeamServices;
+using Service.Services.Interfaces;
 using Service.Services.Interfaces.HeroInterfaces;
 using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.PositionInterfaces;
@@ -11,7 +13,7 @@ namespace WebAPI.Configurations
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             services
                 .AddScoped<IPositionService, PositionService>()
@@ -19,7 +21,8 @@ namespace WebAPI.Configurations
                 .AddScoped<IPlayerService, PlayerService>()
                 .AddScoped<ITeamService, TeamService>()
                 .AddScoped<IPlayerBoardService, PlayerBoardService>()
-                .AddScoped<ITeamBoardService, TeamBoardService>();
+                .AddScoped<ITeamBoardService, TeamBoardService>()
+                .AddScoped<IUserService, UserService>();
             return services;
         }
     }

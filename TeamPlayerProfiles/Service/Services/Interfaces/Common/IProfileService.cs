@@ -1,4 +1,6 @@
-﻿namespace Service.Services.Interfaces.Common
+﻿using Library.Services.Interfaces;
+
+namespace Service.Services.Interfaces.Common
 {
     /// <summary>
     /// Базовый интерфейс сервиса профилей

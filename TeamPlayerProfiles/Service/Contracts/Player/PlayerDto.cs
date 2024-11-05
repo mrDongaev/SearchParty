@@ -1,4 +1,4 @@
-﻿using Common.Models.Enums;
+﻿using Library.Models.Enums;
 using Service.Contracts.Hero;
 
 namespace Service.Contracts.Player
@@ -12,6 +12,8 @@ namespace Service.Contracts.Player
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public uint Mmr { get; set; }
 
         public bool Displayed { get; set; }
 

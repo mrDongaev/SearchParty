@@ -11,8 +11,12 @@ namespace DataAccess.Context.EntitiesConfigurations
             builder.HasIndex(tp => new { tp.TeamId, tp.PositionId })
                 .IsUnique();
 
-            builder.HasIndex(tp => new { tp.TeamId, tp.PlayerUserId })
+            builder.HasIndex(tp => new { tp.TeamId, tp.UserId })
                 .IsUnique();
+
+            builder.HasOne(tp => tp.User)
+                .WithMany(u => u.TeamPlayers)
+                .HasForeignKey(tp => tp.UserId);
 
             builder.HasOne(e => e.Position)
                 .WithMany()

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.PositionInterfaces;
-using WebAPI.Contracts.Position;
+using WebAPI.Models.Position;
 
 namespace WebAPI.Controllers.Position
 {

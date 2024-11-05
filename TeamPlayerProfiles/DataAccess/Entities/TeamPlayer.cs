@@ -6,7 +6,9 @@
 
         public Team Team { get; set; }
 
-        public Guid PlayerUserId { get; set; }
+        public Guid UserId { get; set; }
+
+        public User User { get; set; }
 
         public Guid PlayerId { get; set; }
 

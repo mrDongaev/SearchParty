@@ -14,6 +14,8 @@ namespace DataAccess.Context
 
         public DbSet<Position> Positions { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public TeamPlayerProfilesContext(DbContextOptions<TeamPlayerProfilesContext> options) : base(options)
         {
         }
@@ -21,6 +23,7 @@ namespace DataAccess.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new PositionConfiguration());
             modelBuilder.ApplyConfiguration(new HeroConfiguration());
             modelBuilder.ApplyConfiguration(new PlayerConfiguration());

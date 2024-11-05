@@ -1,5 +1,5 @@
-using Common.Utils;
 using DataAccess.Context;
+using Library.Utils;
 using Serilog;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
@@ -15,11 +15,13 @@ try
     builder.Services
         .AddDbContext(builder.Configuration)
         .AddRepositories()
-        .AddServices()
+        .AddServices(builder.Configuration)
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
-        .AddSwagger()
-        //.AddRabbitMQ(builder.Configuration)
+        .AddSwagger();
+    //.AddRabbitMQ(builder.Configuration);
+
+    builder.Services
         .AddControllers();
 
     builder.Host
@@ -28,7 +30,7 @@ try
     var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (CommonUtils.TryGetEnvVariable("SEED_DATABASE").Equals("true"))
+    if (EnvironmentUtils.TryGetEnvVariable("TEAM_PLAYER_PROFILES__SEED_DATABASE").Equals("true"))
     {
         using (var scope = app.Services.CreateScope())
         {
