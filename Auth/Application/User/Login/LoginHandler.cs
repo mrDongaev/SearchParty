@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.User.Login
 {
-    public class LoginHandler : IRequestHandler<LoginQuery, UserData>
+    public class LoginHandler : IRequestHandler<LoginQuery,UserData>
     {
         private readonly UserManager<Domain.AppUser>? _userManager;
 
@@ -45,12 +45,15 @@ namespace Application.User.Login
                 {
                     DisplayName = user.DisplayName,
 
-                    JwtToken = tokens?.AccessToken,
+                    AccessToken = tokens?.AccessToken,
 
-                    RefreshToken = tokens?.RefreshToken
+                    RefreshToken = tokens?.RefreshToken,
+
+                    Email = user.Email,
+
+                    Id = user.Id
                 };
             }
-
             throw new RestException(HttpStatusCode.Unauthorized);
         }
     }

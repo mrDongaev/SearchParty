@@ -10,17 +10,17 @@ namespace Application.User
     {
         public string? DisplayName { get; set; }
 
-        public string? JwtToken { get; set; }
+        public string? AccessToken { get; set; }
 
         public string? RefreshToken { get; set; }
 
-        //public string? UserId { get; set; }
+        public string? Id { get; set; }
 
         //public string? UserFullName { get; set; }
 
         //public string? UserNickname { get; set; }
 
-        //public string? UserEmail { get; set; }
+        public string? Email { get; set; }
 
         //public string? UserImage { get; set; }
     }

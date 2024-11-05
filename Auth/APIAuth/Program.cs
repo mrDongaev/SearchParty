@@ -58,6 +58,8 @@ namespace APIAuth
             app.UseAuthorization(); // Enable authorization
 
             app.MapControllers(); // Map controllers
+
+            //app.UseMiddleware<RefreshTokenMiddleware>();
         }
 
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -69,6 +71,7 @@ namespace APIAuth
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false; // Do not require account confirmation upon sign-in
+
                 options.Password.RequireNonAlphanumeric = false; // Disable requirement for non-alphanumeric characters in the password
             })
             .AddEntityFrameworkStores<DataContext>() // Use Entity Framework for Identity data storage
@@ -86,7 +89,9 @@ namespace APIAuth
             // Add sign-in manager as a transient dependency
             services.AddTransient<SignInManager<AppUser>>();
 
-            services.AddTransient<IJwtGenerator, TokenGenerator>();
+            services.AddTransient<IJwtGenerator, JwtGenerator>();
+
+            services.AddTransient<IRefreshGenerator, RefreshGenerator>();
 
             // Add controllers
             services.AddControllers();

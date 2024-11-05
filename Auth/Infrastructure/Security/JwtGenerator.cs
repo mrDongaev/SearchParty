@@ -19,28 +19,23 @@ using Application.User;
 
 namespace Infrastructure.Security
 {
-    public class TokenGenerator : IJwtGenerator
+    public class JwtGenerator : IJwtGenerator
     {
         private readonly SymmetricSecurityKey _secretKey;
 
-        private readonly SymmetricSecurityKey? _refreshKey;
-
-        public TokenGenerator()
+        public JwtGenerator()
         {
             byte[] keyByte = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN_KEY")
                 ?? throw new ArgumentNullException("Token key not found in server environment variables"));
 
             _secretKey = new SymmetricSecurityKey(keyByte);
-
-            byte[] refreshKeyByte = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("REFRESH_KEY")
-                ?? throw new ArgumentNullException("Refresh token key not found in server environment variables"));
-
-            _refreshKey = new SymmetricSecurityKey(refreshKeyByte);
         }
 
         public UserToken CreateJwtToken(AppUser user)
         {
-            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.UserName) };
+            var refreshGenerator = new RefreshGenerator();
+
+            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.UserName, user.Email) };
 
             var credentials = new SigningCredentials(_secretKey, SecurityAlgorithms.HmacSha512Signature);
 
@@ -58,7 +53,7 @@ namespace Infrastructure.Security
 
             var accessToken = tokenHandler.WriteToken(token);
 
-            var refreshToken = GenerateRefreshToken(user);
+            var refreshToken = refreshGenerator.GenerateRefreshToken(user);
 
             return new Application.User.Settings.UserToken
             {
@@ -66,101 +61,6 @@ namespace Infrastructure.Security
 
                 RefreshToken = refreshToken
             };
-        }
-        public string GenerateRefreshToken(AppUser user)
-        {
-            // Создаем список утверждений (claims) для токена.
-            // В данном случае мы добавляем только одно утверждение - имя пользователя.
-            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.UserName) };
-
-            var credentials = new SigningCredentials(_refreshKey, SecurityAlgorithms.HmacSha512Signature);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                // Устанавливаем субъект токена (то есть пользователя).
-                Subject = new ClaimsIdentity(claims),
-
-                Expires = DateTime.Now.AddDays(30),
-
-                SigningCredentials = credentials
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
-        }
-        public UserToken RefreshToken(AppUser reqUserDataSet, string refreshToken)
-        {
-            if (refreshToken == string.Empty)
-            {
-                throw new SecurityTokenException("You did not transfer the refresh token for the update");
-            }
-            if (!ValidateRefreshToken(refreshToken))
-            {
-                throw new SecurityTokenException("Invalid refresh token");
-            }
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-
-                    ValidateAudience = false,
-
-                    ValidateLifetime = true,
-
-                    ValidateIssuerSigningKey = true,
-
-                    IssuerSigningKey = _refreshKey
-
-                }, out var validatedToken);
-
-                //var newToken = CreateJwtToken(new AppUser { UserName = principal.FindFirstValue(JwtRegisteredClaimNames.) });
-
-                var newToken = CreateJwtToken(reqUserDataSet);
-
-                return new UserToken
-                {
-                    AccessToken = newToken.AccessToken,
-
-                    RefreshToken = newToken.RefreshToken
-                };
-            }
-            catch (SecurityTokenException)
-            {
-                throw new SecurityTokenException("Invalid refresh token");
-            }
-        }
-        public bool ValidateRefreshToken(string refreshToken)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-
-                    ValidateAudience = false,
-
-                    ValidateLifetime = true,
-
-                    ValidateIssuerSigningKey = true,
-
-                    IssuerSigningKey = _refreshKey
-
-                }, out var validatedToken);
-
-                return true;
-            }
-            catch (SecurityTokenException)
-            {
-                return false;
-            }
         }
     }
 }
