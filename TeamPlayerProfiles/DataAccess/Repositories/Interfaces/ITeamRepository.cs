@@ -6,7 +6,7 @@ namespace DataAccess.Repositories.Interfaces
 {
     public interface ITeamRepository : IProfileRepository<Team>
     {
-        Task<Team?> UpdateTeamPlayers(Guid id, ISet<TeamPlayer> players, CancellationToken cancellationToken);
+        Task<Team?> Update(Team team, ISet<TeamPlayer>? teamPlayers, CancellationToken cancellationToken);
 
         Task<ICollection<Team>> GetConditionalTeamRange(ConditionalTeamQuery config, CancellationToken cancellationToken);
 

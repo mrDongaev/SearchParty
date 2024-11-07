@@ -8,7 +8,7 @@ namespace Service.Services.Interfaces.Common
     /// <typeparam name="TGetDto">ДТО чтения профиля</typeparam>
     /// <typeparam name="TUpdateDto">ДТО обновления профиля</typeparam>
     /// <typeparam name="TCreateDto">ДТО создания профиля</typeparam>
-    public interface IProfileService<TGetDto, TUpdateDto, TCreateDto> : IService<TGetDto, Guid>
+    public interface IProfileService<TGetDto, TUpdateDto, TCreateDto> : IService<TGetDto, Guid>, IRangeGettable<TGetDto, Guid>
     {
         /// <summary>
         /// Получить сущность по ID
@@ -30,5 +30,13 @@ namespace Service.Services.Interfaces.Common
         /// <param name="dto">ДТО обновляемого профиля</param>
         /// <returns>ДТО обновлённого профиля</returns>
         Task<TGetDto?> Update(TUpdateDto dto, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Получить ряд сущностей по идентификатору
+        /// </summary>
+        /// <param name="ids">Список идентификаторов</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Список ДТО сущностей</returns>
+        Task<ICollection<TGetDto>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken);
     }
 }

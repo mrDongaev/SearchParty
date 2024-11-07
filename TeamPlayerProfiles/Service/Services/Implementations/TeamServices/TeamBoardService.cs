@@ -17,7 +17,7 @@ namespace Service.Services.Implementations.TeamServices
             return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
         }
 
-        public async Task SendTeamAccessionRequest(Guid teamId, Guid requestingPlayerId, CancellationToken cancellationToken)
+        public async Task SendTeamApplicationRequest(Guid teamId, Guid requestingPlayerId, CancellationToken cancellationToken)
         {
             await Task.Delay(0, cancellationToken);
             throw new NotImplementedException();

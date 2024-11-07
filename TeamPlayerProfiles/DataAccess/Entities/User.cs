@@ -2,7 +2,7 @@
 
 namespace DataAccess.Entities
 {
-    public class User : IEntity<Guid>
+    public class User : IEntity<Guid>, IUpdateable
     {
         public Guid Id { get; set; }
 

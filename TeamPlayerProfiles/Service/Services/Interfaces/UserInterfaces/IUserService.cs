@@ -1,5 +1,4 @@
-﻿using Library.Entities.Interfaces;
-using Library.Services.Interfaces;
+﻿using Library.Services.Interfaces;
 using Service.Contracts.User;
 
 namespace Service.Services.Interfaces

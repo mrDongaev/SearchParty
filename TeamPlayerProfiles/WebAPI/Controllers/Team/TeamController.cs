@@ -21,6 +21,14 @@ namespace WebAPI.Controllers.Team
             return team == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(team));
         }
 
+        [HttpPost]
+        [ProducesResponseType<IEnumerable<GetTeam.Response>>(StatusCodes.Status200OK)]
+        public async Task<IResult> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
+        {
+            var teams = await teamService.GetRange(ids, cancellationToken);
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetTeam.Response>>(teams));
+        }
+
         [HttpGet]
         [ProducesResponseType<IEnumerable<GetTeam.Response>>(StatusCodes.Status200OK)]
         public async Task<IResult> GetAll(CancellationToken cancellationToken)
@@ -46,15 +54,6 @@ namespace WebAPI.Controllers.Team
             var tempTeam = mapper.Map<UpdateTeamDto>(request);
             tempTeam.Id = id;
             var updatedTeam = await teamService.Update(tempTeam, cancellationToken);
-            return updatedTeam == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedTeam));
-        }
-
-        [HttpPost("{id}")]
-        [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetTeam.Response>, NotFound>> UpdateTeamPlayer(Guid id, [FromBody, MaxLength(5), UniqueTeamPositions] ISet<UpdateTeamPlayers.Request> request, CancellationToken cancellationToken)
-        {
-            var updatedTeam = await teamService.UpdateTeamPlayers(id, mapper.Map<ISet<TeamPlayerDto.Write>>(request), cancellationToken);
             return updatedTeam == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedTeam));
         }
 

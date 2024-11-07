@@ -24,9 +24,9 @@ namespace WebAPI.Controllers.Team
         [HttpPost("{teamId}/{playerId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<Results<Ok, BadRequest>> SendTeamAccessionRequest(Guid teamId, Guid playerId, CancellationToken cancellationToken)
+        public async Task<Results<Ok, BadRequest>> SendTeamApplicationRequest(Guid teamId, Guid playerId, CancellationToken cancellationToken)
         {
-            await teamService.SendTeamAccessionRequest(teamId, playerId, cancellationToken);
+            await teamService.SendTeamApplicationRequest(teamId, playerId, cancellationToken);
             return TypedResults.Ok();
         }
 

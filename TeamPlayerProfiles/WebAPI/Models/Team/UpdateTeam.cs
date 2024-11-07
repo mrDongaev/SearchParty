@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WebAPI.Validation;
 
 namespace WebAPI.Models.Team
 {
@@ -11,6 +12,10 @@ namespace WebAPI.Models.Team
 
             [MaxLength(150)]
             public string? Description { get; set; }
+
+            [MaxLength(5)]
+            [UniqueTeamPositions]
+            public ISet<UpdateTeamPlayer.Request>? PlayersInTeam { get; set; }
         }
     }
 }

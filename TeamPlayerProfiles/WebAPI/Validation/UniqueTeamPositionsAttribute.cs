@@ -12,10 +12,14 @@ namespace WebAPI.Validation
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            bool isSet = value != null && value.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ISet<>)) && value.GetType().GetGenericArguments().Any(x => x == typeof(UpdateTeamPlayers.Request));
+            if (value == null)
+            {
+                return ValidationResult.Success;
+            }
+            bool isSet = value.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ISet<>)) && value.GetType().GetGenericArguments().Any(x => x == typeof(UpdateTeamPlayer.Request));
             if (isSet)
             {
-                var players = value as IEnumerable<UpdateTeamPlayers.Request>;
+                var players = value as IEnumerable<UpdateTeamPlayer.Request>;
                 if (players.Select(p => p.Position).ToHashSet().Count == players.Count())
                 {
                     return ValidationResult.Success;
@@ -27,7 +31,7 @@ namespace WebAPI.Validation
             }
             else
             {
-                return new ValidationResult($"Player list is null or does not satisfy type: {typeof(UpdateTeamPlayers.Request).FullName}");
+                return new ValidationResult($"Player list is null or does not satisfy type: {typeof(UpdateTeamPlayer.Request).FullName}");
             }
 
         }

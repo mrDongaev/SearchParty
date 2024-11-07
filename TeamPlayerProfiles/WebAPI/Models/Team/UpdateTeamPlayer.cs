@@ -4,7 +4,7 @@ using WebAPI.Models.Player;
 
 namespace WebAPI.Models.Team
 {
-    public static class UpdateTeamPlayers
+    public static class UpdateTeamPlayer
     {
         public sealed class Request : IEquatable<Request?>
         {

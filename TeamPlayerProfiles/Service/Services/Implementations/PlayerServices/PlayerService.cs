@@ -41,13 +41,7 @@ namespace Service.Services.Implementations.PlayerServices
         public async Task<PlayerDto?> Update(UpdatePlayerDto dto, CancellationToken cancellationToken = default)
         {
             var player = mapper.Map<Player>(dto);
-            var updatedPlayer = await playerRepo.Update(player, cancellationToken);
-            return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
-        }
-
-        public async Task<PlayerDto?> UpdatePlayerHeroes(Guid id, ISet<int> heroIds, CancellationToken cancellationToken = default)
-        {
-            var updatedPlayer = await playerRepo.UpdatePlayerHeroes(id, heroIds, cancellationToken);
+            var updatedPlayer = await playerRepo.Update(player, dto.HeroIds, cancellationToken);
             return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
         }
     }

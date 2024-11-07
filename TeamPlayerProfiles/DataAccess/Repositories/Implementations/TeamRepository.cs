@@ -13,7 +13,6 @@ namespace DataAccess.Repositories.Implementations
     {
         private readonly DbSet<Team> _teams;
         private readonly DbSet<Player> _players;
-        private const int maxCount = 5;
         public TeamRepository(TeamPlayerProfilesContext context) : base(context)
         {
             _teams = _context.Teams;
@@ -36,19 +35,18 @@ namespace DataAccess.Repositories.Implementations
         {
             team.Id = Guid.NewGuid();
             var playerIds = team.TeamPlayers.Select(tp => tp.PlayerId).ToList();
-            var players = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
+            var players = await _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToListAsync(cancellationToken);
             foreach (var tp in team.TeamPlayers)
             {
                 tp.TeamId = team.Id;
                 tp.UserId = players.Single(p => p.Id == tp.PlayerId).UserId;
             }
             team.PlayerCount = team.TeamPlayers.Count;
-            team.CheckTeamValidity(maxCount);
             await base.Add(team, cancellationToken);
             return await Get(team.Id, cancellationToken);
         }
 
-        public override async Task<Team?> Update(Team team, CancellationToken cancellationToken)
+        public async Task<Team?> Update(Team team, ISet<TeamPlayer>? players, CancellationToken cancellationToken)
         {
             var existingTeam = await _teams
                 .Include(t => t.TeamPlayers)
@@ -60,24 +58,17 @@ namespace DataAccess.Repositories.Implementations
             if (team.Name != null) existingTeam.Name = team.Name;
             if (team.Description != null) existingTeam.Description = team.Description;
             if (team.Displayed != null) existingTeam.Displayed = team.Displayed;
+            if (players != null) UpdateTeamPlayers(existingTeam, players);
             if (_context.Entry(existingTeam).State == EntityState.Modified)
             {
                 existingTeam.UpdatedAt = DateTime.UtcNow;
             }
-            team.CheckTeamValidity(maxCount);
             await _context.SaveChangesAsync(cancellationToken);
             return await Get(team.Id, cancellationToken);
         }
 
-        public async Task<Team?> UpdateTeamPlayers(Guid id, ISet<TeamPlayer> players, CancellationToken cancellationToken)
+        private void UpdateTeamPlayers(Team existingTeam, ISet<TeamPlayer> players)
         {
-            var existingTeam = await _teams
-                .Include(t => t.TeamPlayers)
-                .SingleOrDefaultAsync(t => t.Id == id, cancellationToken);
-            if (existingTeam == null)
-            {
-                return null;
-            }
             var existingPlayerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId);
             var updatedPlayerIds = players.Select(tp => tp.PlayerId);
             var playerIdsToAdd = updatedPlayerIds.Except(existingPlayerIds);
@@ -118,20 +109,13 @@ namespace DataAccess.Repositories.Implementations
                 }
                 _context.Entry(existingTeam).State = EntityState.Modified;
             }
-            if (_context.Entry(existingTeam).State == EntityState.Modified)
-            {
-                existingTeam.UpdatedAt = DateTime.UtcNow;
-            }
             var playerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId).ToList();
             var finalPlayers = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
             foreach (var tp in existingTeam.TeamPlayers)
             {
                 tp.UserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
             }
-            existingTeam.CheckTeamValidity(maxCount);
             existingTeam.PlayerCount = existingTeam.TeamPlayers.Count;
-            await _context.SaveChangesAsync(cancellationToken);
-            return await Get(existingTeam.Id, cancellationToken);
         }
 
         public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalTeamQuery config, CancellationToken cancellationToken)

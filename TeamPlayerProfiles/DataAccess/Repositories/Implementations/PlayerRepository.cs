@@ -4,6 +4,7 @@ using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.Utils;
 using Library.Models;
+using Library.Models.API.TeamPlayerProfiles.Player;
 using Library.Models.Enums;
 using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
@@ -64,7 +65,7 @@ namespace DataAccess.Repositories.Implementations
             return newPlayer;
         }
 
-        public override async Task<Player?> Update(Player player, CancellationToken cancellationToken)
+        public async Task<Player?> Update(Player player, ISet<int>? heroIds, CancellationToken cancellationToken)
         {
             var existingPlayer = await _players.GetEntities(false)
                 .SingleOrDefaultAsync(p => p.Id == player.Id, cancellationToken);
@@ -77,6 +78,7 @@ namespace DataAccess.Repositories.Implementations
             if (player.Description != null) existingPlayer.Description = player.Description;
             if (player.Displayed != null) existingPlayer.Displayed = player.Displayed;
             if (position != null) existingPlayer.Position = position;
+            if (heroIds != null) await UpdatePlayerHeroes(existingPlayer, heroIds, cancellationToken);
             if (_context.Entry(existingPlayer).State == EntityState.Modified)
             {
                 existingPlayer.UpdatedAt = DateTime.UtcNow;
@@ -85,14 +87,8 @@ namespace DataAccess.Repositories.Implementations
             return updatedPlayer;
         }
 
-        public async Task<Player?> UpdatePlayerHeroes(Guid id, ISet<int> heroIds, CancellationToken cancellationToken)
+        private async Task UpdatePlayerHeroes(Player existingPlayer, ISet<int> heroIds, CancellationToken cancellationToken)
         {
-            var existingPlayer = await _players.GetEntities(false)
-                .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
-            if (existingPlayer == null)
-            {
-                return null;
-            }
             var existingHeroIds = existingPlayer.Heroes.Select(p => p.Id).ToList();
             var updatedHeroIds = heroIds;
             var heroIdsToAdd = updatedHeroIds.Except(existingHeroIds).ToList();
@@ -100,7 +96,7 @@ namespace DataAccess.Repositories.Implementations
             if (heroIdsToRemove.Any())
             {
                 var heroesToRemove = await _heroes
-                .Where(h => heroIdsToRemove.Contains(h.Id))
+                    .Where(h => heroIdsToRemove.Contains(h.Id))
                     .ToListAsync(cancellationToken);
                 foreach (var hero in heroesToRemove)
                 {
@@ -111,7 +107,7 @@ namespace DataAccess.Repositories.Implementations
             if (heroIdsToAdd.Count != 0)
             {
                 var heroesToAdd = await _heroes
-                .Where(h => heroIdsToAdd.Contains(h.Id))
+                    .Where(h => heroIdsToAdd.Contains(h.Id))
                     .ToListAsync(cancellationToken);
                 foreach (var hero in heroesToAdd)
                 {
@@ -119,12 +115,6 @@ namespace DataAccess.Repositories.Implementations
                 }
                 _context.Entry(existingPlayer).State = EntityState.Modified;
             }
-            if (_context.Entry(existingPlayer).State == EntityState.Modified)
-            {
-                existingPlayer.UpdatedAt = DateTime.UtcNow;
-            }
-            var updatedPlayer = await base.Update(existingPlayer, cancellationToken);
-            return updatedPlayer;
         }
 
         public async Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery config, CancellationToken cancellationToken)

@@ -24,7 +24,11 @@ namespace Service.Mapping
                 .ForMember(d => d.Player, m => m.Ignore())
                 .ForMember(d => d.Team, m => m.Ignore())
                 .ForMember(d => d.TeamId, m => m.MapFrom(src => Guid.Empty))
-                .ForMember(d => d.Position, m => m.Ignore());
+                .ForMember(d => d.Position, m => m.Ignore())
+                                .ForAllMembers(opts => {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<CreateTeamDto, Team>()
                 .ForMember(d => d.TeamPlayers, m => m.MapFrom(src => src.PlayersInTeam))
@@ -34,7 +38,11 @@ namespace Service.Mapping
                 .ForMember(d => d.Id, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
                 .ForMember(d => d.User, m => m.Ignore())
-                .ForMember(d => d.AvgMmr, m => m.Ignore());
+                .ForMember(d => d.AvgMmr, m => m.Ignore())
+                                .ForAllMembers(opts => {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<UpdateTeamDto, Team>()
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
@@ -44,7 +52,11 @@ namespace Service.Mapping
                 .ForMember(d => d.Displayed, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
                 .ForMember(d => d.PlayerCount, m => m.Ignore())
-                .ForMember(d => d.AvgMmr, m => m.Ignore());
+                .ForMember(d => d.AvgMmr, m => m.Ignore())
+                                .ForAllMembers(opts => {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<PaginatedResult<Team>, PaginatedResult<TeamDto>>();
         }

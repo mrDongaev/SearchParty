@@ -17,6 +17,8 @@
             public string DiscordName { get; set; }
 
             public string TelegramLink { get; set; }
+
+            public DateTime UpdatedAt { get; set; }
         }
     }
 }

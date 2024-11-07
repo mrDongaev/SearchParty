@@ -54,15 +54,6 @@ namespace WebAPI.Controllers.Player
             return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetPlayer.Response>(updatedPlayer));
         }
 
-        [HttpPost("{id}")]
-        [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetPlayer.Response>, NotFound>> UpdatePlayerHeroes(Guid id, [FromBody] ISet<int> heroIds, CancellationToken cancellationToken)
-        {
-            var updatedPlayer = await playerService.UpdatePlayerHeroes(id, heroIds, cancellationToken);
-            return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetPlayer.Response>(updatedPlayer));
-        }
-
         [HttpDelete("{id}")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
         public async Task<IResult> Delete(Guid id, CancellationToken cancellationToken)

@@ -12,16 +12,32 @@ namespace WebAPI.Mapping
         {
             CreateMap<TeamDto, GetTeam.Response>();
 
-            CreateMap<TeamPlayerDto.Read, UpdateTeamPlayers.Response>();
+            CreateMap<TeamPlayerDto.Read, UpdateTeamPlayer.Response>();
 
-            CreateMap<UpdateTeamPlayers.Request, TeamPlayerDto.Write>();
+            CreateMap<UpdateTeamPlayer.Request, TeamPlayerDto.Write>()
+                .ForAllMembers(opts => {
+                        opts.AllowNull();
+                        opts.Condition((src, dest, srcMember) => srcMember != null);
+                    });
 
-            CreateMap<CreateTeam.Request, CreateTeamDto>();
+            CreateMap<CreateTeam.Request, CreateTeamDto>()
+                .ForAllMembers(opts => {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
             CreateMap<UpdateTeam.Request, UpdateTeamDto>()
-                .ForMember(d => d.Id, m => m.Ignore());
+                .ForMember(d => d.Id, m => m.Ignore())
+                .ForAllMembers(opts => {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
-            CreateMap<GetConditionalTeam.Request, ConditionalTeamQuery>();
+            CreateMap<GetConditionalTeam.Request, ConditionalTeamQuery>()
+                .ForAllMembers(opts => {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
             CreateMap<PaginatedResult<TeamDto>, PaginatedResult<GetTeam.Response>>();
         }

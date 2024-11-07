@@ -24,7 +24,11 @@ namespace Service.Mapping
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
                 .ForMember(d => d.PlayerHeroes, m => m.Ignore())
                 .ForMember(d => d.User, m => m.Ignore())
-                .ForMember(d => d.Mmr, m => m.Ignore());
+                .ForMember(d => d.Mmr, m => m.Ignore())
+                                .ForAllMembers(opts => {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<UpdatePlayerDto, Player>()
                 .ForMember(d => d.UserId, m => m.Ignore())
@@ -37,7 +41,11 @@ namespace Service.Mapping
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
                 .ForMember(d => d.PlayerHeroes, m => m.Ignore())
                 .ForMember(d => d.User, m => m.Ignore())
-                .ForMember(d => d.Mmr, m => m.Ignore());
+                .ForMember(d => d.Mmr, m => m.Ignore())
+                                .ForAllMembers(opts => {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<PaginatedResult<Player>, PaginatedResult<PlayerDto>>();
         }
