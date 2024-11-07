@@ -6,8 +6,6 @@ namespace WebAPI.Models.User
     {
         public sealed class Request
         {
-            public Guid Id { get; set; }
-
             public string? Name { get; set; }
 
             public string? Description { get; set; }
