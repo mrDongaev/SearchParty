@@ -4,14 +4,14 @@
     {
         public sealed class Request
         {
-            public string refreshToken { get; set; }
+            public string RefreshToken { get; set; }
         }
 
         public sealed class Response
         {
-            public string accessToken { get; set; }
+            public string AccessToken { get; set; }
 
-            public string refreshToken { get; set; }
+            public string RefreshToken { get; set; }
         }
     }
 }

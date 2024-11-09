@@ -1,7 +1,8 @@
-﻿using Library.Services.Implementations.UserContextServices;
+﻿using Library.Services.Implementations.AuthenticationServices;
+using Library.Services.Implementations.UserContextServices;
+using Library.Services.Interfaces.AuthenticationInterfaces;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Library.Utils;
-using Microsoft.AspNetCore.Authentication;
 using Service.Services.Implementations;
 using Service.Services.Implementations.HeroServices;
 using Service.Services.Implementations.PlayerServices;

@@ -14,7 +14,10 @@ namespace Library.Services.Implementations.AuthenticationServices
 
         public async Task<RefreshToken.Response?> RefreshAccessToken(string refreshToken, CancellationToken cancellationToken)
         {
-            RefreshToken.Request request = new RefreshToken.Request();
+            RefreshToken.Request request = new RefreshToken.Request()
+            {
+                RefreshToken = refreshToken,
+            };
             using var response = await _httpClient.PostAsJsonAsync("/api/Token/refreshtoken", request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {

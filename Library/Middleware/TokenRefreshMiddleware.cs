@@ -35,8 +35,8 @@ namespace Library.Middleware
                     RefreshToken.Response? response = await authService.RefreshAccessToken(refreshToken, new CancellationToken());
                     if (response != null)
                     {
-                        context.Request.Headers["Authorization"] = "Bearer " + response.accessToken;
-                        context.Response.Cookies.Append("RefreshToken", response.refreshToken);
+                        context.Request.Headers["Authorization"] = "Bearer " + response.AccessToken;
+                        context.Response.Cookies.Append("RefreshToken", response.RefreshToken);
                     }
                 }
             }

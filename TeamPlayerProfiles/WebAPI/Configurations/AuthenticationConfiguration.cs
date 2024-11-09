@@ -22,6 +22,8 @@ namespace WebAPI.Configurations
                 {
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
