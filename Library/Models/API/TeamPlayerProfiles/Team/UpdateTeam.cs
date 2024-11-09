@@ -8,7 +8,7 @@
 
             public string? Description { get; set; }
 
-            public ISet<UpdateTeamPlayer.Request>? PlayersInTeam { get; set;}
+            public ISet<UpdateTeamPlayer.Request>? PlayersInTeam { get; set; }
         }
     }
 }

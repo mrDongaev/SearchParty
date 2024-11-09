@@ -12,10 +12,10 @@
             return variable;
         }
 
-        public static string TryGetEnvVariable(string key)
+        public static bool TryGetEnvVariable(string key, out string? envVariable)
         {
-            var variable = Environment.GetEnvironmentVariable(key);
-            return variable ?? string.Empty;
+            envVariable = Environment.GetEnvironmentVariable(key);
+            return envVariable != null;
         }
     }
 }

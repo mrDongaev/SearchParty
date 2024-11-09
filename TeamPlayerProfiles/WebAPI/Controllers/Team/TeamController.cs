@@ -1,16 +1,18 @@
 ﻿using AutoMapper;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
-using System.ComponentModel.DataAnnotations;
 using WebAPI.Models.Team;
-using WebAPI.Validation;
+using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Team
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
-    public class TeamController(ITeamService teamService, IMapper mapper) : WebApiController
+    public class TeamController(ITeamService teamService, IUserHttpContext userContext, IServiceProvider serviceProvider, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
@@ -49,8 +51,13 @@ namespace WebAPI.Controllers.Team
         [HttpPost("{id}")]
         [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetTeam.Response>, NotFound>> Update(Guid id, [FromBody] UpdateTeam.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<GetTeam.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, [FromBody] UpdateTeam.Request request, CancellationToken cancellationToken)
         {
+            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            {
+                return TypedResults.Unauthorized();
+            }
             var tempTeam = mapper.Map<UpdateTeamDto>(request);
             tempTeam.Id = id;
             var updatedTeam = await teamService.Update(tempTeam, cancellationToken);
@@ -59,8 +66,13 @@ namespace WebAPI.Controllers.Team
 
         [HttpDelete("{id}")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-        public async Task<IResult> Delete(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
         {
+            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            {
+                return TypedResults.Unauthorized();
+            }
             return TypedResults.Ok(await teamService.Delete(id, cancellationToken));
         }
     }

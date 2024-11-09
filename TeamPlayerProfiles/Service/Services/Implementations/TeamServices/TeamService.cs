@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using Library.Models.API.TeamPlayerProfiles.Team;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
 
@@ -25,7 +24,7 @@ namespace Service.Services.Implementations.TeamServices
             return await teamRepo.Delete(id, cancellationToken);
         }
 
-        public async Task<TeamDto?> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<TeamDto?> Get(Guid id, CancellationToken cancellationToken = default)
         {
             var team = await teamRepo.Get(id, cancellationToken);
             return team == null ? null : mapper.Map<TeamDto>(team);
@@ -57,6 +56,11 @@ namespace Service.Services.Implementations.TeamServices
             }
             var updatedTeam = await teamRepo.Update(team, teamPlayers, cancellationToken);
             return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
+        }
+
+        public async Task<Guid?> GetProfileUserId(Guid profileId, CancellationToken cancellationToken = default)
+        {
+            return await teamRepo.GetProfileUserId(profileId, cancellationToken);
         }
     }
 }

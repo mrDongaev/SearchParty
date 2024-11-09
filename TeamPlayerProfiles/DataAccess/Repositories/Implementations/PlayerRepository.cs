@@ -4,7 +4,6 @@ using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.Utils;
 using Library.Models;
-using Library.Models.API.TeamPlayerProfiles.Player;
 using Library.Models.Enums;
 using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +34,12 @@ namespace DataAccess.Repositories.Implementations
             return await _players.GetEntities(true)
                 .Include(p => p.Position)
                 .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
+        }
+
+        public async Task<Guid?> GetProfileUserId(Guid playerId, CancellationToken cancellationToken)
+        {
+            var player = await _players.AsNoTracking().SingleOrDefaultAsync(p => p.Id == playerId, cancellationToken);
+            return player?.UserId;
         }
 
         public async Task<ICollection<Player>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)

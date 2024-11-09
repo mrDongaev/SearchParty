@@ -38,5 +38,12 @@ namespace Service.Services.Interfaces.Common
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Список ДТО сущностей</returns>
         Task<ICollection<TGetDto>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Получить ID пользователя создателя сущности по ID сущности
+        /// </summary>
+        /// <param name="id">Идентификатор</param>
+        /// <returns> GUID пользователя</returns>
+        Task<Guid?> GetProfileUserId(Guid profileId, CancellationToken cancellationToken);
     }
 }

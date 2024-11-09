@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using Application.User;
+using Library.Utils;
 
 namespace Infrastructure.Security
 {
@@ -25,8 +26,7 @@ namespace Infrastructure.Security
 
         public JwtGenerator()
         {
-            byte[] keyByte = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN_KEY")
-                ?? throw new ArgumentNullException("Token key not found in server environment variables"));
+            byte[] keyByte = Encoding.UTF8.GetBytes(EnvironmentUtils.GetEnvVariable("TOKEN_KEY"));
 
             _secretKey = new SymmetricSecurityKey(keyByte);
         }
@@ -35,7 +35,7 @@ namespace Infrastructure.Security
         {
             var refreshGenerator = new RefreshGenerator();
 
-            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.UserName, user.Email) };
+            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.Id) };
 
             var credentials = new SigningCredentials(_secretKey, SecurityAlgorithms.HmacSha512Signature);
 

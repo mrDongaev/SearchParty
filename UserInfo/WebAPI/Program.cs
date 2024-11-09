@@ -27,7 +27,7 @@ try
     var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (EnvironmentUtils.TryGetEnvVariable("USER_INFO__SEED_DATABASE").Equals("true"))
+    if (EnvironmentUtils.TryGetEnvVariable("USER_INFO__SEED_DATABASE", out var doSeed) && doSeed == "true")
     {
         using (var scope = app.Services.CreateScope())
         {

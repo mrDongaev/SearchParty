@@ -1,4 +1,8 @@
-﻿using Service.Services.Implementations;
+﻿using Library.Services.Implementations.UserContextServices;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Utils;
+using Microsoft.AspNetCore.Authentication;
+using Service.Services.Implementations;
 using Service.Services.Implementations.HeroServices;
 using Service.Services.Implementations.PlayerServices;
 using Service.Services.Implementations.PositionServices;
@@ -13,7 +17,7 @@ namespace WebAPI.Configurations
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services
                 .AddScoped<IPositionService, PositionService>()
@@ -22,7 +26,13 @@ namespace WebAPI.Configurations
                 .AddScoped<ITeamService, TeamService>()
                 .AddScoped<IPlayerBoardService, PlayerBoardService>()
                 .AddScoped<ITeamBoardService, TeamBoardService>()
-                .AddScoped<IUserService, UserService>();
+                .AddScoped<IUserService, UserService>()
+                .AddScoped<IUserHttpContext, UserHttpContext>()
+                .AddHttpClient<IAuthenticationService, AuthenticationService>(cfg =>
+                {
+                    cfg.BaseAddress = new Uri(EnvironmentUtils.GetEnvVariable("AUTHENTICATION_SERVICE_URL"));
+                    cfg.DefaultRequestHeaders.Add("Accept", "text/plain");
+                });
             return services;
         }
     }
