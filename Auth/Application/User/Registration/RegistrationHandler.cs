@@ -16,20 +16,16 @@ using System.Threading.Tasks;
 
 namespace Application.User.Registration
 {
-    public class RegistrationHandler : IRequestHandler<RegistrationQuery, Unit>
+    public class RegistrationHandler : IRequestHandler<RegistrationQuery, IdentityResult>
     {
         private readonly UserManager<Domain.AppUser>? _userManager;
 
-        private readonly IRegistration _registration;
-
-        public RegistrationHandler(UserManager<Domain.AppUser>? userManager, IRegistration registration) 
+        public RegistrationHandler(UserManager<Domain.AppUser>? userManager) 
         {
             _userManager = userManager;
-
-            _registration = registration;
         }
 
-        public async Task<Unit> Handle(RegistrationQuery request, CancellationToken cancellationToken)
+        public async Task<IdentityResult> Handle(RegistrationQuery request, CancellationToken cancellationToken)
         {
             var userEF = await _userManager.FindByNameAsync(request.Email);
 
@@ -42,18 +38,25 @@ namespace Application.User.Registration
             {
                 userEF = new AppUser 
                 {
-                    DisplayName = "1",
+                    DisplayName = request.Username,
 
-                    UserName = "1",
+                    UserName = request.Username,
 
-                    Email = "1"
+                    Email = request.Email
                 };
 
-                await _userManager.CreateAsync(userEF, "12345678");
+                try
+                {
+                    var result = await _userManager.CreateAsync(userEF, request.Password.ToString());
 
-                //await _registration.SaveChangesToDbAsync();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
-            return Unit.Value;
+            return IdentityResult.Success;
         }
     }
 }

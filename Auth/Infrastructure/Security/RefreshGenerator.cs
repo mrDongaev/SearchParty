@@ -124,5 +124,22 @@ namespace Infrastructure.Security
                 return false;
             }
         }
+        public string DecodeRefreshToken(string refreshToken, string parameter)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var token = tokenHandler.ReadJwtToken(refreshToken);
+            
+            var result = token.Claims.FirstOrDefault(c => c.Type == parameter)?.Value;
+
+            if (result == null)
+            {
+                return string.Empty;
+            }
+            else 
+            {
+                return result;
+            }
+        }
     }
 }
