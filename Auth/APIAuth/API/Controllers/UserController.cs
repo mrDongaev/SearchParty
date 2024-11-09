@@ -37,9 +37,9 @@ namespace APIAuth.Controllers
         }
 
         [HttpPost("registration")]
-        public async Task<ActionResult<UserData>> RegistrationAsync(RegistrationCommand command)
+        public async Task RegistrationAsync(RegistrationQuery command)
         {
-            return await Mediator.Send(command);
+            await Mediator.Send(command);
         }
     }
 }

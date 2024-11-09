@@ -28,7 +28,9 @@ namespace Application.User.Refresh
 
         public async Task<UserData> Handle(RefreshQuery request, CancellationToken cancellationToken)
         {
-            var userEF = await _userManager.FindByEmailAsync(request.Email);
+            //var tokenHandler = new JwtSecurityTokenHandler();
+
+            var userEF = await _userManager.FindByEmailAsync(request.RefreshToken);
 
             if (userEF == null)
             {

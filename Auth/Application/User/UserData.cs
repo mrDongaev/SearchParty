@@ -8,6 +8,12 @@ namespace Application.User
 {
     public class UserData
     {
+        public string? UserName { get; set; }
+
+        public string? Password { get; set; }
+
+        public string? Email { get; set; }
+
         public string? DisplayName { get; set; }
 
         public string? AccessToken { get; set; }
@@ -15,13 +21,5 @@ namespace Application.User
         public string? RefreshToken { get; set; }
 
         public string? Id { get; set; }
-
-        //public string? UserFullName { get; set; }
-
-        //public string? UserNickname { get; set; }
-
-        public string? Email { get; set; }
-
-        //public string? UserImage { get; set; }
     }
 }

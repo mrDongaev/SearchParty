@@ -28,7 +28,12 @@ namespace Infrastructure.Security
         {
             // Создаем список утверждений (claims) для токена.
             // В данном случае мы добавляем только одно утверждение - имя пользователя.
-            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.UserName) };
+            var claims = new List<Claim> 
+            {
+                new Claim(JwtRegisteredClaimNames.NameId, user.UserName),
+                
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            };
 
             var credentials = new SigningCredentials(_refreshKey, SecurityAlgorithms.HmacSha512Signature);
 

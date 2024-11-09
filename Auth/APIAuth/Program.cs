@@ -93,6 +93,8 @@ namespace APIAuth
 
             services.AddTransient<IRefreshGenerator, RefreshGenerator>();
 
+            services.AddTransient<IRegistration, RegistrationGenerator>();
+
             // Add controllers
             services.AddControllers();
 
