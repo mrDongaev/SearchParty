@@ -6,7 +6,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "USER_PROFILES_URL": "http://localhost:5222/",
+        "TEAM_PLAYER_PROFILES_URL": "http://localhost:5222/",
         "AUTHENTICATION_SERVICE_URL": "http://localhost:5126",
         "TOKEN_KEY": "86f9b43a9bc2dee8342d2a780c1ef9fc2cd5d83a8fc792859143298a0bba80a4155313e575c419f775570a49246223fd33191e3ecfd04c702312d61a644eae91",
         "REFRESH_KEY": "40b244112641dd78dd4f93b6c9190dd46e0099194d5a44257b7efad6ef9ff4683da1eda0244448cb343aa688f5d3efd7314dafe580ac0bcbf115aeca9e8dc114",
@@ -25,7 +25,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "USER_PROFILES_URL": "http://localhost:5222/",
+        "TEAM_PLAYER_PROFILES_URL": "http://localhost:5222/",
         "AUTHENTICATION_SERVICE_URL": "http://localhost:5126",
         "TOKEN_KEY": "86f9b43a9bc2dee8342d2a780c1ef9fc2cd5d83a8fc792859143298a0bba80a4155313e575c419f775570a49246223fd33191e3ecfd04c702312d61a644eae91",
         "REFRESH_KEY": "40b244112641dd78dd4f93b6c9190dd46e0099194d5a44257b7efad6ef9ff4683da1eda0244448cb343aa688f5d3efd7314dafe580ac0bcbf115aeca9e8dc114",

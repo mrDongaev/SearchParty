@@ -71,8 +71,15 @@ namespace APIAuth
 
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            string hostname = EnvironmentUtils.GetEnvVariable("DATABASE_HOSTNAME");
+            string portnum = EnvironmentUtils.GetEnvVariable("DATABASE_PORT");
+            string dbname = EnvironmentUtils.GetEnvVariable("DATABASE_NAME");
+            string username = EnvironmentUtils.GetEnvVariable("DATABASE_USER");
+            string password = EnvironmentUtils.GetEnvVariable("DATABASE_PASSWORD");
+            var connectionString = $"Host={hostname};Port={portnum};Database={dbname};Username={username};Password={password}";
+
             services.AddDbContext<DataContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(connectionString));
 
             // Configure Identity for user and role management
             services.AddIdentity<AppUser, IdentityRole>(options =>
