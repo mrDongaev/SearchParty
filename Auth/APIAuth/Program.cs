@@ -53,6 +53,30 @@ namespace APIAuth
                 MigrationProcessing(app);
             }
 
+            if (EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true")
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+
+                    try
+                    {
+                        var context = services.GetRequiredService<DataContext>(); // Get the database context
+
+                        var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
+
+                        DataSeed.SeedDataAsync(context, userManager).Wait();
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetRequiredService<ILogger<Program>>(); // Get the logger
+
+                        logger.LogError(ex, "An error occurred during migration"); // Log migration error
+                    }
+                }
+
+            }
+
             app.Run();
         }
 
@@ -254,9 +278,8 @@ namespace APIAuth
 
                     var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
 
-                    context.Database.Migrate(); // Apply database migrations
-
-                    DataSeed.SeedDataAsync(context, userManager).Wait(); // Seed the database with initial data
+                    context.Database.EnsureDeleted();
+                    context.Database.EnsureDeleted();    
                 }
                 catch (Exception ex)
                 {
