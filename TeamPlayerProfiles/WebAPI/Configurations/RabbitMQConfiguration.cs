@@ -1,16 +1,17 @@
-﻿using MassTransit;
+﻿using Library.Utils;
+using MassTransit;
 
 namespace WebAPI.Configurations
 {
     public static class RabbitMQConfiguration
     {
-        public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddRabbitMQ(this IServiceCollection services)
         {
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    ConfigureRmq(cfg, configuration);
+                    ConfigureRmq(cfg);
                 });
             });
 
@@ -22,25 +23,16 @@ namespace WebAPI.Configurations
         /// </summary>
         /// <param name="configurator"> Конфигуратор RMQ. </param>
         /// <param name="configuration"> Конфигурация приложения. </param>
-        private static void ConfigureRmq(IRabbitMqBusFactoryConfigurator configurator, IConfiguration configuration)
+        private static void ConfigureRmq(IRabbitMqBusFactoryConfigurator configurator)
         {
-            RmqSettings rmqSettings = configuration.GetSection("RmqSettings").Get<RmqSettings>();
-
-            configurator.Host(rmqSettings.Host,
-                rmqSettings.VHost,
+            configurator.Host(
+                EnvironmentUtils.GetEnvVariable("RABBITMQ_HOST"),
+                EnvironmentUtils.GetEnvVariable("RABBITMQ_VHOST"),
                 h =>
                 {
-                    h.Username(rmqSettings.Login);
-                    h.Password(rmqSettings.Password);
+                    h.Username(EnvironmentUtils.GetEnvVariable("RABBITMQ_LOGIN"));
+                    h.Password(EnvironmentUtils.GetEnvVariable("RABBITMQ_PASSWORD"));
                 });
-        }
-
-        public class RmqSettings
-        {
-            public string Host { get; set; }
-            public string VHost { get; set; }
-            public string Login { get; set; }
-            public string Password { get; set; }
         }
     }
 }

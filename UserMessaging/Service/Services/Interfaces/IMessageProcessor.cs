@@ -12,7 +12,7 @@ namespace Service.Services.Interfaces
     {
         public IMessage CreateMessage(Guid SenderId, Guid SendingUserId, Guid AcceptorId, Guid AcceptingUserId);
 
-        public void SaveMessage(IRepository repo, IMessage message);
+        public void SaveMessage(IMessage message);
 
         public void SendMessageBySignalR();
 

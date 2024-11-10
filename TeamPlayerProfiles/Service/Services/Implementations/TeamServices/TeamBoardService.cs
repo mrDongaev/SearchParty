@@ -3,12 +3,15 @@ using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Library.Models;
+using Library.Models.API.UserMessaging;
+using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
 
 namespace Service.Services.Implementations.TeamServices
 {
-    public class TeamBoardService(IMapper mapper, ITeamRepository teamRepo) : ITeamBoardService
+    public class TeamBoardService(IMapper mapper, ITeamRepository teamRepo, IServiceProvider provider) : ITeamBoardService
     {
         public async Task<TeamDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
@@ -17,10 +20,13 @@ namespace Service.Services.Implementations.TeamServices
             return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
         }
 
-        public async Task SendTeamApplicationRequest(Guid teamId, Guid requestingPlayerId, CancellationToken cancellationToken = default)
+        public async Task SendTeamApplicationRequest(Message message, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(0, cancellationToken);
-            throw new NotImplementedException();
+            using (var scope = provider.CreateScope())
+            {
+                var sender = scope.ServiceProvider.GetRequiredService<ISendEndpoint>();
+                await sender.Send(message, cancellationToken);
+            }
         }
 
         public async Task<ICollection<TeamDto>> GetFiltered(ConditionalTeamQuery query, CancellationToken cancellationToken = default)

@@ -3,12 +3,16 @@ using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Library.Models;
+using Library.Models.API.UserMessaging;
+using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 using Service.Contracts.Player;
 using Service.Services.Interfaces.PlayerInterfaces;
+using System.Reflection;
 
 namespace Service.Services.Implementations.PlayerServices
 {
-    public class PlayerBoardService(IMapper mapper, IPlayerRepository playerRepo) : IPlayerBoardService
+    public class PlayerBoardService(IMapper mapper, IPlayerRepository playerRepo, IServiceProvider provider) : IPlayerBoardService
     {
         public async Task<PlayerDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
@@ -17,10 +21,13 @@ namespace Service.Services.Implementations.PlayerServices
             return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
         }
 
-        public async Task InvitePlayerToTeam(Guid playerId, Guid invitingTeamId, CancellationToken cancellationToken = default)
+        public async Task InvitePlayerToTeam(Message message, CancellationToken cancellationToken = default)
         {
-            await Task.Delay(0);
-            throw new NotImplementedException();
+            using (var scope = provider.CreateScope())
+            {
+                var sender = scope.ServiceProvider.GetRequiredService<ISendEndpoint>();
+                await sender.Send(message, cancellationToken);
+            }
         }
 
         public async Task<ICollection<PlayerDto>> GetFiltered(ConditionalPlayerQuery query, CancellationToken cancellationToken = default)

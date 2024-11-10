@@ -1,19 +1,21 @@
 ﻿using AutoMapper;
 using Common.Models;
 using Library.Models;
+using Library.Models.API.UserMessaging;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.PlayerInterfaces;
+using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Player;
-using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Player
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class PlayerBoardController(IMapper mapper, IPlayerBoardService boardService, IServiceProvider serviceProvider, IUserHttpContext userContext) : WebApiController
+    public class PlayerBoardController(IMapper mapper, IPlayerBoardService boardService, IUserIdentityService userIdentity, IUserHttpContext userContext) : WebApiController
     {
         [HttpPost("{playerId}/{displayed}")]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
@@ -21,7 +23,8 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok<GetPlayer.Response>, NotFound, UnauthorizedHttpResult>> SetDisplayed(Guid playerId, bool displayed, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, playerId, cancellationToken) == false)
+            var userId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -35,15 +38,25 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok, BadRequest, UnauthorizedHttpResult>> InvitePlayerToTeam(Guid playerId, Guid teamId, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, teamId, cancellationToken) == false)
+            var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            if (teamUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
-            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, playerId, cancellationToken) == true)
+            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            if (playerUserId == userContext.UserId)
             {
                 return TypedResults.BadRequest();
             }
-            await boardService.InvitePlayerToTeam(playerId, teamId, cancellationToken);
+            var message = new Message()
+            {
+                SenderId = teamId,
+                SendingUserId = userContext.UserId,
+                AcceptorId = playerId,
+                AcceptingUserId = userContext.UserId,
+                MessageType = MessageType.TeamInvitation,
+            };
+            await boardService.InvitePlayerToTeam(message, cancellationToken);
             return TypedResults.Ok();
         }
 

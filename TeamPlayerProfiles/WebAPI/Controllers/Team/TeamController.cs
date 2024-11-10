@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
+using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Team;
-using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Team
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class TeamController(ITeamService teamService, IUserHttpContext userContext, IServiceProvider serviceProvider, IMapper mapper) : WebApiController
+    public class TeamController(ITeamService teamService, IUserHttpContext userContext, IUserIdentityService userIdentity, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
@@ -54,7 +54,8 @@ namespace WebAPI.Controllers.Team
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok<GetTeam.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, [FromBody] UpdateTeam.Request request, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            var userId = await userIdentity.GetTeamUserId(id, cancellationToken);
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -69,7 +70,8 @@ namespace WebAPI.Controllers.Team
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            var userId = await userIdentity.GetTeamUserId(id, cancellationToken);
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
