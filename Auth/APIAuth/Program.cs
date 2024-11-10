@@ -279,7 +279,7 @@ namespace APIAuth
                     var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
 
                     context.Database.EnsureDeleted();
-                    context.Database.EnsureDeleted();    
+                    context.Database.EnsureCreated();    
                 }
                 catch (Exception ex)
                 {
