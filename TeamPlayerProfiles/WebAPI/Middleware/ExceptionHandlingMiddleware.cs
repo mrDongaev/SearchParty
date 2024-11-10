@@ -32,17 +32,17 @@ namespace WebAPI.Middleware
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             var statusCode = (HttpStatusCode)context.Response.StatusCode;
-            if (exception is InvalidEnumMemberException || exception is InvalidClassMemberException ||
-                exception is TeamCountOverflowException || exception is TeamOwnerNotPresentException ||
-                exception is TeamPositionOverlapException)
+            if (ex is InvalidEnumMemberException || ex is InvalidClassMemberException ||
+                ex is TeamCountOverflowException || ex is TeamOwnerNotPresentException ||
+                ex is TeamPositionOverlapException || ex is TeamContainsPlayerException)
             {
                 statusCode = HttpStatusCode.BadRequest;
             }
-            else if (exception is DbUpdateException || exception is DbUpdateConcurrencyException ||
-                exception is HttpRequestException || exception is AutoMapperMappingException || exception is SystemException)
+            else if (ex is DbUpdateException || ex is DbUpdateConcurrencyException ||
+                ex is HttpRequestException || ex is AutoMapperMappingException || ex is SystemException)
             {
                 statusCode = HttpStatusCode.InternalServerError;
             }
@@ -50,7 +50,7 @@ namespace WebAPI.Middleware
             {
                 statusCode = HttpStatusCode.BadRequest;
             }
-            var errorMsg = string.IsNullOrEmpty(exception.Message) ? "An unforeseen error has occurred" : exception.Message;
+            var errorMsg = string.IsNullOrEmpty(ex.Message) ? "An unforeseen error has occurred" : ex.Message;
             int codeNum = (int)statusCode;
 
             context.Response.StatusCode = codeNum;
@@ -62,7 +62,7 @@ namespace WebAPI.Middleware
                 ErrorMsg = errorMsg,
             });
 
-            _logger.Error(exception, "An error has occurred with code {codeNum}: {@statusCode}", codeNum, statusCode);
+            _logger.Error(ex, "An error has occurred with code {codeNum}: {@statusCode}", codeNum, statusCode);
 
             await context.Response.WriteAsync(result);
         }

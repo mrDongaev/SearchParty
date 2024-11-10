@@ -2,7 +2,7 @@
 
 namespace Library.Models.API.UserMessaging
 {
-    public class Message
+    public class ProfileMessageSubmitted
     {
         public Guid SenderId { get; set; }
 
@@ -11,6 +11,8 @@ namespace Library.Models.API.UserMessaging
         public Guid AcceptorId { get; set; }
 
         public Guid AcceptingUserId { get; set; }
+
+        public PositionName PositionName { get; set; }
 
         public MessageType MessageType { get; set; }
     }

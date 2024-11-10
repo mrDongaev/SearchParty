@@ -7,6 +7,6 @@ namespace Service.Services.Interfaces.TeamInterfaces
 {
     public interface ITeamBoardService : IBoardService<TeamDto, ConditionalTeamQuery>
     {
-        Task SendTeamApplicationRequest(Message message, CancellationToken cancellationToken);
+        Task SendTeamApplicationRequest(ProfileMessageSubmitted message, CancellationToken cancellationToken);
     }
 }

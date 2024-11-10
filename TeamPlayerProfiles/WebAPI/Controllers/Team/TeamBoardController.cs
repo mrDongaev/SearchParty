@@ -33,28 +33,34 @@ namespace WebAPI.Controllers.Team
             return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedPlayer));
         }
 
-        [HttpPost("{teamId}/{playerId}")]
+        [HttpPost("{teamId}/{playerId}/{position}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok, BadRequest, UnauthorizedHttpResult>> SendTeamApplicationRequest(Guid teamId, Guid playerId, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok, BadRequest, NotFound, UnauthorizedHttpResult>> SendTeamApplicationRequest(Guid teamId, Guid playerId, int position, CancellationToken cancellationToken)
         {
             var playerUserId = await userIdentity.GetPlayerUserId(teamId, cancellationToken);
+            var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            if (playerUserId == null || teamUserId == null)
+            {
+                return TypedResults.NotFound();
+            }
             if (playerUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
-            var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
-            if (teamUserId == userContext.UserId)
+            if (teamUserId == userContext.UserId || !Enum.IsDefined(typeof(PositionName), position))
             {
                 return TypedResults.BadRequest();
             }
-            var message = new Message()
+            var message = new ProfileMessageSubmitted()
             {
                 SenderId = teamId,
                 SendingUserId = userContext.UserId,
                 AcceptorId = playerId,
-                AcceptingUserId = userContext.UserId,
+                AcceptingUserId = (Guid)teamUserId,
+                PositionName = (PositionName)position,
                 MessageType = MessageType.PlayerApplication,
             };
             await teamService.SendTeamApplicationRequest(message, cancellationToken);

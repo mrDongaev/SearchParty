@@ -7,6 +7,6 @@ namespace Service.Services.Interfaces.PlayerInterfaces
 {
     public interface IPlayerBoardService : IBoardService<PlayerDto, ConditionalPlayerQuery>
     {
-        Task InvitePlayerToTeam(Message message, CancellationToken cancellationToken);
+        Task InvitePlayerToTeam(ProfileMessageSubmitted message, CancellationToken cancellationToken);
     }
 }

@@ -15,6 +15,13 @@ namespace WebAPI.Configurations
                 });
             });
 
+            services.AddOptions<MassTransitHostOptions>()
+                .Configure(options =>
+                {
+                    options.WaitUntilStarted = true;
+                    options.StartTimeout = TimeSpan.FromSeconds(10);
+                });
+
             return services;
         }
 

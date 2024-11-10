@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Exceptions;
 using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
@@ -20,12 +21,21 @@ namespace Service.Services.Implementations.TeamServices
             return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
         }
 
-        public async Task SendTeamApplicationRequest(Message message, CancellationToken cancellationToken = default)
+        public async Task SendTeamApplicationRequest(ProfileMessageSubmitted message, CancellationToken cancellationToken = default)
         {
             using (var scope = provider.CreateScope())
             {
-                var sender = scope.ServiceProvider.GetRequiredService<ISendEndpoint>();
-                await sender.Send(message, cancellationToken);
+                var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+                var teamPlayers = await teamRepo.GetTeamPlayers(message.AcceptorId, cancellationToken);
+                if (teamPlayers.SingleOrDefault(tp => tp.PositionId == (int)message.PositionName) != null)
+                {
+                    throw new TeamPositionOverlapException();   
+                }
+                else if (teamPlayers.SingleOrDefault(tp => tp.PlayerId == message.SenderId) != null)
+                {
+                    throw new TeamContainsPlayerException();
+                }
+                await sender.Publish(message, cancellationToken);
             }
         }
 

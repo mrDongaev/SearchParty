@@ -53,7 +53,7 @@ namespace APIAuth
                 MigrationProcessing(app);
             }
 
-            if (EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true")
+            if (app.Environment.IsDevelopment() || (EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true"))
             {
                 using (var scope = app.Services.CreateScope())
                 {
@@ -279,7 +279,7 @@ namespace APIAuth
                     var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
 
                     context.Database.EnsureDeleted();
-                    context.Database.EnsureDeleted();    
+                    context.Database.EnsureCreated();    
                 }
                 catch (Exception ex)
                 {

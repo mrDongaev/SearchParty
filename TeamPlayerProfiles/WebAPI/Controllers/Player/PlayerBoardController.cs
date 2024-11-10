@@ -32,28 +32,34 @@ namespace WebAPI.Controllers.Player
             return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetPlayer.Response>(updatedPlayer));
         }
 
-        [HttpPost("{playerId}/{teamId}")]
+        [HttpPost("{playerId}/{teamId}/{position}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok, BadRequest, UnauthorizedHttpResult>> InvitePlayerToTeam(Guid playerId, Guid teamId, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok, BadRequest, NotFound, UnauthorizedHttpResult>> InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
         {
             var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            if (teamUserId == null || playerUserId == null)
+            {
+                return TypedResults.NotFound();
+            }
             if (teamUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
-            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
-            if (playerUserId == userContext.UserId)
+            if (playerUserId == userContext.UserId || !Enum.IsDefined(typeof(PositionName), position))
             {
                 return TypedResults.BadRequest();
             }
-            var message = new Message()
+            var message = new ProfileMessageSubmitted()
             {
                 SenderId = teamId,
                 SendingUserId = userContext.UserId,
                 AcceptorId = playerId,
-                AcceptingUserId = userContext.UserId,
+                AcceptingUserId = (Guid)playerUserId,
+                PositionName = (PositionName)position,
                 MessageType = MessageType.TeamInvitation,
             };
             await boardService.InvitePlayerToTeam(message, cancellationToken);
