@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.HeroInterfaces;
@@ -6,6 +7,7 @@ using WebAPI.Models.Hero;
 
 namespace WebAPI.Controllers.Hero
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
     public class HeroController(IHeroService heroService, IMapper mapper) : WebApiController
     {

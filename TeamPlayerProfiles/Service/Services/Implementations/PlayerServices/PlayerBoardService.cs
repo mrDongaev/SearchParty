@@ -10,14 +10,14 @@ namespace Service.Services.Implementations.PlayerServices
 {
     public class PlayerBoardService(IMapper mapper, IPlayerRepository playerRepo) : IPlayerBoardService
     {
-        public async Task<PlayerDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken)
+        public async Task<PlayerDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
             var player = new Player() { Id = id, Displayed = displayed };
             var updatedPlayer = await playerRepo.Update(player, cancellationToken);
             return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
         }
 
-        public async Task InvitePlayerToTeam(Guid playerId, Guid invitingTeamId, CancellationToken cancellationToken)
+        public async Task InvitePlayerToTeam(Guid playerId, Guid invitingTeamId, CancellationToken cancellationToken = default)
         {
             await Task.Delay(0);
             throw new NotImplementedException();

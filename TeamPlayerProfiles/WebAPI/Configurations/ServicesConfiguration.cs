@@ -1,4 +1,9 @@
-﻿using Service.Services.Implementations;
+﻿using Library.Services.Implementations.AuthenticationServices;
+using Library.Services.Implementations.UserContextServices;
+using Library.Services.Interfaces.AuthenticationInterfaces;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Utils;
+using Service.Services.Implementations;
 using Service.Services.Implementations.HeroServices;
 using Service.Services.Implementations.PlayerServices;
 using Service.Services.Implementations.PositionServices;
@@ -13,7 +18,7 @@ namespace WebAPI.Configurations
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services
                 .AddScoped<IPositionService, PositionService>()

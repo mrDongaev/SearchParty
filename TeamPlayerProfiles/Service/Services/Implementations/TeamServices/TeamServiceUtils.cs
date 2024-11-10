@@ -1,7 +1,5 @@
 ﻿using Common.Exceptions;
 using DataAccess.Entities;
-using Library.Models.Enums;
-using Service.Contracts.Player;
 using Service.Contracts.Team;
 
 namespace Service.Services.Implementations.TeamServices

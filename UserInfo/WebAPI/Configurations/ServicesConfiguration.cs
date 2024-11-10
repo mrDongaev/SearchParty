@@ -14,25 +14,10 @@ namespace WebAPI.Configurations
                 .AddScoped<IUserService, UserService>()
                 .AddHttpClient<IUserProfileService, UserProfilesService>(cfg =>
                 {
-                    Uri baseAddress;
-                    if (EnvironmentUtils.TryGetEnvVariable("CONTAINER").Equals("true"))
-                    {
-                        baseAddress = new Uri(EnvironmentUtils.GetEnvVariable("USER_PROFILES_URL"));
-                    }
-                    else
-                    {
-                        HttpClientSettings httpClientSettings = configuration.GetSection("HttpClientSettings").Get<HttpClientSettings>();
-                        baseAddress = new Uri(httpClientSettings.UserProfilesUrl);
-                    }
-                    cfg.BaseAddress = baseAddress;
+                    cfg.BaseAddress = new Uri(EnvironmentUtils.GetEnvVariable("TEAM_PLAYER_PROFILES_URL")); ;
                     cfg.DefaultRequestHeaders.Add("Accept", "text/plain");
                 });
             return services;
         }
-    }
-
-    public class HttpClientSettings
-    {
-        public string UserProfilesUrl { get; set; }
     }
 }

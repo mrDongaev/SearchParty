@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.User;
@@ -7,8 +9,9 @@ using WebAPI.Models.User;
 
 namespace WebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
-    public class UserController(IUserService userService, IMapper mapper) : WebApiController
+    public class UserController(IUserService userService, IUserHttpContext userContext, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
@@ -37,17 +40,28 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
-        public async Task<IResult> Create(CreateUser.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType<GetUser.Response>(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType<GetUser.Response>(StatusCodes.Status400BadRequest)]
+        public async Task<Results<Ok<GetUser.Response>, BadRequest, UnauthorizedHttpResult>> Create(CreateUser.Request request, CancellationToken cancellationToken)
         {
+            if (request.Id != userContext.UserId)
+            {
+                return TypedResults.Unauthorized();
+            }
             var createdUser = await userService.Create(mapper.Map<CreateUserDto>(request), cancellationToken);
-            return TypedResults.Ok(mapper.Map<GetUser.Response>(createdUser));
+            return createdUser == null ? TypedResults.BadRequest() : TypedResults.Ok(mapper.Map<GetUser.Response>(createdUser));
         }
 
         [HttpPost("{id}")]
         [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetUser.Response>(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetUser.Response>, NotFound>> Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken)
+        public async Task<Results<Ok<GetUser.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken)
         {
+            if (userContext.UserId != id)
+            {
+                return TypedResults.Unauthorized();
+            }
             var user = mapper.Map<UpdateUserDto>(request);
             user.Id = id;
             var updatedUser = await userService.Update(user, cancellationToken);
@@ -56,8 +70,13 @@ namespace WebAPI.Controllers
 
         [HttpDelete("{id}")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-        public async Task<IResult> Delete(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
         {
+            if (userContext.UserId != id)
+            {
+                return TypedResults.Unauthorized();
+            }
             return TypedResults.Ok(await userService.Delete(id, cancellationToken));
         }
     }

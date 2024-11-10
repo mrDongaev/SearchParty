@@ -15,7 +15,8 @@ namespace Service.Mapping
                 .ForMember(d => d.Players, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
-                                .ForAllMembers(opts => {
+                                .ForAllMembers(opts =>
+                                {
                                     opts.AllowNull();
                                     opts.Condition((src, dest, srcMember) => srcMember != null);
                                 });
@@ -25,7 +26,8 @@ namespace Service.Mapping
                 .ForMember(d => d.Players, m => m.Ignore())
                 .ForMember(d => d.Teams, m => m.Ignore())
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
-                                .ForAllMembers(opts => {
+                                .ForAllMembers(opts =>
+                                {
                                     opts.AllowNull();
                                     opts.Condition((src, dest, srcMember) => srcMember != null);
                                 });
