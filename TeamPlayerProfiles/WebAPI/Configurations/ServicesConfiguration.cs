@@ -27,13 +27,7 @@ namespace WebAPI.Configurations
                 .AddScoped<ITeamService, TeamService>()
                 .AddScoped<IPlayerBoardService, PlayerBoardService>()
                 .AddScoped<ITeamBoardService, TeamBoardService>()
-                .AddScoped<IUserService, UserService>()
-                .AddScoped<IUserHttpContext, UserHttpContext>()
-                .AddHttpClient<IAuthenticationService, AuthenticationService>(cfg =>
-                {
-                    cfg.BaseAddress = new Uri(EnvironmentUtils.GetEnvVariable("AUTHENTICATION_SERVICE_URL"));
-                    cfg.DefaultRequestHeaders.Add("Accept", "text/plain");
-                });
+                .AddScoped<IUserService, UserService>();
             return services;
         }
     }

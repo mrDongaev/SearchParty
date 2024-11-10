@@ -19,8 +19,7 @@ namespace Service.Mapping
                 .ForMember(d => d.Id, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore());
 
-            CreateMap<CreateUserDto, CreateUser.Request>()
-                .ForMember(d => d.Id, m => m.Ignore());
+            CreateMap<CreateUserDto, CreateUser.Request>();
 
             CreateMap<UpdateUserDto, UpdateUser.Request>();
         }

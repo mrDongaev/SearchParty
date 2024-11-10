@@ -1,9 +1,13 @@
-﻿using Library.Utils;
+﻿using Library.Services.Implementations.AuthenticationServices;
+using Library.Services.Implementations.UserContextServices;
+using Library.Services.Interfaces.AuthenticationInterfaces;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace WebAPI.Configurations
+namespace Library.Configurations
 {
     public static class AuthenticationConfiguration
     {
@@ -28,6 +32,12 @@ namespace WebAPI.Configurations
                 };
             });
 
+            services.AddScoped<IUserHttpContext, UserHttpContext>()
+                .AddHttpClient<IAuthenticationService, AuthenticationService>(cfg =>
+                {
+                    cfg.BaseAddress = new Uri(EnvironmentUtils.GetEnvVariable("AUTHENTICATION_SERVICE_URL"));
+                    cfg.DefaultRequestHeaders.Add("Accept", "text/plain");
+                });
             return services;
         }
     }

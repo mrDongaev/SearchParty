@@ -3,6 +3,7 @@ using Library.Middleware;
 using Library.Utils;
 using Serilog;
 using WebAPI.Configurations;
+using Library.Configurations;
 using WebAPI.Middleware;
 
 Log.Logger = new Serilog.LoggerConfiguration()

@@ -8,8 +8,13 @@ namespace Service.Services.Implementations
 {
     public class UserService(IMapper mapper, IUserRepository userRepo) : IUserService
     {
-        public async Task<UserDto> Create(CreateUserDto dto, CancellationToken cancellationToken = default)
+        public async Task<UserDto?> Create(CreateUserDto dto, CancellationToken cancellationToken = default)
         {
+            var userExists = await userRepo.Get(dto.Id, cancellationToken) != null;
+            if (userExists)
+            {
+                return null;
+            }
             var newUser = mapper.Map<User>(dto);
             var createdUser = await userRepo.Add(newUser, cancellationToken);
             return mapper.Map<UserDto>(createdUser);

@@ -40,8 +40,13 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
-        public async Task<IResult> Create(CreateUser.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<GetUser.Response>, UnauthorizedHttpResult>> Create(CreateUser.Request request, CancellationToken cancellationToken)
         {
+            if (userContext.UserId != request.Id)
+            {
+                return TypedResults.Unauthorized();
+            }
             var createdUser = await userService.Create(mapper.Map<CreateUserDto>(request), cancellationToken);
             return TypedResults.Ok(mapper.Map<GetUser.Response>(createdUser));
         }
