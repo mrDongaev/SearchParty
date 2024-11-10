@@ -15,29 +15,22 @@ namespace EFData
         {
             if (!userManager.Users.Any())
             {
-                var users = new List<AppUser>
-                            {
-                                new AppUser
-                                    {
-                                        DisplayName = "TestUserFirst",
-
-                                        UserName = "TestUserFirst",
-
-                                        Email = "testuserfirst@test.com"
-                                    },
-
-                                new AppUser
-                                    {
-                                        DisplayName = "TestUserSecond",
-
-                                        UserName = "TestUserSecond",
-
-                                        Email = "testusersecond@test.com"
-                                    }
-                              };
+                AppUser[] users = new AppUser[20];
+                string emptyGuid = Guid.Empty.ToString();
+                for (int i = 0; i < users.Length; i++)
+                {
+                    string indexStr = (i + 1).ToString();
+                    users[i] = new AppUser
+                    {
+                        Id = ("a" + emptyGuid[1..^indexStr.Length] + indexStr),
+                        DisplayName = $"user{i + 1}",
+                        UserName = $"user{i + 1}",
+                        Email = $"user{i + 1}@test.com",
+                    };
+                }
                 foreach (var user in users)
                 {
-                    await userManager.CreateAsync(user, "qazwsX123@");
+                    await userManager.CreateAsync(user, "Qwe123@");
                 }
             }
         }
