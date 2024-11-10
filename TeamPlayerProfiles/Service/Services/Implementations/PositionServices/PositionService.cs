@@ -19,7 +19,7 @@ namespace Service.Services.Implementations.PositionServices
             return mapper.Map<ICollection<PositionDto>>(positions);
         }
 
-        public async Task<ICollection<PositionDto>> GetRange(ICollection<int> ids, CancellationToken cancellationToken)
+        public async Task<ICollection<PositionDto>> GetRange(ICollection<int> ids, CancellationToken cancellationToken = default)
         {
             var positions = await posRepo.GetRange(ids, cancellationToken);
             return mapper.Map<ICollection<PositionDto>>(positions);

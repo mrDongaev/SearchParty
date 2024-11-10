@@ -15,26 +15,30 @@ namespace WebAPI.Mapping
             CreateMap<TeamPlayerDto.Read, UpdateTeamPlayer.Response>();
 
             CreateMap<UpdateTeamPlayer.Request, TeamPlayerDto.Write>()
-                .ForAllMembers(opts => {
-                        opts.AllowNull();
-                        opts.Condition((src, dest, srcMember) => srcMember != null);
-                    });
+                .ForAllMembers(opts =>
+                {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
             CreateMap<CreateTeam.Request, CreateTeamDto>()
-                .ForAllMembers(opts => {
+                .ForAllMembers(opts =>
+                {
                     opts.AllowNull();
                     opts.Condition((src, dest, srcMember) => srcMember != null);
                 });
 
             CreateMap<UpdateTeam.Request, UpdateTeamDto>()
                 .ForMember(d => d.Id, m => m.Ignore())
-                .ForAllMembers(opts => {
+                .ForAllMembers(opts =>
+                {
                     opts.AllowNull();
                     opts.Condition((src, dest, srcMember) => srcMember != null);
                 });
 
             CreateMap<GetConditionalTeam.Request, ConditionalTeamQuery>()
-                .ForAllMembers(opts => {
+                .ForAllMembers(opts =>
+                {
                     opts.AllowNull();
                     opts.Condition((src, dest, srcMember) => srcMember != null);
                 });

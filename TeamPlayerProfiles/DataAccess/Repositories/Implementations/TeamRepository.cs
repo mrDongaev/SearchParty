@@ -31,6 +31,12 @@ namespace DataAccess.Repositories.Implementations
                 .SingleAsync(t => t.Id == id, cancellationToken);
         }
 
+        public async Task<Guid?> GetProfileUserId(Guid teamId, CancellationToken cancellationToken)
+        {
+            var team = await _teams.AsNoTracking().SingleOrDefaultAsync(t => t.Id == teamId, cancellationToken);
+            return team?.UserId;
+        }
+
         public override async Task<Team> Add(Team team, CancellationToken cancellationToken)
         {
             team.Id = Guid.NewGuid();

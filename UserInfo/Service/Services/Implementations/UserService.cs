@@ -12,13 +12,17 @@ namespace Service.Services.Implementations
     {
         public async Task<UserDto?> Create(CreateUserDto dto, CancellationToken cancellationToken)
         {
+            var userExists = await userRepo.Get(dto.Id, cancellationToken) != null;
+            if (userExists)
+            {
+                return null;
+            }
             var newUser = mapper.Map<User>(dto);
             var createdUser = await userRepo.Add(newUser, cancellationToken);
             GetUser.Response? userProfile = null;
             if (createdUser != null)
             {
                 CreateUser.Request userRequest = mapper.Map<CreateUser.Request>(dto);
-                userRequest.Id = createdUser.Id;
                 userProfile = await userProfileService.Create(userRequest, cancellationToken);
             }
             if (userProfile != null)

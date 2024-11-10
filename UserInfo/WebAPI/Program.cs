@@ -1,4 +1,6 @@
 using DataAccess.Context;
+using Library.Configurations;
+using Library.Middleware;
 using Library.Utils;
 using Serilog;
 using WebAPI.Configurations;
@@ -19,6 +21,7 @@ try
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
         .AddSwagger()
+        .AddAuthenticationConfiguration()
         .AddControllers();
 
     builder.Host
@@ -27,7 +30,7 @@ try
     var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (EnvironmentUtils.TryGetEnvVariable("USER_INFO__SEED_DATABASE").Equals("true"))
+    if (EnvironmentUtils.TryGetEnvVariable("USER_INFO__SEED_DATABASE", out var doSeed) && doSeed == "true")
     {
         using (var scope = app.Services.CreateScope())
         {
@@ -50,6 +53,10 @@ try
     app.UseSerilogRequestLogging();
     app.UseExceptionHandling();
     app.UseHttpsRedirection();
+    app.UseMiddleware<TokenRefreshMiddleware>();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseMiddleware<UserHttpContextMiddleware>();
     app.UseAuthorization();
     app.MapControllers();
     await app.RunAsync();

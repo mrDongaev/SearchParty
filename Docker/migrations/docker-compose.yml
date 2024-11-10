@@ -13,7 +13,6 @@ services:
       - "8080:8080" 
       - "8081:8081" 
     environment:
-      CONTAINER: true
       DATABASE_HOSTNAME: team_player_profiles_db
       DATABASE_PORT: 5432
       DATABASE_NAME: team_player_profiles
@@ -55,7 +54,6 @@ services:
       - "8082:8080" 
       - "8083:8081" 
     environment:
-      CONTAINER: true
       DATABASE_HOSTNAME: user_info_db
       DATABASE_PORT: 5432
       DATABASE_NAME: user_info
