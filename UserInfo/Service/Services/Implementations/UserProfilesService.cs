@@ -1,5 +1,7 @@
 ﻿using Library.Models.API.UserProfiles.User;
+using Library.Services.Interfaces.UserContextInterfaces;
 using Service.Services.Interfaces.UserProfilesInterfaces;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Service.Services.Implementations.UserProfileServices
@@ -8,9 +10,11 @@ namespace Service.Services.Implementations.UserProfileServices
     {
         private HttpClient _httpClient;
 
-        public UserProfilesService(HttpClient httpClient)
+        public UserProfilesService(HttpClient httpClient, IUserHttpContext userContext)
         {
             _httpClient = httpClient;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userContext.AccessToken);
+            _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={userContext.RefreshToken}");
         }
         public async Task<GetUser.Response> Create(CreateUser.Request request, CancellationToken cancellationToken)
         {
