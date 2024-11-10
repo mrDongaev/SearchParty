@@ -1,12 +1,5 @@
 ﻿using DataAccess.Entities.Interfaces;
-using Library.Entities.Interfaces;
 using Library.Models.Enums;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Entities
 {
@@ -20,7 +13,7 @@ namespace DataAccess.Entities
 
         public Guid AcceptingTeamId { get; set; }
 
-        public Guid AcceptingUserId {  get; set; }
+        public Guid AcceptingUserId { get; set; }
 
         public MessageStatus Status { get; set; }
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Service.Models
+﻿namespace Service.Models
 {
     public interface IMessage
     {
@@ -18,7 +12,7 @@ namespace Service.Models
 
         public DateTime IssuedAt { get; set; }
 
-        public DateTime ExpiresAt {  get; set; }
+        public DateTime ExpiresAt { get; set; }
 
         public Task<IMessage> Accept { get; set; }
 
