@@ -1,22 +1,31 @@
 ﻿using AutoMapper;
 using Common.Models;
 using Library.Models;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.TeamInterfaces;
 using WebAPI.Models.Player;
 using WebAPI.Models.Team;
+using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Team
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
-    public class TeamBoardController(IMapper mapper, ITeamBoardService teamService) : WebApiController
+    public class TeamBoardController(IMapper mapper, ITeamBoardService teamService, IUserHttpContext userContext, IServiceProvider serviceProvider) : WebApiController
     {
         [HttpPost("{teamId}/{displayed}")]
         [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetTeam.Response>, NotFound>> SetDisplayed(Guid teamId, bool displayed, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<GetTeam.Response>, NotFound, UnauthorizedHttpResult>> SetDisplayed(Guid teamId, bool displayed, CancellationToken cancellationToken)
         {
+            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, teamId, cancellationToken) == false)
+            {
+                return TypedResults.Unauthorized();
+            }
             var updatedPlayer = await teamService.SetDisplayed(teamId, displayed, cancellationToken);
             return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedPlayer));
         }
@@ -24,9 +33,18 @@ namespace WebAPI.Controllers.Team
         [HttpPost("{teamId}/{playerId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<Results<Ok, BadRequest>> SendTeamAccessionRequest(Guid teamId, Guid playerId, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok, BadRequest, UnauthorizedHttpResult>> SendTeamApplicationRequest(Guid teamId, Guid playerId, CancellationToken cancellationToken)
         {
-            await teamService.SendTeamAccessionRequest(teamId, playerId, cancellationToken);
+            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, playerId, cancellationToken) == false)
+            {
+                return TypedResults.Unauthorized();
+            }
+            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, teamId, cancellationToken) == true)
+            {
+                return TypedResults.BadRequest();
+            }
+            await teamService.SendTeamApplicationRequest(teamId, playerId, cancellationToken);
             return TypedResults.Ok();
         }
 

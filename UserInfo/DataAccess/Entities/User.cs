@@ -2,7 +2,7 @@
 
 namespace DataAccess.Entities
 {
-    public class User : IEntity<Guid>
+    public class User : IEntity<Guid>, IUpdateable
     {
         public Guid Id { get; set; }
 
@@ -15,5 +15,7 @@ namespace DataAccess.Entities
         public string? DiscordName { get; set; }
 
         public string? TelegramLink { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
     }
 }

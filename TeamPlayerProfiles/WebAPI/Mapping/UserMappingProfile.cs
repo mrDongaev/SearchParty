@@ -10,10 +10,20 @@ namespace WebAPI.Mapping
         {
             CreateMap<UserDto, GetUser.Response>();
 
-            CreateMap<CreateUser.Request, CreateUserDto>();
+            CreateMap<CreateUser.Request, CreateUserDto>()
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<UpdateUser.Request, UpdateUserDto>()
-                .ForMember(d => d.Id, m => m.Ignore());
+                .ForMember(d => d.Id, m => m.Ignore())
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
         }
     }
 }

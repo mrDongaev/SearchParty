@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Models.User
+﻿namespace Library.Models.API.UserInfo.User
 {
     public static class GetUser
     {
@@ -17,6 +17,8 @@
             public string DiscordName { get; set; }
 
             public string TelegramLink { get; set; }
+
+            public DateTime UpdatedAt { get; set; }
         }
     }
 }

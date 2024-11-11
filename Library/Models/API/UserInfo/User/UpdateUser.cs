@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebAPI.Models.User
+﻿namespace Library.Models.API.UserInfo.User
 {
     public static class UpdateUser
     {

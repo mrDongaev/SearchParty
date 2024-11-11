@@ -18,7 +18,7 @@
 
             public uint AvgMmr { get; set; }
 
-            public ISet<UpdateTeamPlayers.Response> PlayersInTeam { get; set; }
+            public ISet<UpdateTeamPlayer.Response> PlayersInTeam { get; set; }
         }
     }
 }

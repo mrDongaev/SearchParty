@@ -3,7 +3,7 @@ using Library.Models.Enums;
 
 namespace Library.Models.API.TeamPlayerProfiles.Team
 {
-    public static class UpdateTeamPlayers
+    public static class UpdateTeamPlayer
     {
         public sealed class Request
         {

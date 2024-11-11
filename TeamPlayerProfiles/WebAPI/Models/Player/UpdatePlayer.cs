@@ -14,6 +14,8 @@ namespace WebAPI.Models.Player
             public string? Description { get; set; }
 
             public PositionName? Position { get; set; }
+
+            public ISet<int>? HeroIds { get; set; }
         }
     }
 }

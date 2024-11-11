@@ -16,4 +16,5 @@ COPY ["./Library/", "./Library/"]
 WORKDIR "/src/UserInfo"
 COPY ["./UserInfo/migrations.sh", "."]
 RUN chmod +x migrations.sh
+RUN sed -i 's/\r$//' migrations.sh
 ENTRYPOINT ["bash", "./migrations.sh"]

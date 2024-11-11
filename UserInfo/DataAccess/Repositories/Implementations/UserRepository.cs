@@ -15,11 +15,24 @@ namespace DataAccess.Repositories.Implementations
             _users = context.Users;
         }
 
-        public async Task<ICollection<User>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
+        public override async Task<User?> Update(User user, CancellationToken cancellationToken)
         {
-            return await _users.AsNoTracking()
-                .Where(u => ids.Contains(u.Id))
-                .ToListAsync(cancellationToken);
+            var existingUser = await _users.SingleOrDefaultAsync(p => p.Id == user.Id, cancellationToken);
+            if (existingUser == null)
+            {
+                return null;
+            }
+            if (user.Name != null) existingUser.Name = user.Name;
+            if (user.Description != null) existingUser.Description = user.Description;
+            if (user.SteamFriendCode != null) existingUser.SteamFriendCode = user.SteamFriendCode;
+            if (user.DiscordName != null) existingUser.DiscordName = user.DiscordName;
+            if (user.TelegramLink != null) existingUser.TelegramLink = user.TelegramLink;
+            if (_context.Entry(existingUser).State == EntityState.Modified)
+            {
+                existingUser.UpdatedAt = DateTime.UtcNow;
+            }
+            var updatedUser = await base.Update(existingUser, cancellationToken);
+            return updatedUser;
         }
     }
 }

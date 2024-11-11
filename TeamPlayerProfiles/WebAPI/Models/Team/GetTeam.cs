@@ -18,7 +18,7 @@
 
             public DateTime UpdatedAt { get; set; }
 
-            public ISet<UpdateTeamPlayers.Response> PlayersInTeam { get; set; } = new HashSet<UpdateTeamPlayers.Response>();
+            public ISet<UpdateTeamPlayer.Response> PlayersInTeam { get; set; } = new HashSet<UpdateTeamPlayer.Response>();
         }
     }
 }

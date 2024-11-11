@@ -4,7 +4,7 @@ using Library.Repositories.Interfaces;
 
 namespace DataAccess.Repositories.Interfaces
 {
-    public interface IUserRepository : IRepository<User, Guid>, IRangeGettable<User, Guid>
+    public interface IUserRepository : IRepository<User, Guid>
     {
     }
 }

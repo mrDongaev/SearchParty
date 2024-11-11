@@ -12,12 +12,27 @@ namespace WebAPI.Mapping
         {
             CreateMap<PlayerDto, GetPlayer.Response>();
 
-            CreateMap<CreatePlayer.Request, CreatePlayerDto>();
+            CreateMap<CreatePlayer.Request, CreatePlayerDto>()
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<UpdatePlayer.Request, UpdatePlayerDto>()
-                .ForMember(d => d.Id, m => m.Ignore());
+                .ForMember(d => d.Id, m => m.Ignore())
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
-            CreateMap<GetConditionalPlayer.Request, ConditionalPlayerQuery>();
+            CreateMap<GetConditionalPlayer.Request, ConditionalPlayerQuery>()
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<PaginatedResult<PlayerDto>, PaginatedResult<GetPlayer.Response>>();
         }

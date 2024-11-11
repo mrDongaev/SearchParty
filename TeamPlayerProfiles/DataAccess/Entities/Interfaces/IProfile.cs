@@ -12,7 +12,7 @@ namespace DataAccess.Entities.Interfaces
 
         string? Description { get; set; }
 
-        bool Displayed { get; set; }
+        bool? Displayed { get; set; }
 
     }
 }

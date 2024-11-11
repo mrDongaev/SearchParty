@@ -11,7 +11,7 @@ namespace DataAccess.Entities
 
         public string? Description { get; set; }
 
-        public bool Displayed { get; set; }
+        public bool? Displayed { get; set; }
 
         public DateTime UpdatedAt { get; set; }
 

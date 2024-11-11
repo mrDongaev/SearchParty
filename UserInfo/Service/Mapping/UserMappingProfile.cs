@@ -12,13 +12,14 @@ namespace Service.Mapping
             CreateMap<User, UserDto>()
                 .ForMember(d => d.Mmr, m => m.Ignore());
 
-            CreateMap<CreateUserDto, User>();
+            CreateMap<CreateUserDto, User>()
+                .ForMember(d => d.UpdatedAt, m => m.Ignore());
 
             CreateMap<UpdateUserDto, User>()
-                .ForMember(d => d.Id, m => m.Ignore());
+                .ForMember(d => d.Id, m => m.Ignore())
+                .ForMember(d => d.UpdatedAt, m => m.Ignore());
 
-            CreateMap<CreateUserDto, CreateUser.Request>()
-                .ForMember(d => d.Id, m => m.Ignore());
+            CreateMap<CreateUserDto, CreateUser.Request>();
 
             CreateMap<UpdateUserDto, UpdateUser.Request>();
         }

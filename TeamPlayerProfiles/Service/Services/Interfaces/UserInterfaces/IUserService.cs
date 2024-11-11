@@ -1,5 +1,4 @@
-﻿using Library.Entities.Interfaces;
-using Library.Services.Interfaces;
+﻿using Library.Services.Interfaces;
 using Service.Contracts.User;
 
 namespace Service.Services.Interfaces
@@ -18,7 +17,7 @@ namespace Service.Services.Interfaces
         /// </summary>
         /// <param name="dto">ДТО создаваемого профиля</param>
         /// <returns>ДТО созданного профиля</returns>
-        Task<UserDto> Create(CreateUserDto dto, CancellationToken cancellationToken);
+        Task<UserDto?> Create(CreateUserDto dto, CancellationToken cancellationToken);
 
         /// <summary>
         /// Обновить данные профиля

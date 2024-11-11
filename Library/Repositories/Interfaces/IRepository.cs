@@ -26,6 +26,14 @@ namespace Library.Repositories.Interfaces
         Task<T?> Get(TId id, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Получить ряд сущностей по идентификатору
+        /// </summary>
+        /// <param name="ids">Список идентификаторов</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Список сущностей</returns>
+        Task<ICollection<T>> GetRange(ICollection<TId> ids, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Удалить сущность.
         /// </summary>
         /// <param name="id"> Id удалённой сущности. </param>
@@ -39,7 +47,7 @@ namespace Library.Repositories.Interfaces
         /// <param name="entities"> Коллекция сущностей для удаления. </param>
         /// <param name="cancellationToken"> Токен отмены </param>
         /// <returns> Была ли операция удаления успешна. </returns>
-        Task<bool> DeleteRange(ICollection<T> entities, CancellationToken cancellationToken);
+        Task<bool> DeleteRange(ICollection<TId> ids, CancellationToken cancellationToken);
 
         /// <summary>
         /// Для сущности проставить состояние - что она изменена.

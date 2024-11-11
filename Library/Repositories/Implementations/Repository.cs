@@ -38,6 +38,20 @@ namespace Library.Repositories.Implementations
         }
 
         /// <summary>
+        /// Получить ряд сущностей по идентификатору
+        /// </summary>
+        /// <param name="ids">Список идентификаторов</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Список сущностей</returns>
+        public async Task<ICollection<TEntity>> GetRange(ICollection<TId> ids, CancellationToken cancellationToken)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Where(e => ids.Contains(e.Id))
+                .ToListAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Добавить в базу одну сущность.
         /// </summary>
         /// <param name="entity"> Сущность для добавления. </param>
@@ -100,14 +114,15 @@ namespace Library.Repositories.Implementations
         /// <summary>
         /// Удалить сущности.
         /// </summary>
-        /// <param name="entities"> Коллекция сущностей для удаления. </param>
+        /// <param name="ids"> Коллекция сущностей для удаления. </param>
         /// <returns> Была ли операция завершена успешно. </returns>
-        public virtual async Task<bool> DeleteRange(ICollection<TEntity> entities, CancellationToken cancellationToken)
+        public virtual async Task<bool> DeleteRange(ICollection<TId> ids, CancellationToken cancellationToken)
         {
-            if (entities == null || entities.Count == 0)
+            if (ids.Count == 0)
             {
                 return false;
             }
+            var entities = await _dbSet.Where(e => ids.Contains(e.Id)).ToArrayAsync(cancellationToken);
             _dbSet.RemoveRange(entities);
             await _context.SaveChangesAsync(cancellationToken);
             return true;

@@ -14,10 +14,16 @@ namespace DataAccess.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<User>()
                 .HasKey(e => e.Id);
+
             modelBuilder.Entity<User>()
                 .Property(e => e.Id);
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
 }

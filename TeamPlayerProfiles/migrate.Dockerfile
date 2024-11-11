@@ -17,4 +17,5 @@ COPY ["./Library/", "./Library/"]
 WORKDIR "/src/TeamPlayerProfiles/"
 COPY ["./TeamPlayerProfiles/migrations.sh", "."]
 RUN chmod +x migrations.sh
+RUN sed -i 's/\r$//' migrations.sh
 ENTRYPOINT ["bash", "./migrations.sh"]

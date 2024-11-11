@@ -18,7 +18,7 @@ namespace WebAPI.Models.Team
 
             [MaxLength(5)]
             [UniqueTeamPositions]
-            public ISet<UpdateTeamPlayers.Request>? PlayersInTeam { get; set; } = new HashSet<UpdateTeamPlayers.Request>();
+            public ISet<UpdateTeamPlayer.Request>? PlayersInTeam { get; set; } = new HashSet<UpdateTeamPlayer.Request>();
         }
     }
 }
