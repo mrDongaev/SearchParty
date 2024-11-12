@@ -7,7 +7,7 @@ using WebAPI.Middleware;
 Log.Logger = new Serilog.LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
-Log.Information("Starting Team and Player profiles app...");
+Log.Information("Starting User messaging app...");
 try
 {
     var builder = WebApplication.CreateBuilder(args);

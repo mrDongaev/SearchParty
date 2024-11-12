@@ -15,6 +15,8 @@ namespace DataAccess.Entities
 
         public Guid AcceptingUserId { get; set; }
 
+        public PositionName PositionName { get; set; }
+
         public MessageStatus Status { get; set; }
 
         public DateTime IssuedAt { get; set; }
