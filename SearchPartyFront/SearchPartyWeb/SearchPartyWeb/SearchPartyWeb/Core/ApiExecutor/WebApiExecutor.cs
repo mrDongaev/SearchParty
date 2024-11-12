@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Net.Mime;
 
 namespace SearchPartyWeb.Core.ApiExecutor;
 
@@ -13,7 +14,8 @@ public class WebApiExecutor : IWebApiExecutor
         _httpClient = httpClient;
 
         _httpClient.DefaultRequestHeaders.Accept.Clear();
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
+       _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     public async Task InvokeDelete<T>(string uri)
@@ -30,6 +32,7 @@ public class WebApiExecutor : IWebApiExecutor
 
     public async Task<T> InvokePost<T>(string uri, T obj)
     {
+      
         var response = await _httpClient.PostAsJsonAsync(GetUrl(uri), obj);
         return await response.Content.ReadFromJsonAsync<T>();
     }
@@ -44,7 +47,7 @@ public class WebApiExecutor : IWebApiExecutor
            
     }
 
-    public string GetUrl(string uri) => $"{_urlBase}/{uri}";
+    public string GetUrl(string uri) => $"{_urlBase}{uri}";
 
     private static async Task HandleError(HttpResponseMessage response)
     {

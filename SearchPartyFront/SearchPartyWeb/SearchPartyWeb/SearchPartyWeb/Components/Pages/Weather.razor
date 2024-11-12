@@ -1,12 +1,12 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
-
+@inject IAuthService _authService
 <PageTitle>Weather</PageTitle>
 
 <h1>Weather</h1>
 
 <p>This component demonstrates showing data.</p>
-
+<MudButton Variant="Variant.Filled" OnClick="Login">Default</MudButton>
 @if (forecasts == null)
 {
     <p>
@@ -64,4 +64,9 @@ else
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 
+    async Task Login()
+    {
+        await _authService.Login("user1@test.com", "Qwe123@");
+    }
+    
 }

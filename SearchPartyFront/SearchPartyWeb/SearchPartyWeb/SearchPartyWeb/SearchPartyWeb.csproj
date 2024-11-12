@@ -9,6 +9,7 @@
 
     <ItemGroup>       
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7"/>
+        <PackageReference Include="MudBlazor" Version="7.15.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,8 +19,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Core\Authentication\" />
       <Folder Include="Core\Models\" />
+      <Folder Include="Core\Profile\" />
+      <Folder Include="Core\Team\" />
     </ItemGroup>
 
 </Project>
