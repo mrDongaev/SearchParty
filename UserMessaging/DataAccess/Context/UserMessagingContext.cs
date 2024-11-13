@@ -1,4 +1,5 @@
-﻿using DataAccess.Entities;
+﻿using DataAccess.Context.EntitiesConfigurations;
+using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Context
@@ -15,6 +16,8 @@ namespace DataAccess.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new PlayerInvitationConfiguration());
+            modelBuilder.ApplyConfiguration(new TeamApplicationConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }

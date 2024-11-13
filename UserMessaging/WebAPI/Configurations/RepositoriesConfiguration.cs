@@ -1,5 +1,5 @@
 ﻿using DataAccess.Repositories.Implementations;
-using DataAccess.Repositories.Interfaces;
+using Service.Repositories.Interfaces;
 
 namespace WebAPI.Configurations
 {

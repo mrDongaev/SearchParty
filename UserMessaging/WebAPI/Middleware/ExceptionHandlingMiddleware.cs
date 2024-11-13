@@ -33,7 +33,7 @@ namespace WebAPI.Middleware
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var statusCode = (HttpStatusCode)context.Response.StatusCode;
-            else if (exception is DbUpdateException || exception is DbUpdateConcurrencyException ||
+            if (exception is DbUpdateException || exception is DbUpdateConcurrencyException ||
                 exception is HttpRequestException || exception is AutoMapperMappingException || exception is SystemException)
             {
                 statusCode = HttpStatusCode.InternalServerError;

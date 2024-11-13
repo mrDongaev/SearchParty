@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="Middleware\" />
+    <Folder Include="Mapping\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

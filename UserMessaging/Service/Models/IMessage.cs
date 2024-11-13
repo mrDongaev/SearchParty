@@ -1,4 +1,6 @@
-﻿namespace Service.Models
+﻿using Service.Repositories.Interfaces;
+
+namespace Service.Models
 {
     public interface IMessage
     {
@@ -14,10 +16,16 @@
 
         public DateTime ExpiresAt { get; set; }
 
-        public Task<IMessage> Accept { get; set; }
+        public void Accept();
 
-        public Task<IMessage> Reject { get; set; }
+        public void Reject();
 
-        public Task<IMessage> Expire { get; set; }
+        public void Expire();
+
+        public void Rescind();
+
+        public Task<IMessage?> SaveToDatabase(IMessageRepository messageRepository);
+
+        public Task TrySendToUser();
     }
 }

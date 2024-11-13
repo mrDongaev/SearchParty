@@ -1,3 +1,4 @@
+using DataAccess.Context;
 using Library.Configurations;
 using Library.Middleware;
 using Serilog;
@@ -27,6 +28,17 @@ try
         .AddSerilog();
 
     var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<UserMessagingContext>();
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+        }
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseSerilogRequestLogging();
