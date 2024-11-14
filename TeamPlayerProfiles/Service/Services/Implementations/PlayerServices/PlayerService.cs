@@ -32,6 +32,12 @@ namespace Service.Services.Implementations.PlayerServices
             return mapper.Map<ICollection<PlayerDto>>(players);
         }
 
+        public async Task<ICollection<PlayerDto>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            var players = await playerRepo.GetProfilesByUserId(userId, cancellationToken);
+            return mapper.Map<ICollection<PlayerDto>>(players);
+        }
+
         public async Task<Guid?> GetProfileUserId(Guid profileId, CancellationToken cancellationToken = default)
         {
             return await playerRepo.GetProfileUserId(profileId, cancellationToken);

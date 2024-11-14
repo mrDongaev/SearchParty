@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using Service.Contracts.Player;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
 
@@ -39,6 +40,12 @@ namespace Service.Services.Implementations.TeamServices
         public async Task<ICollection<TeamDto>> GetAll(CancellationToken cancellationToken = default)
         {
             var teams = await teamRepo.GetAll(cancellationToken);
+            return mapper.Map<ICollection<TeamDto>>(teams);
+        }
+
+        public async Task<ICollection<TeamDto>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            var teams = await teamRepo.GetProfilesByUserId(userId, cancellationToken);
             return mapper.Map<ICollection<TeamDto>>(teams);
         }
 

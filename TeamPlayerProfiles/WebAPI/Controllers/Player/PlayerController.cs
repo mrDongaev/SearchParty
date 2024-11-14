@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Player;
+using Service.Services.Implementations.TeamServices;
 using Service.Services.Interfaces.PlayerInterfaces;
 using WebAPI.Models.Player;
 using WebAPI.Utils;
@@ -36,6 +37,19 @@ namespace WebAPI.Controllers.Player
         public async Task<IResult> GetAll(CancellationToken cancellationToken)
         {
             var players = await playerService.GetAll(cancellationToken);
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
+        }
+
+        [HttpGet("{userId}")]
+        [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<IEnumerable<GetPlayer.Response>>, UnauthorizedHttpResult>> GetPlayersByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            if (userId != userContext.UserId)
+            {
+                return TypedResults.Unauthorized();
+            }
+            var players = await playerService.GetProfilesByUserId(userId, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
         }
 

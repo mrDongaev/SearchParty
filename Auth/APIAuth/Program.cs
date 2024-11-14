@@ -53,7 +53,7 @@ namespace APIAuth
                 MigrationProcessing(app);
             }
 
-            if (EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true")
+            if (app.Environment.IsDevelopment() || EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true")
             {
                 using (var scope = app.Services.CreateScope())
                 {
@@ -71,7 +71,7 @@ namespace APIAuth
                     {
                         var logger = services.GetRequiredService<ILogger<Program>>(); // Get the logger
 
-                        logger.LogError(ex, "An error occurred during migration"); // Log migration error
+                        logger.LogError(ex, "An error occurred during seeding"); // Log migration error
                     }
                 }
 

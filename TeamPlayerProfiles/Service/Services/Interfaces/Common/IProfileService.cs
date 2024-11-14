@@ -40,6 +40,13 @@ namespace Service.Services.Interfaces.Common
         Task<ICollection<TGetDto>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Получить все профили пользователя по ID пользователя
+        /// </summary>
+        /// <param name="id">Идентификатор пользователя</param>
+        /// <returns>Список ДТО сущностей</returns>
+        Task<ICollection<TGetDto>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Получить ID пользователя создателя сущности по ID сущности
         /// </summary>
         /// <param name="id">Идентификатор</param>
