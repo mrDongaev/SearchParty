@@ -6,9 +6,9 @@ namespace DataAccess.Context
 {
     public class UserMessagingContext : DbContext
     {
-        public DbSet<PlayerInvitation> PlayerInvitations;
+        public DbSet<PlayerInvitationEntity> PlayerInvitations;
 
-        public DbSet<TeamApplication> TeamApplications;
+        public DbSet<TeamApplicationEntity> TeamApplications;
 
         public UserMessagingContext(DbContextOptions<UserMessagingContext> options) : base(options)
         {

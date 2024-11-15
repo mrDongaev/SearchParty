@@ -1,17 +1,16 @@
-﻿using DataAccess.Entities.Interfaces;
-using Library.Models.Enums;
+﻿using Library.Models.Enums;
 
 namespace DataAccess.Entities
 {
-    public class PlayerInvitation : IMessageEntity
+    public class TeamApplicationEntity : IMessageEntity
     {
         public Guid Id { get; set; }
 
-        public Guid InvitingTeamId { get; set; }
+        public Guid ApplyingPlayerId { get; set; }
 
         public Guid SendingUserId { get; set; }
 
-        public Guid AcceptingPlayerId { get; set; }
+        public Guid AcceptingTeamId { get; set; }
 
         public Guid AcceptingUserId { get; set; }
 

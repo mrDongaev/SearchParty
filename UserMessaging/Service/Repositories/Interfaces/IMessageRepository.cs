@@ -1,16 +1,16 @@
 ﻿using Library.Models.Enums;
-using Service.Models;
+using Service.Dtos;
 
 namespace Service.Repositories.Interfaces
 {
-    public interface IMessageRepository
+    public interface IMessageRepository<T> where T : MessageDto
     {
-        Task ClearMessages(ISet<MessageType> messageTypes, CancellationToken cancellationToken);
+        Task ClearMessages(ISet<MessageStatus> messageTypes, CancellationToken cancellationToken);
 
-        Task<IMessage> GetMessage(Guid id, CancellationToken cancellationToken);
+        Task<T?> GetMessage(Guid id, CancellationToken cancellationToken);
 
-        Task<IMessage> GetUserMessages(Guid userId, CancellationToken cancellationToken);
+        Task<T?> SaveMessage(T message, CancellationToken cancellationToken);
 
-        Task<IMessage> SaveMessage(IMessage message, CancellationToken cancellationToken);
+        Task<ICollection<T>> GetUserMessages(Guid userId, MessageStatus messageType, CancellationToken cancellationToken);
     }
 }

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using WebAPI.Mapping;
+using DaoMapping = DataAccess.Mapping;
 
 
 namespace WebAPI.Configurations
@@ -15,6 +17,11 @@ namespace WebAPI.Configurations
         {
             var configuration = new MapperConfiguration(cfg =>
             {
+                cfg.AddProfile(new DaoMapping.PlayerInvitationMappingProfile());
+                cfg.AddProfile(new DaoMapping.TeamApplicationMappingProfile());
+                cfg.AddProfile(new PlayerInvitationMappingProfile());
+                cfg.AddProfile(new TeamApplicationMappingProfile());
+
             });
 
             configuration.AssertConfigurationIsValid();

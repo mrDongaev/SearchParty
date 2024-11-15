@@ -1,9 +1,8 @@
-﻿using Library.Entities.Interfaces;
-using Library.Models.Enums;
+﻿using Library.Models.Enums;
 
-namespace DataAccess.Entities.Interfaces
+namespace Service.Dtos
 {
-    public interface IMessageEntity : IEntity<Guid>, IUpdateable
+    public class MessageDto
     {
         public Guid SendingUserId { get; set; }
 
@@ -16,5 +15,7 @@ namespace DataAccess.Entities.Interfaces
         public DateTime IssuedAt { get; set; }
 
         public DateTime ExpiresAt { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
     }
 }

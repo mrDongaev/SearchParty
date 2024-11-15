@@ -1,13 +1,13 @@
 ﻿using Library.Models.API.UserMessaging;
-using Service.Models;
+using Service.Dtos;
 using Service.Repositories.Interfaces;
 using Service.Services.Interfaces;
 
 namespace Service.Services.Implementations
 {
-    public class SubmittedTeamApplicationProcessor(ITeamApplicationRepository repository) : SubmittedMessageAbstractProcessor(repository)
+    public class SubmittedTeamApplicationProcessor(ITeamApplicationRepository repository) : SubmittedMessageAbstractProcessor<TeamApplicationDto>(repository)
     {
-        protected override IMessage? CreateMessage(ProfileMessageSubmitted message)
+        protected override Models.Message<TeamApplicationDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
         {
             throw new NotImplementedException();
         }

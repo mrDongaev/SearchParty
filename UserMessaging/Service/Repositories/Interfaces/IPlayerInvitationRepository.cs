@@ -1,6 +1,8 @@
-﻿namespace Service.Repositories.Interfaces
+﻿using Service.Dtos;
+
+namespace Service.Repositories.Interfaces
 {
-    public interface IPlayerInvitationRepository : IMessageRepository
+    public interface IPlayerInvitationRepository : IMessageRepository<PlayerInvitationDto>
     {
     }
 }

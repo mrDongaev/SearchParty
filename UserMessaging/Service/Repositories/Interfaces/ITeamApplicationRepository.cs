@@ -1,6 +1,8 @@
-﻿namespace Service.Repositories.Interfaces
+﻿using Service.Dtos;
+
+namespace Service.Repositories.Interfaces
 {
-    public interface ITeamApplicationRepository : IMessageRepository
+    public interface ITeamApplicationRepository : IMessageRepository<TeamApplicationDto>
     {
     }
 }

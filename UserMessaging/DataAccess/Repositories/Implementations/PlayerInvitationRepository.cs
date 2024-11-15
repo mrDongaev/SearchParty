@@ -1,30 +1,39 @@
-﻿using DataAccess.Context;
+﻿using AutoMapper;
+using DataAccess.Context;
 using DataAccess.Entities;
 using Library.Models.Enums;
 using Library.Repositories.Implementations;
-using Service.Models;
+using Microsoft.EntityFrameworkCore;
+using Service.Dtos;
 using Service.Repositories.Interfaces;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class PlayerInvitationRepository(UserMessagingContext context) : Repository<UserMessagingContext, PlayerInvitation, Guid>(context), IPlayerInvitationRepository
+    public class PlayerInvitationRepository : Repository<UserMessagingContext, PlayerInvitationEntity, Guid>, IPlayerInvitationRepository
     {
-        public Task ClearMessages(ISet<MessageType> messageTypes, CancellationToken cancellationToken)
+        private readonly DbSet<PlayerInvitationEntity> _playerInvitations;
+
+        public PlayerInvitationRepository(UserMessagingContext context, IMapper mapper) : base(context)
+        {
+            _playerInvitations = context.PlayerInvitations;
+        }
+
+        public Task ClearMessages(ISet<MessageStatus> messageTypes, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IMessage> GetMessage(Guid id, CancellationToken cancellationToken)
+        public Task<PlayerInvitationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IMessage> GetUserMessages(Guid userId, CancellationToken cancellationToken)
+        public Task<ICollection<PlayerInvitationDto>> GetUserMessages(Guid userId, MessageStatus messageType, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IMessage> SaveMessage(IMessage message, CancellationToken cancellationToken)
+        Task<PlayerInvitationDto?> IMessageRepository<PlayerInvitationDto>.SaveMessage(PlayerInvitationDto message, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

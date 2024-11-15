@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Context.EntitiesConfigurations
 {
-    public class TeamApplicationConfiguration : MessageConfiguration<TeamApplication>
+    public class TeamApplicationConfiguration : MessageConfiguration<TeamApplicationEntity>
     {
-        public override void Configure(EntityTypeBuilder<TeamApplication> builder)
+        public override void Configure(EntityTypeBuilder<TeamApplicationEntity> builder)
         {
             builder.Property(ta => ta.ApplyingPlayerId)
                 .IsRequired();

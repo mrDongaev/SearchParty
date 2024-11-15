@@ -1,30 +1,39 @@
-﻿using DataAccess.Context;
+﻿using AutoMapper;
+using DataAccess.Context;
 using DataAccess.Entities;
 using Library.Models.Enums;
 using Library.Repositories.Implementations;
-using Service.Models;
+using Microsoft.EntityFrameworkCore;
+using Service.Dtos;
 using Service.Repositories.Interfaces;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class TeamApplicationRepository(UserMessagingContext context) : Repository<UserMessagingContext, TeamApplication, Guid>(context), ITeamApplicationRepository
+    public class TeamApplicationRepository : Repository<UserMessagingContext, TeamApplicationEntity, Guid>, ITeamApplicationRepository
     {
-        public Task ClearMessages(ISet<MessageType> messageTypes, CancellationToken cancellationToken)
+        private readonly DbSet<TeamApplicationEntity> _teamApplications;
+
+        public TeamApplicationRepository(UserMessagingContext context, IMapper mapper) : base(context)
+        {
+            _teamApplications = context.TeamApplications;
+        }
+
+        public Task ClearMessages(ISet<MessageStatus> messageTypes, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IMessage> GetMessage(Guid id, CancellationToken cancellationToken)
+        public Task<TeamApplicationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IMessage> GetUserMessages(Guid userId, CancellationToken cancellationToken)
+        public Task<ICollection<TeamApplicationDto>> GetUserMessages(Guid userId, MessageStatus messageType, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IMessage> SaveMessage(IMessage message, CancellationToken cancellationToken)
+        public Task<TeamApplicationDto?> SaveMessage(TeamApplicationDto message, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
