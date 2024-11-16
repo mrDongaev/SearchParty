@@ -4,6 +4,8 @@ namespace Service.Dtos.Message
 {
     public abstract class MessageDto
     {
+        public Guid Id { get; set; }
+
         public Guid SendingUserId { get; set; }
 
         public Guid AcceptingUserId { get; set; }
