@@ -1,5 +1,5 @@
 ﻿using Library.Models.Enums;
-using Service.Dtos;
+using Service.Dtos.Message;
 using Service.Repositories.Interfaces;
 using Service.Services.Interfaces;
 

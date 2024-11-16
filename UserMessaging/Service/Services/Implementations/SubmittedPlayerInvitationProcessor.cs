@@ -1,5 +1,5 @@
 ﻿using Library.Models.API.UserMessaging;
-using Service.Dtos;
+using Service.Dtos.Message;
 using Service.Models;
 using Service.Repositories.Interfaces;
 using Service.Services.Interfaces;
@@ -8,7 +8,7 @@ namespace Service.Services.Implementations
 {
     public class SubmittedPlayerInvitationProcessor(IPlayerInvitationRepository repository) : SubmittedMessageAbstractProcessor
     {
-        protected override Message<PlayerInvitationDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
+        protected override Message<MessageDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
         {
             throw new NotImplementedException();
         }

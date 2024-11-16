@@ -1,5 +1,5 @@
 ﻿using Library.Models.API.UserMessaging;
-using Service.Dtos;
+using Service.Dtos.Message;
 using Service.Models;
 using Service.Repositories.Interfaces;
 

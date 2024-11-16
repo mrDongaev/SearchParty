@@ -1,5 +1,5 @@
 ﻿using Library.Models.Enums;
-using Service.Dtos;
+using Service.Dtos.Message;
 
 namespace Service.Repositories.Interfaces
 {

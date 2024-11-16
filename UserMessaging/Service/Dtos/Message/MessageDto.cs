@@ -1,8 +1,8 @@
 ﻿using Library.Models.Enums;
 
-namespace Service.Dtos
+namespace Service.Dtos.Message
 {
-    public class MessageDto
+    public abstract class MessageDto
     {
         public Guid SendingUserId { get; set; }
 

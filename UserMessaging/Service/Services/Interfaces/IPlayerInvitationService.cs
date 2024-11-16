@@ -1,4 +1,4 @@
-﻿using Service.Dtos;
+﻿using Service.Dtos.Message;
 
 namespace Service.Services.Interfaces
 {

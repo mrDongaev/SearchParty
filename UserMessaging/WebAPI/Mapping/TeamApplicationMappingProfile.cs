@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using Service.Dtos;
+using Service.Dtos.ActionResponse;
+using Service.Dtos.Message;
 using WebAPI.Models;
 
 namespace WebAPI.Mapping
@@ -8,7 +9,9 @@ namespace WebAPI.Mapping
     {
         public TeamApplicationMappingProfile()
         {
-            CreateMap<GetTeamApplication.Response, TeamApplicationDto>();
+            CreateMap<TeamApplicationDto, GetTeamApplication.Response>();
+
+            CreateMap<ActionResponse<TeamApplicationDto>, GetActionResponse.Response<GetTeamApplication.Response>>();
         }
     }
 }

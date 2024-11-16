@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using Service.Dtos;
+using Service.Dtos.ActionResponse;
+using Service.Dtos.Message;
 using WebAPI.Models;
 
 namespace WebAPI.Mapping
@@ -8,7 +9,9 @@ namespace WebAPI.Mapping
     {
         public PlayerInvitationMappingProfile()
         {
-            CreateMap<GetPlayerInvitation.Response, PlayerInvitationDto>();
+            CreateMap<PlayerInvitationDto, GetPlayerInvitation.Response>();
+
+            CreateMap<ActionResponse<PlayerInvitationDto>, GetActionResponse.Response<GetPlayerInvitation.Response>>();
         }
     }
 }

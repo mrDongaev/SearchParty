@@ -9,7 +9,7 @@ using Service.Services.Interfaces;
 
 namespace Service.Services.Implementations
 {
-    public class ProfileMessageConsumer(SubmittedMessageAbstractProcessor messageProcessor, IServiceProvider serviceProvider, ILogger logger) : IConsumer<ProfileMessageSubmitted>
+    public class ProfileMessageConsumer(IServiceProvider serviceProvider, ILogger logger) : IConsumer<ProfileMessageSubmitted>
     {
         public async Task Consume(ConsumeContext<ProfileMessageSubmitted> context)
         {

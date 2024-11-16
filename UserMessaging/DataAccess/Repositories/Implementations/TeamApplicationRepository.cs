@@ -4,7 +4,7 @@ using DataAccess.Entities;
 using Library.Models.Enums;
 using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
-using Service.Dtos;
+using Service.Dtos.Message;
 using Service.Repositories.Interfaces;
 
 namespace DataAccess.Repositories.Implementations

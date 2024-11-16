@@ -1,4 +1,4 @@
-﻿namespace Service.Dtos
+﻿namespace Service.Dtos.Message
 {
     public class PlayerInvitationDto : MessageDto
     {
