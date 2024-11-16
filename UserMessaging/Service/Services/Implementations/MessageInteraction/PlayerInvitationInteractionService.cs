@@ -2,11 +2,11 @@
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Repositories.Interfaces;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.MessageInteraction;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.MessageInteraction
 {
-    public class PlayerInvitationService(IPlayerInvitationRepository playerInvitationRepo) : IPlayerInvitationService
+    public class PlayerInvitationInteractionService(IPlayerInvitationRepository playerInvitationRepo) : IPlayerInvitationInteractionService
     {
         public async Task<PlayerInvitationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {

@@ -2,11 +2,11 @@
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Repositories.Interfaces;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.MessageInteraction;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.MessageInteraction
 {
-    public class TeamApplicationService(ITeamApplicationRepository teamApplicationRepo) : ITeamApplicationService
+    public class TeamApplicationInteractionService(ITeamApplicationRepository teamApplicationRepo) : ITeamApplicationInteractionService
     {
         public async Task<TeamApplicationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {

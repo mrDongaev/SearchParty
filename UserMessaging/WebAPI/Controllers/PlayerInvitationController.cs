@@ -4,14 +4,14 @@ using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.MessageInteraction;
 using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class PlayerInvitationController(IPlayerInvitationService playerInvitationService, IUserHttpContext userContext, IMapper mapper) : WebApiController
+    public class PlayerInvitationController(IPlayerInvitationInteractionService playerInvitationService, IUserHttpContext userContext, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetPlayerInvitation.Response>(StatusCodes.Status200OK)]
@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<GetPlayerInvitation.Response>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetActionResponse.Response<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<Ok<GetActionResponse.Response<GetPlayerInvitation.Response>>, UnauthorizedHttpResult, NotFound>> Accept(Guid id, CancellationToken cancellationToken)
@@ -64,7 +64,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<GetPlayerInvitation.Response>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetActionResponse.Response<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<Ok<GetActionResponse.Response<GetPlayerInvitation.Response>>, UnauthorizedHttpResult, NotFound>> Reject(Guid id, CancellationToken cancellationToken)
@@ -83,7 +83,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<GetPlayerInvitation.Response>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetActionResponse.Response<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<Ok<GetActionResponse.Response<GetPlayerInvitation.Response>>, UnauthorizedHttpResult, NotFound>> Rescind(Guid id, CancellationToken cancellationToken)

@@ -1,5 +1,7 @@
-﻿using Library.Utils;
+﻿using Library.Models.API.UserMessaging;
+using Library.Utils;
 using MassTransit;
+using Service.Services.Implementations.MessageProcessing;
 
 namespace WebAPI.Configurations
 {
@@ -9,9 +11,13 @@ namespace WebAPI.Configurations
         {
             services.AddMassTransit(x =>
             {
+                x.AddConsumer<ProfileMessageConsumer>();
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     ConfigureRmq(cfg);
+
+                    cfg.ConfigureEndpoints(context);
                 });
             });
 

@@ -7,14 +7,16 @@ using Service.Dtos;
 using Service.Repositories.Interfaces;
 using Service.Services.Interfaces;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.MessageProcessing
 {
-    public class ProfileMessageConsumer(IServiceProvider serviceProvider, ILogger logger) : IConsumer<ProfileMessageSubmitted>
+    public class ProfileMessageConsumer(IServiceProvider serviceProvider) : IConsumer<ProfileMessageSubmitted>
     {
+        public int consumeCounter = 0;
+
         public async Task Consume(ConsumeContext<ProfileMessageSubmitted> context)
         {
             var receivedMessage = context.Message;
-            logger.LogInformation($"Received message {receivedMessage.SenderId} {receivedMessage.AcceptorId}");
+            consumeCounter++;
             using (var scope = serviceProvider.CreateScope())
             {
                 switch (receivedMessage.MessageType)

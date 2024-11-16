@@ -28,7 +28,7 @@ namespace Service.Services.Implementations.PlayerServices
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
                 var teamRepo = scope.ServiceProvider.GetRequiredService<ITeamRepository>();
-                var teamPlayers = await teamRepo.GetTeamPlayers(message.AcceptorId, cancellationToken);
+                var teamPlayers = await teamRepo.GetTeamPlayers(message.SenderId, cancellationToken);
                 if (teamPlayers.SingleOrDefault(tp => tp.PositionId == (int)message.PositionName) != null)
                 {
                     throw new TeamPositionOverlapException();

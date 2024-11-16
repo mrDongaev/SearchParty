@@ -1,14 +1,15 @@
 ﻿using Library.Models.API.UserMessaging;
+using Microsoft.Extensions.DependencyInjection;
 using Service.Dtos.Message;
-using Service.Models;
+using Service.Models.Message;
 using Service.Repositories.Interfaces;
-using Service.Services.Interfaces;
+using Service.Services.Interfaces.MessageProcessing;
 
-namespace Service.Services.Implementations
+namespace Service.Services.Implementations.MessageProcessing
 {
-    public class SubmittedPlayerInvitationProcessor(IPlayerInvitationRepository repository) : SubmittedMessageAbstractProcessor
+    public class SubmittedPlayerInvitationProcessor(IServiceScopeFactory serviceScopeFactory) : SubmittedMessageAbstractProcessor
     {
-        protected override Message<MessageDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
+        protected override AbstractMessage<MessageDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
         {
             throw new NotImplementedException();
         }

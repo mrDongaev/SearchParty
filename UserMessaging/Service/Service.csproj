@@ -16,4 +16,8 @@
     <ProjectReference Include="..\..\Library\Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Implementations\MessageManagement\" />
+  </ItemGroup>
+
 </Project>

@@ -40,7 +40,7 @@ namespace WebAPI.Controllers.Team
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<Ok, BadRequest, NotFound, UnauthorizedHttpResult>> SendTeamApplicationRequest(Guid teamId, Guid playerId, int position, CancellationToken cancellationToken)
         {
-            var playerUserId = await userIdentity.GetPlayerUserId(teamId, cancellationToken);
+            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
             var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
             if (playerUserId == null || teamUserId == null)
             {
