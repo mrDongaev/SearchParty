@@ -7,11 +7,11 @@ namespace Service.Services.Interfaces.MessageProcessing
 {
     public abstract class SubmittedMessageAbstractProcessor
     {
-        protected abstract AbstractMessage<MessageDto> CreateMessage(ProfileMessageSubmitted submittedMessage);
+        protected abstract AbstractMessage<PlayerInvitationDto> CreateMessage(ProfileMessageSubmitted submittedMessage);
 
         public async Task ProcessSubmittedMessage(ProfileMessageSubmitted submittedMessage)
         {
-            AbstractMessage<MessageDto> message = CreateMessage(submittedMessage);
+            AbstractMessage<PlayerInvitationDto> message = CreateMessage(submittedMessage);
             var messageDto = await message.SaveToDatabase();
             message.TrySendToUser();
         }

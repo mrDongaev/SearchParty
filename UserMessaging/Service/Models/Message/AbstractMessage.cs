@@ -1,4 +1,5 @@
 ﻿using Library.Models.Enums;
+using Library.Services.Interfaces.UserContextInterfaces;
 using MassTransit.Configuration;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
@@ -8,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace Service.Models.Message
 {
-    public abstract class AbstractMessage<TMessageDto>(CancellationToken cancellationToken) where TMessageDto : MessageDto
+    public abstract class AbstractMessage
     {
         public Guid Id { get; set; }
 
@@ -28,21 +29,37 @@ namespace Service.Models.Message
 
         protected readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        public AbstractMessageState<AbstractMessage<TMessageDto>, TMessageDto> State { get; set; }
+        protected AbstractMessageState State { get; set; }
 
-        public void ChangeState(AbstractMessageState<AbstractMessage<TMessageDto>, TMessageDto> state)
+        public readonly CancellationToken CancellationToken;
+
+        public readonly IServiceProvider ServiceProvider;
+
+        public readonly IUserHttpContext UserContext;
+
+        public abstract PlayerInvitationDto MessageDto { get; }
+
+        public AbstractMessage(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken)
+        {
+            ServiceProvider = serviceProvider;
+            UserContext = userContext;
+            CancellationToken = cancellationToken;
+            State = startingState;
+        }
+
+        public void ChangeState(AbstractMessageState state)
         {
             State = state;
         }
 
-        protected async Task<T> Execute<T>(Func<CancellationToken, Task<T>> task)
+        protected async Task<T> Execute<T>(Func<Task<T>> task)
         {
             var tcs = new TaskCompletionSource<T>(); 
             _taskQueue.Enqueue(async () =>
             {
                 try
                 {
-                    T result = await task(cancellationToken);
+                    T result = await task();
                     tcs.SetResult(result);
                 }
                 catch (Exception ex)
@@ -67,23 +84,23 @@ namespace Service.Models.Message
             return await tcs.Task;
         }
 
-        public Task<ActionResponse<TMessageDto>> Accept()
+        public Task<ActionResponse<PlayerInvitationDto>> Accept()
         {
             return Execute(State.Accept);
         }
 
-        public Task<ActionResponse<TMessageDto>> Reject()
+        public Task<ActionResponse<PlayerInvitationDto>> Reject()
         {
             return Execute(State.Reject);
         }
 
-        public Task<ActionResponse<TMessageDto>> Rescind()
+        public Task<ActionResponse<PlayerInvitationDto>> Rescind()
         {
             return Execute(State.Rescind);
         }
 
         public abstract Task TrySendToUser();
 
-        public abstract Task<TMessageDto?> SaveToDatabase();
+        public abstract Task SaveToDatabase();
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Library.Models.Enums;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Models.Message;
@@ -10,21 +12,82 @@ using System.Threading.Tasks;
 
 namespace Service.Models.States.Interfaces
 {
-    public abstract class AbstractMessageState<TMessage, TMessageDto>
-        where TMessage : AbstractMessage<TMessageDto> 
-        where TMessageDto : MessageDto
+    public abstract class AbstractMessageState
     {
-        public virtual TMessage Message { get; set; }
+        public virtual AbstractMessage Message { get; set; }
 
-        public AbstractMessageState(TMessage message)
+        public Guid Id
+        {
+            get => this.Message.Id;
+        }
+
+        public Guid SendingUserId
+        {
+            get => this.SendingUserId;
+        }
+
+        public Guid AcceptingUserId
+        {
+            get => this.AcceptingUserId;
+        }
+
+        public PositionName PositionName
+        {
+            get => this.Message.PositionName;
+            set
+            {
+                this.Message.PositionName = value;
+            }
+        }
+
+        public MessageStatus Status
+        {
+            get => this.Message.Status; 
+            set
+            {
+                this.Message.Status = value;
+            }
+        }
+
+        public DateTime IssuedAt
+        {
+            get => this.Message.IssuedAt;
+        }
+
+        public DateTime ExpiresAt
+        {
+            get => this.Message.ExpiresAt;
+        }
+
+        public CancellationToken CancellationToken
+        {
+            get => this.Message.CancellationToken;
+        }
+
+        public IServiceProvider ServiceProvider
+        {
+            get => this.Message.ServiceProvider;
+        }
+
+        public IUserHttpContext UserContext 
+        { 
+            get => this.Message.UserContext; 
+        }
+
+        public PlayerInvitationDto MessageDto 
+        { 
+            get => this.Message.MessageDto; 
+        }
+
+        public AbstractMessageState(AbstractMessage message)
         {
             Message = message;
         }
 
-        public abstract Task<ActionResponse<TMessageDto>> Accept(CancellationToken cancellationToken);
+        public abstract Task<ActionResponse<PlayerInvitationDto>> Accept();
 
-        public abstract Task<ActionResponse<TMessageDto>> Reject(CancellationToken cancellationToken);
+        public abstract Task<ActionResponse<PlayerInvitationDto>> Reject();
 
-        public abstract Task<ActionResponse<TMessageDto>> Rescind(CancellationToken cancellationToken);
+        public abstract Task<ActionResponse<PlayerInvitationDto>> Rescind();
     }
 }

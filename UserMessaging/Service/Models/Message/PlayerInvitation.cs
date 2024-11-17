@@ -1,52 +1,51 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
+using Service.Models.States.Interfaces;
 using Service.Repositories.Interfaces;
 using System.Threading;
 
 namespace Service.Models.Message
 {
-    public class PlayerInvitation : AbstractMessage<PlayerInvitationDto>
+    public class PlayerInvitation : AbstractMessage
     {
-        public readonly IServiceProvider serviceProvider;
-
-        public readonly CancellationToken cancellationToken;
-
-        public PlayerInvitation(IServiceProvider serviceProvider, CancellationToken cancellationToken) : base(cancellationToken) 
+        public PlayerInvitation(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken) 
+            : base(serviceProvider, userContext, startingState, cancellationToken) 
         {
-            this.serviceProvider = serviceProvider;
-            this.cancellationToken = cancellationToken;
         }
 
         public Guid AcceptingPlayerId { get; set; }
 
         public Guid InvitingTeamId { get; set; }
 
+        public override PlayerInvitationDto MessageDto => new PlayerInvitationDto
+        {
+            Id = this.Id,
+            AcceptingUserId = this.AcceptingUserId,
+            AcceptingPlayerId = this.AcceptingPlayerId,
+            InvitingTeamId = this.InvitingTeamId,
+            SendingUserId = this.SendingUserId,
+            PositionName = this.PositionName,
+            Status = this.Status,
+            IssuedAt = this.IssuedAt,
+            ExpiresAt = this.ExpiresAt,
+            UpdatedAt = DateTime.UtcNow,
+        };
+
         public async override Task<PlayerInvitationDto?> SaveToDatabase()
         {
-            using (var scope = serviceProvider.CreateScope())
+            using (var scope = ServiceProvider.CreateScope())
             {
                 var playerInvitationService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
-                PlayerInvitationDto message = new PlayerInvitationDto
-                {
-                    Id = this.Id,
-                    SendingUserId = this.SendingUserId,
-                    AcceptingUserId = this.AcceptingUserId,
-                    InvitingTeamId = this.InvitingTeamId,
-                    AcceptingPlayerId = this.AcceptingPlayerId,
-                    Status = this.Status,
-                    IssuedAt = this.IssuedAt,
-                    ExpiresAt = this.ExpiresAt,
-                    UpdatedAt = DateTime.UtcNow,
-                    PositionName = this.PositionName,
-                };
-                return await playerInvitationService.SaveMessage(message, cancellationToken);
+                return await playerInvitationService.SaveMessage(MessageDto, CancellationToken);
             }
         }
 
         public override Task TrySendToUser()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
+            //throw new NotImplementedException();
         }
     }
 }

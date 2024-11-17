@@ -8,7 +8,7 @@ namespace Service.Services.Implementations.MessageProcessing
 {
     public class SubmittedTeamApplicationProcessor(ITeamApplicationRepository repository) : SubmittedMessageAbstractProcessor
     {
-        protected override AbstractMessage<MessageDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
+        protected override AbstractMessage<PlayerInvitationDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
         {
             throw new NotImplementedException();
         }

@@ -3,7 +3,7 @@ using Service.Dtos.Message;
 
 namespace Service.Repositories.Interfaces
 {
-    public interface IMessageRepository<T> where T : MessageDto
+    public interface IMessageRepository<T> where T : PlayerInvitationDto
     {
         Task ClearMessages(ISet<MessageStatus> messageTypes, CancellationToken cancellationToken);
 

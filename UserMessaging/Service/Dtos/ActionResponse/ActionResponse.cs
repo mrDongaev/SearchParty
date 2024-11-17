@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Service.Dtos.ActionResponse
 {
-    public class ActionResponse<T> where T : MessageDto
+    public class ActionResponse<T> where T : PlayerInvitationDto
     {
         public ActionResponseStatus Status { get; set; }
 

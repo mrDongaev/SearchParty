@@ -9,7 +9,7 @@ namespace Service.Services.Implementations.MessageProcessing
 {
     public class SubmittedPlayerInvitationProcessor(IServiceScopeFactory serviceScopeFactory) : SubmittedMessageAbstractProcessor
     {
-        protected override AbstractMessage<MessageDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
+        protected override AbstractMessage<PlayerInvitationDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
         {
             throw new NotImplementedException();
         }
