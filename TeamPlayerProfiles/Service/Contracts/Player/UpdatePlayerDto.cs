@@ -1,5 +1,4 @@
-﻿using Common.Models.Enums;
-
+﻿using Library.Models.Enums;
 namespace Service.Contracts.Player
 {
     public class UpdatePlayerDto
@@ -11,5 +10,7 @@ namespace Service.Contracts.Player
         public string? Description { get; set; }
 
         public PositionName? Position { get; set; }
+
+        public ISet<int>? HeroIds { get; set; }
     }
 }

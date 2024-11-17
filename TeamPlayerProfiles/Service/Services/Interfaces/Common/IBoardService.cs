@@ -1,9 +1,9 @@
-﻿using DataAccess.Repositories.Models;
-using static Common.Models.ConditionalQuery;
+﻿using Common.Models;
+using Library.Models;
 
 namespace Service.Services.Interfaces.Common
 {
-    public interface IBoardService<TGetDto, TProfileConditions> where TProfileConditions : ProfileConditions
+    public interface IBoardService<TGetDto, TProfileConditions> where TProfileConditions : ConditionalProfileQuery
     {
         /// <summary>
         /// Выставить профиль на показ

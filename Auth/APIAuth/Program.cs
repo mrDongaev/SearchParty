@@ -18,6 +18,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Library.Utils;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace APIAuth
 {
@@ -33,7 +36,8 @@ namespace APIAuth
 
             // Build the web application
             var app = builder.Build();
-
+            app.UseSwagger();
+            app.UseSwaggerUI();
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
@@ -44,7 +48,34 @@ namespace APIAuth
             UseAndMapMiddleware(app);
 
             // Run migrations and seed database
-            MigrationProcessing(app);
+            if (app.Environment.IsDevelopment())
+            {
+                MigrationProcessing(app);
+            }
+
+            if (app.Environment.IsDevelopment() || EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true")
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+
+                    try
+                    {
+                        var context = services.GetRequiredService<DataContext>(); // Get the database context
+
+                        var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
+
+                        DataSeed.SeedDataAsync(context, userManager).Wait();
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetRequiredService<ILogger<Program>>(); // Get the logger
+
+                        logger.LogError(ex, "An error occurred during seeding"); // Log migration error
+                    }
+                }
+
+            }
 
             app.Run();
         }
@@ -64,8 +95,15 @@ namespace APIAuth
 
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            string hostname = EnvironmentUtils.GetEnvVariable("DATABASE_HOSTNAME");
+            string portnum = EnvironmentUtils.GetEnvVariable("DATABASE_PORT");
+            string dbname = EnvironmentUtils.GetEnvVariable("DATABASE_NAME");
+            string username = EnvironmentUtils.GetEnvVariable("DATABASE_USER");
+            string password = EnvironmentUtils.GetEnvVariable("DATABASE_PASSWORD");
+            var connectionString = $"Host={hostname};Port={portnum};Database={dbname};Username={username};Password={password}";
+
             services.AddDbContext<DataContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(connectionString));
 
             // Configure Identity for user and role management
             services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -93,6 +131,7 @@ namespace APIAuth
 
             services.AddTransient<IRefreshGenerator, RefreshGenerator>();
 
+            AddSwagger(services);
             // Add controllers
             services.AddControllers();
 
@@ -110,8 +149,7 @@ namespace APIAuth
 
         public static void AddAuthAndBearer(IServiceCollection services)
         {
-            byte[] keyByte = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN_KEY")
-    ?? throw new ArgumentNullException("Token key not found in server environment variables"));
+            byte[] keyByte = Encoding.UTF8.GetBytes(EnvironmentUtils.GetEnvVariable("TOKEN_KEY"));
 
             var _key = new SymmetricSecurityKey(keyByte);
 
@@ -170,6 +208,63 @@ namespace APIAuth
             });
         }
 
+        public static IServiceCollection AddSwagger(IServiceCollection services)
+        {
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            Dictionary<string, int> counter = new Dictionary<string, int>();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Description = "SearchParty Authentication and authorization API v1",
+                    Title = "Swagger",
+                    Version = "1.0.0"
+                });
+                options.CustomSchemaIds(type =>
+                {
+                    var name = type.Name;
+                    var declaringName = type.DeclaringType?.Name ?? string.Empty;
+                    if (declaringName != string.Empty) declaringName += ".";
+                    var final = declaringName + name;
+                    if (counter.ContainsKey(final))
+                    {
+                        counter[final] += 1;
+                        final += $"({counter[final]})";
+                    }
+                    else
+                    {
+                        counter.Add(final, 0);
+                    }
+                    return final;
+                });
+            });
+            return services;
+        }
+
         public static void MigrationProcessing(WebApplication app)
         {
             // Create a scope for running database migrations
@@ -183,9 +278,8 @@ namespace APIAuth
 
                     var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
 
-                    context.Database.Migrate(); // Apply database migrations
-
-                    DataSeed.SeedDataAsync(context, userManager).Wait(); // Seed the database with initial data
+                    context.Database.EnsureDeleted();
+                    context.Database.EnsureCreated();    
                 }
                 catch (Exception ex)
                 {

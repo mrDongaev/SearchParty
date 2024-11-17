@@ -1,36 +1,37 @@
 ﻿using Common.Exceptions;
 using DataAccess.Entities;
+using Service.Contracts.Team;
 
 namespace Service.Services.Implementations.TeamServices
 {
     public static class TeamServiceUtils
     {
-        public static bool TeamOwnerPlayerIsInTeam(this Team team)
+        public static bool TeamOwnerPlayerIsInTeam(ICollection<Player> players, Guid teamUserId)
         {
-            return team.TeamPlayers.SingleOrDefault(tp => tp.PlayerUserId == team.UserId) != null || team.Players.SingleOrDefault(p => p.UserId == team.UserId) != null;
+            return players.SingleOrDefault(tp => tp.UserId == teamUserId) != null;
         }
 
-        public static bool TeamPositionHasNoOverlap(this Team team)
+        public static bool TeamPositionHasNoOverlap(ICollection<TeamPlayerDto.Write> players)
         {
-            return team.TeamPlayers.Select(tp => tp.PositionId).ToHashSet().Count == team.TeamPlayers.Count;
+            return players.Select(p => p.Position).ToHashSet().Count == players.Count;
         }
 
-        public static bool TeamCountIsValid(this Team team, uint maxCount)
+        public static bool TeamCountIsValid(ICollection<Player> teamPlayers, int maxCount)
         {
-            return team.TeamPlayers.Count <= maxCount;
+            return teamPlayers.Count <= maxCount;
         }
 
-        public static void CheckTeamValidity(this Team team, uint maxCount)
+        public static void CheckTeamValidity(ICollection<Player> players, ICollection<TeamPlayerDto.Write> teamPlayers, Guid teamUserId, int maxCount)
         {
-            if (!team.TeamOwnerPlayerIsInTeam())
+            if (!TeamOwnerPlayerIsInTeam(players, teamUserId))
             {
                 throw new TeamOwnerNotPresentException();
             }
-            if (!team.TeamPositionHasNoOverlap())
+            if (!TeamPositionHasNoOverlap(teamPlayers))
             {
                 throw new TeamPositionOverlapException();
             }
-            if (team.TeamCountIsValid(maxCount))
+            if (!TeamCountIsValid(players, maxCount))
             {
                 throw new TeamCountOverflowException(maxCount);
             }

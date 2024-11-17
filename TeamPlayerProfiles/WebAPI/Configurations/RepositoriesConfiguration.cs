@@ -11,7 +11,8 @@ namespace WebAPI.Configurations
                 .AddScoped<IPositionRepository, PositionRepository>()
                 .AddScoped<IHeroRepository, HeroRepository>()
                 .AddScoped<IPlayerRepository, PlayerRepository>()
-                .AddScoped<ITeamRepository, TeamRepository>();
+                .AddScoped<ITeamRepository, TeamRepository>()
+                .AddScoped<IUserRepository, UserRepository>();
             return services;
         }
     }

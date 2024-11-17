@@ -1,0 +1,137 @@
+name: search_party_migrations
+
+services:
+  team_player_profiles_migrations:
+    container_name: team_player_profiles_migrations
+    depends_on:
+      team_player_profiles_db:
+        condition: service_healthy
+    build: 
+      context: ../../
+      dockerfile: TeamPlayerProfiles/migrate.Dockerfile
+    ports: 
+      - "8080:8080" 
+      - "8081:8081" 
+    environment:
+      DATABASE_HOSTNAME: team_player_profiles_db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: team_player_profiles
+      DATABASE_USER: ${POSTGRES__USER}
+      DATABASE_PASSWORD: ${POSTGRES__PASSWORD}
+      TEAM_PLAYER_PROFILES__ADD_MIGRATION: ${TEAM_PLAYER_PROFILES__ADD_MIGRATION}
+      TEAM_PLAYER_PROFILES__APPLY_MIGRATION: ${TEAM_PLAYER_PROFILES__APPLY_MIGRATION}
+      TEAM_PLAYER_PROFILES__MIGRATION_NAME: ${TEAM_PLAYER_PROFILES__MIGRATION_NAME}
+      TEAM_PLAYER_PROFILES__STARTUP_PROJECT_NAME: ${TEAM_PLAYER_PROFILES__STARTUP_PROJECT_NAME}
+      TEAM_PLAYER_PROFILES__CONTEXT_PROJECT_NAME: ${TEAM_PLAYER_PROFILES__CONTEXT_PROJECT_NAME}
+      TOKEN_KEY: ${TOKEN_KEY}
+  team_player_profiles_db:
+    container_name: team_player_profiles_db
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: team_player_profiles
+      POSTGRES_USER: ${POSTGRES__USER}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+    volumes: 
+      - team_player_profiles_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES__USER} -d team_player_profiles"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+  user_info_migrations:
+    container_name: user_info_migrations
+    depends_on:
+      user_info_db:
+        condition: service_healthy
+    build: 
+      context: ../../
+      dockerfile: UserInfo/migrate.Dockerfile
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    ports: 
+      - "8082:8080" 
+      - "8083:8081" 
+    environment:
+      DATABASE_HOSTNAME: user_info_db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: user_info
+      DATABASE_USER: ${POSTGRES__USER}
+      DATABASE_PASSWORD: ${POSTGRES__PASSWORD}
+      USER_INFO__ADD_MIGRATION: ${USER_INFO__ADD_MIGRATION}
+      USER_INFO__APPLY_MIGRATION: ${USER_INFO__APPLY_MIGRATION}
+      USER_INFO__MIGRATION_NAME: ${USER_INFO__MIGRATION_NAME}
+      USER_INFO__STARTUP_PROJECT_NAME: ${USER_INFO__STARTUP_PROJECT_NAME}
+      USER_INFO__CONTEXT_PROJECT_NAME: ${USER_INFO__CONTEXT_PROJECT_NAME}
+      TOKEN_KEY: ${TOKEN_KEY}
+  user_info_db:
+    container_name: user_info_db
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: user_info
+      POSTGRES_USER: ${POSTGRES__USER}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+    volumes: 
+      - user_info_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES__USER} -d user_info"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+  user_auth_migrations:
+    container_name: user_auth_migrations
+    depends_on:
+      user_info_db:
+        condition: service_healthy
+    build: 
+      context: ../../
+      dockerfile: Auth/migrate.Dockerfile
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    ports: 
+      - "8084:8080" 
+      - "8085:8081" 
+    environment:
+      DATABASE_HOSTNAME: user_auth_db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: user_auth
+      DATABASE_USER: ${POSTGRES__USER}
+      DATABASE_PASSWORD: ${POSTGRES__PASSWORD}
+      USER_AUTH__ADD_MIGRATION: ${USER_AUTH__ADD_MIGRATION}
+      USER_AUTH__APPLY_MIGRATION: ${USER_AUTH__APPLY_MIGRATION}
+      USER_AUTH__MIGRATION_NAME: ${USER_AUTH__MIGRATION_NAME}
+      USER_AUTH__STARTUP_PROJECT_NAME: ${USER_AUTH__STARTUP_PROJECT_NAME}
+      USER_AUTH__CONTEXT_PROJECT_NAME: ${USER_AUTH__CONTEXT_PROJECT_NAME}
+      TOKEN_KEY: ${TOKEN_KEY}
+      REFRESH_KEY: ${REFRESH_KEY}
+  user_auth_db:
+    container_name: user_auth_db
+    image: postgres:latest
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: user_auth
+      POSTGRES_USER: ${POSTGRES__USER}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+    volumes: 
+      - user_auth_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES__USER} -d user_auth"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+volumes:
+  team_player_profiles_pg_data:
+    name: "team_player_profiles_pg_data"
+  user_info_pg_data:
+    name: "user_info_pg_data"
+  user_auth_pg_data:
+    name: "user_auth_pg_data"
+

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Entities;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Player;
 
 namespace Service.Mapping
@@ -10,7 +10,8 @@ namespace Service.Mapping
         public PlayerMappingProfile()
         {
             CreateMap<Player, PlayerDto>()
-                .ForMember(d => d.Position, m => m.MapFrom(src => src.Position.Name));
+                .ForMember(d => d.Position, m => m.MapFrom(src => src.Position.Name))
+                .ForMember(d => d.Mmr, m => m.MapFrom(src => src.User.Mmr));
 
             CreateMap<CreatePlayerDto, Player>()
                 .ForMember(d => d.Heroes, m => m.MapFrom(src => src.HeroIds))
@@ -21,7 +22,14 @@ namespace Service.Mapping
                 .ForMember(d => d.Id, m => m.Ignore())
                 .ForMember(d => d.Displayed, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
-                .ForMember(d => d.PlayerHeroes, m => m.Ignore());
+                .ForMember(d => d.PlayerHeroes, m => m.Ignore())
+                .ForMember(d => d.User, m => m.Ignore())
+                .ForMember(d => d.Mmr, m => m.Ignore())
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<UpdatePlayerDto, Player>()
                 .ForMember(d => d.UserId, m => m.Ignore())
@@ -32,11 +40,17 @@ namespace Service.Mapping
                 .ForMember(d => d.TeamPlayers, m => m.Ignore())
                 .ForMember(d => d.Displayed, m => m.Ignore())
                 .ForMember(d => d.UpdatedAt, m => m.Ignore())
-                .ForMember(d => d.PlayerHeroes, m => m.Ignore());
+                .ForMember(d => d.PlayerHeroes, m => m.Ignore())
+                .ForMember(d => d.User, m => m.Ignore())
+                .ForMember(d => d.Mmr, m => m.Ignore())
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<PaginatedResult<Player>, PaginatedResult<PlayerDto>>();
         }
-
         private class UpdatePositionResolver : IValueResolver<UpdatePlayerDto, Player, int?>
         {
             public int? Resolve(UpdatePlayerDto source, Player destination, int? destMember, ResolutionContext context)

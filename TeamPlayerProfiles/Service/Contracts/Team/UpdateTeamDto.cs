@@ -7,5 +7,7 @@
         public string? Name { get; set; }
 
         public string? Description { get; set; }
+
+        public ISet<TeamPlayerDto.Write>? PlayersInTeam { get; set; } = null;
     }
 }

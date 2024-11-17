@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Service.Contracts.Hero;
-using WebAPI.Contracts.Hero;
+using WebAPI.Models.Hero;
 
 namespace WebAPI.Mapping
 {

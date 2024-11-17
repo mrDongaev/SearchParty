@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Common.Models;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Player;
-using WebAPI.Contracts.Board;
-using WebAPI.Contracts.Player;
+using WebAPI.Models.Player;
 
 namespace WebAPI.Mapping
 {
@@ -13,11 +12,27 @@ namespace WebAPI.Mapping
         {
             CreateMap<PlayerDto, GetPlayer.Response>();
 
-            CreateMap<CreatePlayer.Request, CreatePlayerDto>();
+            CreateMap<CreatePlayer.Request, CreatePlayerDto>()
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
-            CreateMap<UpdatePlayer.Request, UpdatePlayerDto>();
+            CreateMap<UpdatePlayer.Request, UpdatePlayerDto>()
+                .ForMember(d => d.Id, m => m.Ignore())
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
-            CreateMap<ConditionalProfile.PlayerRequest, ConditionalQuery.PlayerConditions>();
+            CreateMap<GetConditionalPlayer.Request, ConditionalPlayerQuery>()
+                                .ForAllMembers(opts =>
+                                {
+                                    opts.AllowNull();
+                                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                                });
 
             CreateMap<PaginatedResult<PlayerDto>, PaginatedResult<GetPlayer.Response>>();
         }

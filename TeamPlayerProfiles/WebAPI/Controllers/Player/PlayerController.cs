@@ -1,14 +1,19 @@
 ﻿using AutoMapper;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Player;
+using Service.Services.Implementations.TeamServices;
 using Service.Services.Interfaces.PlayerInterfaces;
-using WebAPI.Contracts.Player;
+using WebAPI.Models.Player;
+using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Player
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
-    public class PlayerController(IPlayerService playerService, IMapper mapper) : WebApiController
+    public class PlayerController(IPlayerService playerService, IServiceProvider serviceProvider, IUserHttpContext userContext, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
@@ -35,6 +40,19 @@ namespace WebAPI.Controllers.Player
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
         }
 
+        [HttpGet("{userId}")]
+        [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<IEnumerable<GetPlayer.Response>>, UnauthorizedHttpResult>> GetPlayersByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            if (userId != userContext.UserId)
+            {
+                return TypedResults.Unauthorized();
+            }
+            var players = await playerService.GetProfilesByUserId(userId, cancellationToken);
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
+        }
+
         [HttpPost]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
         public async Task<IResult> Create(CreatePlayer.Request request, CancellationToken cancellationToken)
@@ -43,28 +61,31 @@ namespace WebAPI.Controllers.Player
             return TypedResults.Ok(mapper.Map<GetPlayer.Response>(createdPlayer));
         }
 
-        [HttpPost]
-        [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetPlayer.Response>, NotFound>> Update(UpdatePlayer.Request request, CancellationToken cancellationToken)
-        {
-            var updatedPlayer = await playerService.Update(mapper.Map<UpdatePlayerDto>(request), cancellationToken);
-            return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetPlayer.Response>(updatedPlayer));
-        }
-
         [HttpPost("{id}")]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetPlayer.Response>, NotFound>> UpdatePlayerHeroes(Guid id, [FromBody] ISet<int> heroIds, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<GetPlayer.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, [FromBody] UpdatePlayer.Request request, CancellationToken cancellationToken)
         {
-            var updatedPlayer = await playerService.UpdatePlayerHeroes(id, heroIds, cancellationToken);
+            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            {
+                return TypedResults.Unauthorized();
+            }
+            var tempPlayer = mapper.Map<UpdatePlayerDto>(request);
+            tempPlayer.Id = id;
+            var updatedPlayer = await playerService.Update(tempPlayer, cancellationToken);
             return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetPlayer.Response>(updatedPlayer));
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-        public async Task<IResult> Delete(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
         {
+            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            {
+                return TypedResults.Unauthorized();
+            }
             return TypedResults.Ok(await playerService.Delete(id, cancellationToken));
         }
     }

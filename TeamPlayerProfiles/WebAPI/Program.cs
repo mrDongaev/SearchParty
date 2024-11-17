@@ -1,7 +1,9 @@
-using Common.Utils;
 using DataAccess.Context;
+using Library.Middleware;
+using Library.Utils;
 using Serilog;
 using WebAPI.Configurations;
+using Library.Configurations;
 using WebAPI.Middleware;
 
 Log.Logger = new Serilog.LoggerConfiguration()
@@ -13,13 +15,16 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Services
-        .AddDbContext(builder.Configuration)
+        .AddDbContext()
         .AddRepositories()
         .AddServices()
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
         .AddSwagger()
-        .AddRabbitMQ(builder.Configuration)
+        .AddAuthenticationConfiguration();
+    //.AddRabbitMQ(builder.Configuration);
+
+    builder.Services
         .AddControllers();
 
     builder.Host
@@ -28,7 +33,7 @@ try
     var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (CommonUtils.TryGetEnvVariable("SEED_DATABASE").Equals("true"))
+    if (EnvironmentUtils.TryGetEnvVariable("TEAM_PLAYER_PROFILES__SEED_DATABASE", out var doSeed) && doSeed == "true")
     {
         using (var scope = app.Services.CreateScope())
         {
@@ -51,7 +56,10 @@ try
     app.UseSerilogRequestLogging();
     app.UseExceptionHandling();
     app.UseHttpsRedirection();
+    app.UseMiddleware<TokenRefreshMiddleware>();
+    app.UseAuthentication();
     app.UseAuthorization();
+    app.UseMiddleware<UserHttpContextMiddleware>();
     app.MapControllers();
     await app.RunAsync();
     Log.Information("Clean shutdown.");

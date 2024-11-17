@@ -2,17 +2,17 @@
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using DataAccess.Repositories.Models;
 using DataAccess.Utils;
+using Library.Models;
+using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class TeamRepository : Repository<Team, Guid>, ITeamRepository
+    public class TeamRepository : Repository<TeamPlayerProfilesContext, Team, Guid>, ITeamRepository
     {
         private readonly DbSet<Team> _teams;
         private readonly DbSet<Player> _players;
-        private const int maxCount = 5;
         public TeamRepository(TeamPlayerProfilesContext context) : base(context)
         {
             _teams = _context.Teams;
@@ -31,23 +31,35 @@ namespace DataAccess.Repositories.Implementations
                 .SingleAsync(t => t.Id == id, cancellationToken);
         }
 
+        public async Task<ICollection<Team>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            return await _teams.GetEntities(true)
+                    .Where(t => t.UserId == userId)
+                    .ToListAsync(cancellationToken);
+        }
+
+        public async Task<Guid?> GetProfileUserId(Guid teamId, CancellationToken cancellationToken)
+        {
+            var team = await _teams.AsNoTracking().SingleOrDefaultAsync(t => t.Id == teamId, cancellationToken);
+            return team?.UserId;
+        }
+
         public override async Task<Team> Add(Team team, CancellationToken cancellationToken)
         {
             team.Id = Guid.NewGuid();
             var playerIds = team.TeamPlayers.Select(tp => tp.PlayerId).ToList();
-            var players = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
+            var players = await _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToListAsync(cancellationToken);
             foreach (var tp in team.TeamPlayers)
             {
                 tp.TeamId = team.Id;
-                tp.PlayerUserId = players.Single(p => p.Id == tp.PlayerId).UserId;
+                tp.UserId = players.Single(p => p.Id == tp.PlayerId).UserId;
             }
             team.PlayerCount = team.TeamPlayers.Count;
-            team.CheckTeamValidity(maxCount);
             await base.Add(team, cancellationToken);
             return await Get(team.Id, cancellationToken);
         }
 
-        public override async Task<Team?> Update(Team team, CancellationToken cancellationToken)
+        public async Task<Team?> Update(Team team, ISet<TeamPlayer>? players, CancellationToken cancellationToken)
         {
             var existingTeam = await _teams
                 .Include(t => t.TeamPlayers)
@@ -59,24 +71,17 @@ namespace DataAccess.Repositories.Implementations
             if (team.Name != null) existingTeam.Name = team.Name;
             if (team.Description != null) existingTeam.Description = team.Description;
             if (team.Displayed != null) existingTeam.Displayed = team.Displayed;
+            if (players != null) UpdateTeamPlayers(existingTeam, players);
             if (_context.Entry(existingTeam).State == EntityState.Modified)
             {
                 existingTeam.UpdatedAt = DateTime.UtcNow;
             }
-            team.CheckTeamValidity(maxCount);
             await _context.SaveChangesAsync(cancellationToken);
             return await Get(team.Id, cancellationToken);
         }
 
-        public async Task<Team?> UpdateTeamPlayers(Guid id, ISet<TeamPlayer> players, CancellationToken cancellationToken)
+        private void UpdateTeamPlayers(Team existingTeam, ISet<TeamPlayer> players)
         {
-            var existingTeam = await _teams
-                .Include(t => t.TeamPlayers)
-                .SingleOrDefaultAsync(t => t.Id == id, cancellationToken);
-            if (existingTeam == null)
-            {
-                return null;
-            }
             var existingPlayerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId);
             var updatedPlayerIds = players.Select(tp => tp.PlayerId);
             var playerIdsToAdd = updatedPlayerIds.Except(existingPlayerIds);
@@ -117,45 +122,39 @@ namespace DataAccess.Repositories.Implementations
                 }
                 _context.Entry(existingTeam).State = EntityState.Modified;
             }
-            if (_context.Entry(existingTeam).State == EntityState.Modified)
-            {
-                existingTeam.UpdatedAt = DateTime.UtcNow;
-            }
             var playerIds = existingTeam.TeamPlayers.Select(tp => tp.PlayerId).ToList();
             var finalPlayers = _players.AsNoTracking().Where(p => playerIds.Contains(p.Id)).ToList();
             foreach (var tp in existingTeam.TeamPlayers)
             {
-                tp.PlayerUserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
+                tp.UserId = finalPlayers.Single(p => p.Id == tp.PlayerId).UserId;
             }
-            existingTeam.CheckTeamValidity(maxCount);
             existingTeam.PlayerCount = existingTeam.TeamPlayers.Count;
-            await _context.SaveChangesAsync(cancellationToken);
-            return await Get(existingTeam.Id, cancellationToken);
         }
 
-        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalQuery.TeamConditions config, CancellationToken cancellationToken)
+        public async Task<ICollection<Team>> GetConditionalTeamRange(ConditionalTeamQuery config, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
                 .FilterWith(config)
-                .SortWith(config.Sort)
+                .SortWith(config.SortConditions)
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalQuery.TeamConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalTeamQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
-            int count = _teams
+            var query = _teams.GetEntities(true)
                 .AsNoTracking()
-                .FilterWith(config)
-                .Count();
+                .FilterWith(config);
 
-            var list = await _teams.GetEntities(true)
-                .FilterWith(config)
-                .SortWith(config.Sort)
+            int count = query.Count();
+
+            var list = await query
+                .SortWith(config.SortConditions)
                 .Skip((intPage - 1) * intSize)
                 .Take(intSize)
                 .ToListAsync(cancellationToken);
+
             return new PaginatedResult<Team>
             {
                 Page = intPage,

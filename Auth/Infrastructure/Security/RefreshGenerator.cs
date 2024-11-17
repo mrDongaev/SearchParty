@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.User;
 using Domain;
+using Library.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -19,8 +20,7 @@ namespace Infrastructure.Security
 
         public RefreshGenerator()
         {
-            byte[] refreshKeyByte = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("REFRESH_KEY")
-                ?? throw new ArgumentNullException("Refresh token key not found in server environment variables"));
+            byte[] refreshKeyByte = Encoding.UTF8.GetBytes(EnvironmentUtils.GetEnvVariable("REFRESH_KEY"));
 
             _refreshKey = new SymmetricSecurityKey(refreshKeyByte);
         }

@@ -1,12 +1,11 @@
 ﻿using DataAccess.Entities.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccess.Entities
 {
     public class Team : IProfile
     {
         public Guid Id { get; set; }
-
-        public Guid UserId { get; set; }
 
         public string? Name { get; set; }
 
@@ -18,8 +17,15 @@ namespace DataAccess.Entities
 
         public int PlayerCount { get; set; }
 
-        public ICollection<Player> Players { get; protected set; } = [];
+        public Guid UserId { get; set; }
 
-        public ICollection<TeamPlayer> TeamPlayers { get; protected set; } = [];
+        public User User { get; set; }
+
+        [NotMapped]
+        public double AvgMmr { get; set; }
+
+        public ICollection<Player> Players { get; set; } = [];
+
+        public ICollection<TeamPlayer> TeamPlayers { get; set; } = [];
     }
 }

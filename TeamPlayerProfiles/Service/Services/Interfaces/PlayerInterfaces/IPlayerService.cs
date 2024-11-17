@@ -3,8 +3,7 @@ using Service.Services.Interfaces.Common;
 
 namespace Service.Services.Interfaces.PlayerInterfaces
 {
-    public interface IPlayerService : IProfileService<PlayerDto, UpdatePlayerDto, CreatePlayerDto>, IRangeGettable<PlayerDto, Guid>
+    public interface IPlayerService : IProfileService<PlayerDto, UpdatePlayerDto, CreatePlayerDto>
     {
-        Task<PlayerDto?> UpdatePlayerHeroes(Guid id, ISet<int> heroIds, CancellationToken cancellationToken);
     }
 }

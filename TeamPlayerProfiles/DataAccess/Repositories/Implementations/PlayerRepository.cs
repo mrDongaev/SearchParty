@@ -1,15 +1,16 @@
-﻿using Common.Models.Enums;
+﻿using Common.Models;
 using DataAccess.Context;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
-using DataAccess.Repositories.Models;
 using DataAccess.Utils;
+using Library.Models;
+using Library.Models.Enums;
+using Library.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
-using static Common.Models.ConditionalQuery;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public class PlayerRepository : Repository<Player, Guid>, IPlayerRepository
+    public class PlayerRepository : Repository<TeamPlayerProfilesContext, Player, Guid>, IPlayerRepository
     {
         private readonly DbSet<Player> _players;
         private readonly DbSet<Hero> _heroes;
@@ -33,6 +34,19 @@ namespace DataAccess.Repositories.Implementations
             return await _players.GetEntities(true)
                 .Include(p => p.Position)
                 .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
+        }
+
+        public async Task<ICollection<Player>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            return await _players.GetEntities(true)
+                    .Where(t => t.UserId == userId)
+                    .ToListAsync(cancellationToken);
+        }
+
+        public async Task<Guid?> GetProfileUserId(Guid playerId, CancellationToken cancellationToken)
+        {
+            var player = await _players.AsNoTracking().SingleOrDefaultAsync(p => p.Id == playerId, cancellationToken);
+            return player?.UserId;
         }
 
         public async Task<ICollection<Player>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
@@ -63,7 +77,7 @@ namespace DataAccess.Repositories.Implementations
             return newPlayer;
         }
 
-        public override async Task<Player?> Update(Player player, CancellationToken cancellationToken)
+        public async Task<Player?> Update(Player player, ISet<int>? heroIds, CancellationToken cancellationToken)
         {
             var existingPlayer = await _players.GetEntities(false)
                 .SingleOrDefaultAsync(p => p.Id == player.Id, cancellationToken);
@@ -76,6 +90,7 @@ namespace DataAccess.Repositories.Implementations
             if (player.Description != null) existingPlayer.Description = player.Description;
             if (player.Displayed != null) existingPlayer.Displayed = player.Displayed;
             if (position != null) existingPlayer.Position = position;
+            if (heroIds != null) await UpdatePlayerHeroes(existingPlayer, heroIds, cancellationToken);
             if (_context.Entry(existingPlayer).State == EntityState.Modified)
             {
                 existingPlayer.UpdatedAt = DateTime.UtcNow;
@@ -84,14 +99,8 @@ namespace DataAccess.Repositories.Implementations
             return updatedPlayer;
         }
 
-        public async Task<Player?> UpdatePlayerHeroes(Guid id, ISet<int> heroIds, CancellationToken cancellationToken)
+        private async Task UpdatePlayerHeroes(Player existingPlayer, ISet<int> heroIds, CancellationToken cancellationToken)
         {
-            var existingPlayer = await _players.GetEntities(false)
-                .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
-            if (existingPlayer == null)
-            {
-                return null;
-            }
             var existingHeroIds = existingPlayer.Heroes.Select(p => p.Id).ToList();
             var updatedHeroIds = heroIds;
             var heroIdsToAdd = updatedHeroIds.Except(existingHeroIds).ToList();
@@ -99,7 +108,7 @@ namespace DataAccess.Repositories.Implementations
             if (heroIdsToRemove.Any())
             {
                 var heroesToRemove = await _heroes
-                .Where(h => heroIdsToRemove.Contains(h.Id))
+                    .Where(h => heroIdsToRemove.Contains(h.Id))
                     .ToListAsync(cancellationToken);
                 foreach (var hero in heroesToRemove)
                 {
@@ -110,7 +119,7 @@ namespace DataAccess.Repositories.Implementations
             if (heroIdsToAdd.Count != 0)
             {
                 var heroesToAdd = await _heroes
-                .Where(h => heroIdsToAdd.Contains(h.Id))
+                    .Where(h => heroIdsToAdd.Contains(h.Id))
                     .ToListAsync(cancellationToken);
                 foreach (var hero in heroesToAdd)
                 {
@@ -118,37 +127,34 @@ namespace DataAccess.Repositories.Implementations
                 }
                 _context.Entry(existingPlayer).State = EntityState.Modified;
             }
-            if (_context.Entry(existingPlayer).State == EntityState.Modified)
-            {
-                existingPlayer.UpdatedAt = DateTime.UtcNow;
-            }
-            var updatedPlayer = await base.Update(existingPlayer, cancellationToken);
-            return updatedPlayer;
         }
 
-        public async Task<ICollection<Player>> GetConditionalPlayerRange(PlayerConditions config, CancellationToken cancellationToken)
+        public async Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery config, CancellationToken cancellationToken)
         {
-            return await _players.GetEntities(true)
+            return await _players
+                .GetEntities(true)
                 .FilterWith(config)
-                .SortWith(config.Sort)
+                .SortWith(config.SortConditions)
                 .ToListAsync(cancellationToken);
+
         }
 
-        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(PlayerConditions config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
-            int count = _players
-                .AsNoTracking()
-                .FilterWith(config)
-                .Count();
-            var list = await _players.GetEntities(true)
-                .FilterWith(config)
-                .OrderBy(p => p.Id)
-                .SortWith(config.Sort)
+
+            var query = _players.GetEntities(true)
+                .FilterWith(config);
+
+            int count = query.Count();
+
+            var list = await query
+                .SortWith(config.SortConditions)
                 .Skip((intPage - 1) * intSize)
                 .Take(intSize)
                 .ToListAsync(cancellationToken);
+
             return new PaginatedResult<Player>
             {
                 Page = intPage,

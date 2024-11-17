@@ -1,15 +1,15 @@
-﻿using DataAccess.Entities;
-using DataAccess.Repositories.Models;
-using static Common.Models.ConditionalQuery;
+﻿using Common.Models;
+using DataAccess.Entities;
+using Library.Models;
 
 namespace DataAccess.Repositories.Interfaces
 {
     public interface ITeamRepository : IProfileRepository<Team>
     {
-        Task<Team?> UpdateTeamPlayers(Guid id, ISet<TeamPlayer> players, CancellationToken cancellationToken);
+        Task<Team?> Update(Team team, ISet<TeamPlayer>? teamPlayers, CancellationToken cancellationToken);
 
-        Task<ICollection<Team>> GetConditionalTeamRange(TeamConditions config, CancellationToken cancellationToken);
+        Task<ICollection<Team>> GetConditionalTeamRange(ConditionalTeamQuery config, CancellationToken cancellationToken);
 
-        Task<PaginatedResult<Team>> GetPaginatedTeamRange(TeamConditions config, uint page, uint pageSize, CancellationToken cancellationToken);
+        Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalTeamQuery config, uint page, uint pageSize, CancellationToken cancellationToken);
     }
 }

@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Common.Models;
-using DataAccess.Repositories.Models;
+using Library.Models;
 using Service.Contracts.Team;
-using WebAPI.Contracts.Board;
-using WebAPI.Contracts.Team;
+using WebAPI.Models.Team;
 
 namespace WebAPI.Mapping
 {
@@ -13,15 +12,36 @@ namespace WebAPI.Mapping
         {
             CreateMap<TeamDto, GetTeam.Response>();
 
-            CreateMap<TeamPlayerDto.Read, UpdateTeamPlayers.Response>();
+            CreateMap<TeamPlayerDto.Read, UpdateTeamPlayer.Response>();
 
-            CreateMap<UpdateTeamPlayers.Request, TeamPlayerDto.Write>();
+            CreateMap<UpdateTeamPlayer.Request, TeamPlayerDto.Write>()
+                .ForAllMembers(opts =>
+                {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
-            CreateMap<CreateTeam.Request, CreateTeamDto>();
+            CreateMap<CreateTeam.Request, CreateTeamDto>()
+                .ForAllMembers(opts =>
+                {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
-            CreateMap<UpdateTeam.Request, UpdateTeamDto>();
+            CreateMap<UpdateTeam.Request, UpdateTeamDto>()
+                .ForMember(d => d.Id, m => m.Ignore())
+                .ForAllMembers(opts =>
+                {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
-            CreateMap<ConditionalProfile.TeamRequest, ConditionalQuery.TeamConditions>();
+            CreateMap<GetConditionalTeam.Request, ConditionalTeamQuery>()
+                .ForAllMembers(opts =>
+                {
+                    opts.AllowNull();
+                    opts.Condition((src, dest, srcMember) => srcMember != null);
+                });
 
             CreateMap<PaginatedResult<TeamDto>, PaginatedResult<GetTeam.Response>>();
         }
