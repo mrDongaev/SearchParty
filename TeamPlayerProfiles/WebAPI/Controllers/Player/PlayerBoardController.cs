@@ -60,7 +60,7 @@ namespace WebAPI.Controllers.Player
                 AcceptorId = playerId,
                 AcceptingUserId = (Guid)playerUserId,
                 PositionName = (PositionName)position,
-                MessageType = MessageType.TeamInvitation,
+                MessageType = MessageType.PlayerInvitation,
             };
             await boardService.InvitePlayerToTeam(message, cancellationToken);
             return TypedResults.Ok();

@@ -21,7 +21,7 @@ namespace Service.Services.Implementations.MessageProcessing
             {
                 switch (receivedMessage.MessageType)
                 {
-                    case MessageType.PlayerApplication:
+                    case MessageType.PlayerInvitation:
                         {
                             var repo = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
                             var messageProcessor = new SubmittedPlayerInvitationProcessor(repo);
@@ -29,7 +29,7 @@ namespace Service.Services.Implementations.MessageProcessing
                             break;
                         }
 
-                    case MessageType.TeamInvitation:
+                    case MessageType.TeamApplication:
                         {
                             var repo = scope.ServiceProvider.GetRequiredService<ITeamApplicationRepository>();
                             var messageProcessor = new SubmittedTeamApplicationProcessor(repo);

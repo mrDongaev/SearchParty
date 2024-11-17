@@ -1,15 +1,19 @@
 ﻿using AutoMapper;
+using Common.Exceptions;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using Library.Models.API.UserMessaging;
+using Library.Models.Enums;
+using Microsoft.Extensions.DependencyInjection;
+using Service.Contracts.Player;
 using Service.Contracts.Team;
+using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
 
 namespace Service.Services.Implementations.TeamServices
 {
-    public class TeamService(IMapper mapper, ITeamRepository teamRepo, IPlayerRepository playerRepo) : ITeamService
+    public class TeamService(IMapper mapper, ITeamRepository teamRepo, IPlayerRepository playerRepo, IServiceProvider serviceProvider) : ITeamService
     {
-        private static int maxCount = 5;
-
         public async Task<TeamDto> Create(CreateTeamDto dto, CancellationToken cancellationToken = default)
         {
             var team = mapper.Map<Team>(dto);
@@ -61,6 +65,74 @@ namespace Service.Services.Implementations.TeamServices
         public async Task<Guid?> GetProfileUserId(Guid profileId, CancellationToken cancellationToken = default)
         {
             return await teamRepo.GetProfileUserId(profileId, cancellationToken);
+        }
+
+        public async Task PushPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid? messageId, MessageType? messageType, CancellationToken cancellationToken)
+        {
+            Team currentTeam = await teamRepo.Get(teamId, cancellationToken);
+            Player pushedPlayer = await playerRepo.Get(playerId, cancellationToken);
+            if (messageId != null && messageType != null)
+            {
+                using (var scope = serviceProvider.CreateScope())
+                {
+                    GetMessage.Response? message;
+                    if (messageType == MessageType.PlayerInvitation)
+                    {
+                        var messageService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationService>();
+                        message = await messageService.Get(messageId.Value, cancellationToken);
+                    }
+                    else
+                    {
+                        var messageService = scope.ServiceProvider.GetRequiredService<ITeamApplicationService>();
+                        message = await messageService.Get(messageId.Value, cancellationToken);
+                    }
+                    if (message == null || message.Status != MessageStatus.Pending)
+                    {
+                        throw new NoPendingMessageException(messageType.Value);
+                    }
+                }
+            }
+            else if (currentTeam.UserId != pushedPlayer.UserId)
+            {
+                throw new TeamOwnerNotPresentException();
+            }
+            UpdateTeamDto updatedTeam = new UpdateTeamDto
+            {
+                Id = teamId,
+                PlayersInTeam = currentTeam.TeamPlayers.Select(tp => new TeamPlayerDto.Write
+                {
+                    PlayerId = tp.PlayerId,
+                    Position = (PositionName)tp.PositionId,
+                }).ToHashSet(),
+            };
+            updatedTeam.PlayersInTeam.Add(new TeamPlayerDto.Write
+            {
+                PlayerId = playerId,
+                Position = position,
+            });
+            await Update(updatedTeam, cancellationToken);
+        }
+
+        public async Task PullPlayerFromTeam(Guid teamId, Guid playerId, CancellationToken cancellationToken)
+        {
+            Team currentTeam = await teamRepo.Get(teamId, cancellationToken);
+            Player pushedPlayer = await playerRepo.Get(playerId, cancellationToken);
+            UpdateTeamDto updatedTeam = new UpdateTeamDto
+            {
+                Id = teamId,
+                PlayersInTeam = currentTeam.TeamPlayers.Select(tp => new TeamPlayerDto.Write
+                {
+                    PlayerId = tp.PlayerId,
+                    Position = (PositionName)tp.PositionId,
+                }).ToHashSet(),
+            };
+            var playerToRemove = currentTeam.TeamPlayers.SingleOrDefault(currentTeam => currentTeam.PlayerId == playerId);
+            updatedTeam.PlayersInTeam.Remove(new TeamPlayerDto.Write
+            {
+                PlayerId = playerId,
+                Position = (PositionName)playerToRemove.PositionId,
+            });
+            await Update(updatedTeam, cancellationToken);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public enum MessageType
     {
-        PlayerApplication,
-        TeamInvitation
+        PlayerInvitation,
+        TeamApplication,
     }
 }

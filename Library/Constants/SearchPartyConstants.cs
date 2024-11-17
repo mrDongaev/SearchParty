@@ -10,8 +10,12 @@ namespace Library.Constants
 
         public static readonly TimeSpan MessageExpirationTime;
 
+        public static readonly int MaxCount;
+
         static SearchPartyConstants()
         {
+            MinMmr = EnvironmentUtils.TryGetEnvVariable("MAX_COUNT", out var maxCount) && int.TryParse(maxCount, out var maxCountInt) ? maxCountInt : 0;
+
             MinMmr = EnvironmentUtils.TryGetEnvVariable("MIN_MMR", out var minMmr) && int.TryParse(minMmr, out var minMmrInt) ? minMmrInt : 0;
 
             MinMmr = EnvironmentUtils.TryGetEnvVariable("MAX_MMR", out var maxMmr) && int.TryParse(maxMmr, out var maxMmrInt) ? maxMmrInt : 20000;

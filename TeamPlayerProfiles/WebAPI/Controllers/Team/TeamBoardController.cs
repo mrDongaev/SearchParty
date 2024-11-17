@@ -61,7 +61,7 @@ namespace WebAPI.Controllers.Team
                 AcceptorId = playerId,
                 AcceptingUserId = (Guid)teamUserId,
                 PositionName = (PositionName)position,
-                MessageType = MessageType.PlayerApplication,
+                MessageType = MessageType.TeamApplication,
             };
             await teamService.SendTeamApplicationRequest(message, cancellationToken);
             return TypedResults.Ok();
