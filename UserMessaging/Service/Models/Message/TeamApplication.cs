@@ -8,27 +8,29 @@ namespace Service.Models.Message
 {
     public class TeamApplication : AbstractMessage<TeamApplicationDto>
     {
-        public TeamApplication(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TeamApplicationDto> startingState, CancellationToken cancellationToken)
-            : base(serviceProvider, userContext, startingState, cancellationToken)
+        public TeamApplication(TeamApplicationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TeamApplicationDto> startingState, CancellationToken cancellationToken)
+            : base(messageDto, serviceProvider, userContext, startingState, cancellationToken)
         {
+            ApplyingPlayerId = messageDto.ApplyingPlayerId;
+            AcceptingTeamId = messageDto.AcceptingTeamId;
         }
 
-        public Guid ApplyingPlayerId { get; set; }
+        public Guid ApplyingPlayerId { get; protected set; }
 
-        public Guid AcceptingTeamId { get; set; }
+        public Guid AcceptingTeamId { get; protected set; }
 
         public override TeamApplicationDto MessageDto => new TeamApplicationDto
         {
-            Id = this.Id,
-            AcceptingUserId = this.AcceptingUserId,
-            SendingUserId = this.SendingUserId,
-            AcceptingTeamId = this.AcceptingTeamId,
-            ApplyingPlayerId = this.ApplyingPlayerId,
-            PositionName = this.PositionName,
-            Status = this.Status,
-            IssuedAt = this.IssuedAt,
-            ExpiresAt = this.ExpiresAt,
-            UpdatedAt = DateTime.UtcNow,
+            Id = Id,
+            AcceptingUserId = AcceptingUserId,
+            SendingUserId = SendingUserId,
+            AcceptingTeamId = AcceptingTeamId,
+            ApplyingPlayerId = ApplyingPlayerId,
+            PositionName = PositionName,
+            Status = Status,
+            IssuedAt = IssuedAt,
+            ExpiresAt = ExpiresAt,
+            UpdatedAt = UpdatedAt,
         };
 
         public async override Task<TeamApplicationDto?> SaveToDatabase()
@@ -36,14 +38,14 @@ namespace Service.Models.Message
             using (var scope = ServiceProvider.CreateScope())
             {
                 var teamApplicationService = scope.ServiceProvider.GetRequiredService<ITeamApplicationRepository>();
-                return await teamApplicationService.SaveMessage(MessageDto, CancellationToken);
+                var messageDto = await teamApplicationService.SaveMessage(MessageDto, CancellationToken);
+                if (messageDto != null)
+                {
+                    Status = messageDto.Status;
+                    UpdatedAt = messageDto.UpdatedAt;
+                }
+                return messageDto;
             }
-        }
-
-        public override Task TrySendToUser()
-        {
-            return Task.CompletedTask;
-            //throw new NotImplementedException();
         }
     }
 }

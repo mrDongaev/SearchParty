@@ -1,4 +1,5 @@
 ﻿using Library.Services.Interfaces.UserContextInterfaces;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Dtos.Message;
 using Service.Models.States.Interfaces;
@@ -8,27 +9,29 @@ namespace Service.Models.Message
 {
     public class PlayerInvitation : AbstractMessage<PlayerInvitationDto>
     {
-        public PlayerInvitation(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<PlayerInvitationDto> startingState, CancellationToken cancellationToken)
-            : base(serviceProvider, userContext, startingState, cancellationToken)
+        public PlayerInvitation(PlayerInvitationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<PlayerInvitationDto> startingState, CancellationToken cancellationToken)
+            : base(messageDto, serviceProvider, userContext, startingState, cancellationToken)
         {
+            AcceptingPlayerId = messageDto.AcceptingPlayerId;
+            InvitingTeamId = messageDto.InvitingTeamId;
         }
 
-        public Guid AcceptingPlayerId { get; set; }
+        public Guid AcceptingPlayerId { get; protected set; }
 
-        public Guid InvitingTeamId { get; set; }
+        public Guid InvitingTeamId { get; protected set; }
 
         public override PlayerInvitationDto MessageDto => new PlayerInvitationDto
         {
-            Id = this.Id,
-            AcceptingUserId = this.AcceptingUserId,
-            AcceptingPlayerId = this.AcceptingPlayerId,
-            InvitingTeamId = this.InvitingTeamId,
-            SendingUserId = this.SendingUserId,
-            PositionName = this.PositionName,
-            Status = this.Status,
-            IssuedAt = this.IssuedAt,
-            ExpiresAt = this.ExpiresAt,
-            UpdatedAt = DateTime.UtcNow,
+            Id = Id,
+            AcceptingUserId = AcceptingUserId,
+            AcceptingPlayerId = AcceptingPlayerId,
+            InvitingTeamId = InvitingTeamId,
+            SendingUserId = SendingUserId,
+            PositionName = PositionName,
+            Status = Status,
+            IssuedAt = IssuedAt,
+            ExpiresAt = ExpiresAt,
+            UpdatedAt = UpdatedAt,
         };
 
         public async override Task<PlayerInvitationDto?> SaveToDatabase()
@@ -36,14 +39,14 @@ namespace Service.Models.Message
             using (var scope = ServiceProvider.CreateScope())
             {
                 var playerInvitationService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
-                return await playerInvitationService.SaveMessage(MessageDto, CancellationToken);
+                var messageDto = await playerInvitationService.SaveMessage(MessageDto, CancellationToken);
+                if (messageDto != null)
+                {
+                    Status = messageDto.Status;
+                    UpdatedAt = messageDto.UpdatedAt;
+                }
+                return messageDto;
             }
-        }
-
-        public override Task TrySendToUser()
-        {
-            return Task.CompletedTask;
-            //throw new NotImplementedException();
         }
     }
 }

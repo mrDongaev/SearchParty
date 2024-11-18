@@ -1,4 +1,5 @@
-﻿using Service.Dtos.ActionResponse;
+﻿using Library.Models.Enums;
+using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Models.Message;
 using Service.Models.States.Interfaces;
@@ -7,34 +8,28 @@ namespace Service.Models.States.Implementations.AcceptedMessage
 {
     public class AcceptedPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {
-        public override Task<ActionResponse<PlayerInvitationDto>> Accept()
+        public async override Task<ActionResponse<PlayerInvitationDto>> Accept()
         {
-            throw new NotImplementedException();
+            return _giveFailureResponse();
         }
 
-        public override Task<ActionResponse<PlayerInvitationDto>> Expire()
+        public async override Task<ActionResponse<PlayerInvitationDto>> Reject()
         {
-            throw new NotImplementedException();
+            return _giveFailureResponse();
         }
 
-        public override Task<ActionResponse<PlayerInvitationDto>> Reject()
+        public async override Task<ActionResponse<PlayerInvitationDto>> Rescind()
         {
-            throw new NotImplementedException();
+            return _giveFailureResponse();
         }
 
-        public override Task<ActionResponse<PlayerInvitationDto>> Rescind()
+        private ActionResponse<PlayerInvitationDto> _giveFailureResponse()
         {
-            throw new NotImplementedException();
-        }
-
-        public override Task<PlayerInvitationDto?> SaveToDatabase()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task TrySendToUser()
-        {
-            throw new NotImplementedException();
+            var actionResponse = new ActionResponse<PlayerInvitationDto>();
+            actionResponse.ActionMessage = "The invitation has already been accepted";
+            actionResponse.Status = ActionResponseStatus.Failure;
+            actionResponse.Message = MessageDto;
+            return actionResponse;
         }
     }
 }

@@ -53,6 +53,11 @@ namespace Service.Models.States.Interfaces
             get => this.Message.ExpiresAt;
         }
 
+        public DateTime UpdatedAt
+        {
+            get => this.Message.UpdatedAt;
+        }
+
         public CancellationToken CancellationToken
         {
             get => this.Message.CancellationToken;

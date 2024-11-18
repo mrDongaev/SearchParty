@@ -1,4 +1,5 @@
-﻿using Service.Dtos.ActionResponse;
+﻿using Library.Models.Enums;
+using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Models.Message;
 using Service.Models.States.Interfaces;
@@ -7,34 +8,28 @@ namespace Service.Models.States.Implementations.RejectedMessage
 {
     public class RejectedTeamApplication(TeamApplication message) : AbstractTeamApplicationState(message)
     {
-        public override Task<ActionResponse<TeamApplicationDto>> Accept()
+        public async override Task<ActionResponse<TeamApplicationDto>> Accept()
         {
-            throw new NotImplementedException();
+            return _giveFailureResponse();
         }
 
-        public override Task<ActionResponse<TeamApplicationDto>> Expire()
+        public async override Task<ActionResponse<TeamApplicationDto>> Reject()
         {
-            throw new NotImplementedException();
+            return _giveFailureResponse();
         }
 
-        public override Task<ActionResponse<TeamApplicationDto>> Reject()
+        public async override Task<ActionResponse<TeamApplicationDto>> Rescind()
         {
-            throw new NotImplementedException();
+            return _giveFailureResponse();
         }
 
-        public override Task<ActionResponse<TeamApplicationDto>> Rescind()
+        private ActionResponse<TeamApplicationDto> _giveFailureResponse()
         {
-            throw new NotImplementedException();
-        }
-
-        public override Task<TeamApplicationDto?> SaveToDatabase()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task TrySendToUser()
-        {
-            throw new NotImplementedException();
+            var actionResponse = new ActionResponse<TeamApplicationDto>();
+            actionResponse.ActionMessage = "The application has already been rejected";
+            actionResponse.Status = ActionResponseStatus.Failure;
+            actionResponse.Message = MessageDto;
+            return actionResponse;
         }
     }
 }

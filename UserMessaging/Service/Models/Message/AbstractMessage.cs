@@ -9,19 +9,21 @@ namespace Service.Models.Message
 {
     public abstract class AbstractMessage<TMessageDto> where TMessageDto : MessageDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; protected set; }
 
-        public Guid SendingUserId { get; set; }
+        public Guid SendingUserId { get; protected set; }
 
-        public Guid AcceptingUserId { get; set; }
+        public Guid AcceptingUserId { get; protected set; }
 
-        public PositionName PositionName { get; set; }
+        public PositionName PositionName { get; protected set; }
 
         public MessageStatus Status { get; set; }
 
-        public DateTime IssuedAt { get; set; }
+        public DateTime IssuedAt { get; protected set; }
 
-        public DateTime ExpiresAt { get; set; }
+        public DateTime ExpiresAt { get;protected  set; }
+
+        public DateTime UpdatedAt { get; protected set; }
 
         protected readonly ConcurrentQueue<Func<Task>> _taskQueue = new ConcurrentQueue<Func<Task>>();
 
@@ -37,8 +39,16 @@ namespace Service.Models.Message
 
         public abstract MessageDto MessageDto { get; }
 
-        public AbstractMessage(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TMessageDto> startingState, CancellationToken cancellationToken)
+        public AbstractMessage(TMessageDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TMessageDto> startingState, CancellationToken cancellationToken)
         {
+            Id = messageDto.Id;
+            SendingUserId = messageDto.SendingUserId;
+            AcceptingUserId = messageDto.AcceptingUserId;
+            PositionName = messageDto.PositionName;
+            Status = messageDto.Status;
+            IssuedAt = messageDto.IssuedAt;
+            ExpiresAt = messageDto.ExpiresAt;
+            UpdatedAt = messageDto.UpdatedAt;
             ServiceProvider = serviceProvider;
             UserContext = userContext;
             CancellationToken = cancellationToken;
@@ -96,8 +106,6 @@ namespace Service.Models.Message
         {
             return Execute(State.Rescind);
         }
-
-        public abstract Task TrySendToUser();
 
         public abstract Task SaveToDatabase();
     }
