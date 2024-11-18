@@ -1,6 +1,7 @@
 ﻿using Library.Models.API.UserMessaging;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Dtos.Message;
+using Service.Models.Message;
 using Service.Services.Interfaces.MessageProcessing;
 
 namespace Service.Services.Implementations.MessageProcessing

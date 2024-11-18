@@ -1,5 +1,6 @@
 ﻿using Library.Models.API.UserMessaging;
 using Service.Dtos.Message;
+using Service.Models.Message;
 
 namespace Service.Services.Interfaces.MessageProcessing
 {
@@ -11,7 +12,6 @@ namespace Service.Services.Interfaces.MessageProcessing
         {
             AbstractMessage<PlayerInvitationDto> message = CreateMessage(submittedMessage);
             var messageDto = await message.SaveToDatabase();
-            message.TrySendToUser();
         }
     }
 }

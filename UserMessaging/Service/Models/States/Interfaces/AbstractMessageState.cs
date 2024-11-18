@@ -28,10 +28,6 @@ namespace Service.Models.States.Interfaces
         public PositionName PositionName
         {
             get => this.Message.PositionName;
-            set
-            {
-                this.Message.PositionName = value;
-            }
         }
 
         public MessageStatus Status
@@ -75,7 +71,7 @@ namespace Service.Models.States.Interfaces
 
         public TMessageDto MessageDto
         {
-            get => (TMessageDto) this.Message.MessageDto;
+            get => (TMessageDto)this.Message.MessageDto;
         }
 
         public AbstractMessageState(AbstractMessage<TMessageDto> message)

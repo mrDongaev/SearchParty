@@ -3,7 +3,7 @@ using Service.Dtos.Message;
 
 namespace Service.Services.Interfaces.MessageInteraction
 {
-    public interface IMessageInteractionService<TMessageDto> where TMessageDto : PlayerInvitationDto
+    public interface IMessageInteractionService<TMessageDto> where TMessageDto : MessageDto
     {
         Task<TMessageDto?> GetMessage(Guid id, CancellationToken cancellationToken);
 

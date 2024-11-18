@@ -21,7 +21,7 @@ namespace Service.Models.Message
 
         public DateTime IssuedAt { get; protected set; }
 
-        public DateTime ExpiresAt { get;protected  set; }
+        public DateTime ExpiresAt { get; protected set; }
 
         public DateTime UpdatedAt { get; protected set; }
 
@@ -107,6 +107,6 @@ namespace Service.Models.Message
             return Execute(State.Rescind);
         }
 
-        public abstract Task SaveToDatabase();
+        public abstract Task<TMessageDto> SaveToDatabase();
     }
 }

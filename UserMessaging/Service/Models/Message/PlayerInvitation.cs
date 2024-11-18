@@ -1,5 +1,4 @@
 ﻿using Library.Services.Interfaces.UserContextInterfaces;
-using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Dtos.Message;
 using Service.Models.States.Interfaces;
