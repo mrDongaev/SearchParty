@@ -6,9 +6,9 @@ using Service.Repositories.Interfaces;
 
 namespace Service.Models.Message
 {
-    public class TeamApplication : AbstractMessage
+    public class TeamApplication : AbstractMessage<TeamApplicationDto>
     {
-        public TeamApplication(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken)
+        public TeamApplication(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TeamApplicationDto> startingState, CancellationToken cancellationToken)
             : base(serviceProvider, userContext, startingState, cancellationToken)
         {
         }

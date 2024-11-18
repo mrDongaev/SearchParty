@@ -6,7 +6,7 @@ using Service.Models.Message;
 
 namespace Service.Models.States.Interfaces
 {
-    public abstract class AbstractMessageState
+    public abstract class AbstractMessageState<TMessageDto> where TMessageDto : MessageDto
     {
         public virtual AbstractMessage Message { get; set; }
 
@@ -68,20 +68,20 @@ namespace Service.Models.States.Interfaces
             get => this.Message.UserContext;
         }
 
-        public MessageDto MessageDto
+        public TMessageDto MessageDto
         {
             get => this.Message.MessageDto;
         }
 
-        public AbstractMessageState(AbstractMessage message)
+        public AbstractMessageState(AbstractMessage<TMessageDto> message)
         {
             Message = message;
         }
 
-        public abstract Task<ActionResponse<MessageDto>> Accept();
+        public abstract Task<ActionResponse<TMessageDto>> Accept();
 
-        public abstract Task<ActionResponse<MessageDto>> Reject();
+        public abstract Task<ActionResponse<TMessageDto>> Reject();
 
-        public abstract Task<ActionResponse<MessageDto>> Rescind();
+        public abstract Task<ActionResponse<TMessageDto>> Rescind();
     }
 }

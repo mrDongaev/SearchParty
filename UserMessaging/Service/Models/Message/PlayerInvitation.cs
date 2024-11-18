@@ -6,9 +6,9 @@ using Service.Repositories.Interfaces;
 
 namespace Service.Models.Message
 {
-    public class PlayerInvitation : AbstractMessage
+    public class PlayerInvitation : AbstractMessage<PlayerInvitationDto>
     {
-        public PlayerInvitation(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken)
+        public PlayerInvitation(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<PlayerInvitationDto> startingState, CancellationToken cancellationToken)
             : base(serviceProvider, userContext, startingState, cancellationToken)
         {
         }

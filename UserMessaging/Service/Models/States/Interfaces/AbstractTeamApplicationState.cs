@@ -1,8 +1,9 @@
-﻿using Service.Models.Message;
+﻿using Service.Dtos.Message;
+using Service.Models.Message;
 
 namespace Service.Models.States.Interfaces
 {
-    public abstract class AbstractTeamApplicationState : AbstractMessageState
+    public abstract class AbstractTeamApplicationState : AbstractMessageState<TeamApplicationDto>
     {
         public new TeamApplication Message { get; set; }
 

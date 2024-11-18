@@ -11,7 +11,7 @@ namespace Service.Models.States.Implementations.PendingMessage
 {
     public class PendingPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {
-        public override async Task<ActionResponse<MessageDto>> Accept()
+        public override async Task<ActionResponse<PlayerInvitationDto>> Accept()
         {
             var actionResponse = new ActionResponse<PlayerInvitationDto>();
             if (DateTime.UtcNow >= this.ExpiresAt)
@@ -41,12 +41,12 @@ namespace Service.Models.States.Implementations.PendingMessage
             return actionResponse;
         }
 
-        public override Task<ActionResponse<MessageDto>> Reject()
+        public override Task<ActionResponse<PlayerInvitationDto>> Reject()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<ActionResponse<MessageDto>> Rescind()
+        public override Task<ActionResponse<PlayerInvitationDto>> Rescind()
         {
             throw new NotImplementedException();
         }

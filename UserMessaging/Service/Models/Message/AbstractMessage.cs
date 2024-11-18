@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 
 namespace Service.Models.Message
 {
-    public abstract class AbstractMessage
+    public abstract class AbstractMessage<TMessageDto> where TMessageDto : MessageDto
     {
         public Guid Id { get; set; }
 
@@ -27,7 +27,7 @@ namespace Service.Models.Message
 
         protected readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        protected AbstractMessageState State { get; set; }
+        protected AbstractMessageState<TMessageDto> State { get; set; }
 
         public readonly CancellationToken CancellationToken;
 
@@ -37,7 +37,7 @@ namespace Service.Models.Message
 
         public abstract MessageDto MessageDto { get; }
 
-        public AbstractMessage(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken)
+        public AbstractMessage(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TMessageDto> startingState, CancellationToken cancellationToken)
         {
             ServiceProvider = serviceProvider;
             UserContext = userContext;
@@ -45,7 +45,7 @@ namespace Service.Models.Message
             State = startingState;
         }
 
-        public void ChangeState(AbstractMessageState state)
+        public void ChangeState(AbstractMessageState<TMessageDto> state)
         {
             State = state;
         }
@@ -82,17 +82,17 @@ namespace Service.Models.Message
             return await tcs.Task;
         }
 
-        public Task<ActionResponse<MessageDto>> Accept()
+        public Task<ActionResponse<TMessageDto>> Accept()
         {
             return Execute(State.Accept);
         }
 
-        public Task<ActionResponse<MessageDto>> Reject()
+        public Task<ActionResponse<TMessageDto>> Reject()
         {
             return Execute(State.Reject);
         }
 
-        public Task<ActionResponse<MessageDto>> Rescind()
+        public Task<ActionResponse<TMessageDto>> Rescind()
         {
             return Execute(State.Rescind);
         }
