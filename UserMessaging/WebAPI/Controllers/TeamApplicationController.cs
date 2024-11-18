@@ -3,7 +3,6 @@ using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services.Implementations;
 using Service.Services.Interfaces.MessageInteraction;
 using WebAPI.Models;
 

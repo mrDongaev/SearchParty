@@ -1,6 +1,5 @@
 ﻿using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Models.States.Interfaces;
 using Service.Repositories.Interfaces;
@@ -9,7 +8,7 @@ namespace Service.Models.Message
 {
     public class TeamApplication : AbstractMessage
     {
-        public TeamApplication(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken) 
+        public TeamApplication(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken)
             : base(serviceProvider, userContext, startingState, cancellationToken)
         {
         }

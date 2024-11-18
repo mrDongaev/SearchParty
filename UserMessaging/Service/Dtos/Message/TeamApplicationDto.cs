@@ -1,6 +1,6 @@
 ﻿namespace Service.Dtos.Message
 {
-    public class TeamApplicationDto : PlayerInvitationDto
+    public class TeamApplicationDto : MessageDto
     {
         public Guid ApplyingPlayerId { get; set; }
 

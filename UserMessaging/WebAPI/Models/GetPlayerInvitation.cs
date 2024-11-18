@@ -1,6 +1,4 @@
-﻿using Library.Models.Enums;
-
-namespace WebAPI.Models
+﻿namespace WebAPI.Models
 {
     public class GetPlayerInvitation
     {

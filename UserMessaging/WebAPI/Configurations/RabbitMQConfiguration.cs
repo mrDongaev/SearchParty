@@ -1,5 +1,4 @@
-﻿using Library.Models.API.UserMessaging;
-using Library.Utils;
+﻿using Library.Utils;
 using MassTransit;
 using Service.Services.Implementations.MessageProcessing;
 

@@ -1,11 +1,9 @@
 ﻿using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
-using MassTransit.Configuration;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Models.States.Interfaces;
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 
 namespace Service.Models.Message
 {
@@ -37,7 +35,7 @@ namespace Service.Models.Message
 
         public readonly IUserHttpContext UserContext;
 
-        public abstract PlayerInvitationDto MessageDto { get; }
+        public abstract MessageDto MessageDto { get; }
 
         public AbstractMessage(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken)
         {
@@ -54,7 +52,7 @@ namespace Service.Models.Message
 
         protected async Task<T> Execute<T>(Func<Task<T>> task)
         {
-            var tcs = new TaskCompletionSource<T>(); 
+            var tcs = new TaskCompletionSource<T>();
             _taskQueue.Enqueue(async () =>
             {
                 try
@@ -84,17 +82,17 @@ namespace Service.Models.Message
             return await tcs.Task;
         }
 
-        public Task<ActionResponse<PlayerInvitationDto>> Accept()
+        public Task<ActionResponse<MessageDto>> Accept()
         {
             return Execute(State.Accept);
         }
 
-        public Task<ActionResponse<PlayerInvitationDto>> Reject()
+        public Task<ActionResponse<MessageDto>> Reject()
         {
             return Execute(State.Reject);
         }
 
-        public Task<ActionResponse<PlayerInvitationDto>> Rescind()
+        public Task<ActionResponse<MessageDto>> Rescind()
         {
             return Execute(State.Rescind);
         }

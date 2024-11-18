@@ -1,14 +1,8 @@
 ﻿using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Models.Message;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Models.States.Interfaces
 {
@@ -42,7 +36,7 @@ namespace Service.Models.States.Interfaces
 
         public MessageStatus Status
         {
-            get => this.Message.Status; 
+            get => this.Message.Status;
             set
             {
                 this.Message.Status = value;
@@ -69,14 +63,14 @@ namespace Service.Models.States.Interfaces
             get => this.Message.ServiceProvider;
         }
 
-        public IUserHttpContext UserContext 
-        { 
-            get => this.Message.UserContext; 
+        public IUserHttpContext UserContext
+        {
+            get => this.Message.UserContext;
         }
 
-        public PlayerInvitationDto MessageDto 
-        { 
-            get => this.Message.MessageDto; 
+        public MessageDto MessageDto
+        {
+            get => this.Message.MessageDto;
         }
 
         public AbstractMessageState(AbstractMessage message)
@@ -84,10 +78,10 @@ namespace Service.Models.States.Interfaces
             Message = message;
         }
 
-        public abstract Task<ActionResponse<PlayerInvitationDto>> Accept();
+        public abstract Task<ActionResponse<MessageDto>> Accept();
 
-        public abstract Task<ActionResponse<PlayerInvitationDto>> Reject();
+        public abstract Task<ActionResponse<MessageDto>> Reject();
 
-        public abstract Task<ActionResponse<PlayerInvitationDto>> Rescind();
+        public abstract Task<ActionResponse<MessageDto>> Rescind();
     }
 }

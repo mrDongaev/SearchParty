@@ -1,5 +1,4 @@
 ﻿using Library.Models.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace Library.Models.API.TeamPlayerProfiles.Team
 {

@@ -2,7 +2,7 @@
 
 namespace Service.Dtos.Message
 {
-    public abstract class PlayerInvitationDto
+    public abstract class MessageDto
     {
         public Guid Id { get; set; }
 

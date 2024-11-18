@@ -2,10 +2,7 @@
 using Library.Models.Enums;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Service.Dtos;
 using Service.Repositories.Interfaces;
-using Service.Services.Interfaces;
 
 namespace Service.Services.Implementations.MessageProcessing
 {

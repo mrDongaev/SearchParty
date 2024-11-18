@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Service.Services.Interfaces.TeamInterfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Library.Services.Interfaces.UserContextInterfaces;
+﻿using Library.Models.API.TeamPlayerProfiles.Team;
 using Library.Models.Enums;
-using Library.Models.API.TeamPlayerProfiles.Team;
+using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.AspNetCore.Http;
+using Service.Services.Interfaces.TeamInterfaces;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Service.Services.Implementations.TeamServices

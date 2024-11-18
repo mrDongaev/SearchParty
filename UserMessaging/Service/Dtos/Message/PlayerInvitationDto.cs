@@ -1,6 +1,6 @@
 ﻿namespace Service.Dtos.Message
 {
-    public class PlayerInvitationDto : PlayerInvitationDto
+    public class PlayerInvitationDto : MessageDto
     {
         public Guid InvitingTeamId { get; set; }
 

@@ -1,17 +1,15 @@
 ﻿using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Models.States.Interfaces;
 using Service.Repositories.Interfaces;
-using System.Threading;
 
 namespace Service.Models.Message
 {
     public class PlayerInvitation : AbstractMessage
     {
-        public PlayerInvitation(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken) 
-            : base(serviceProvider, userContext, startingState, cancellationToken) 
+        public PlayerInvitation(IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState startingState, CancellationToken cancellationToken)
+            : base(serviceProvider, userContext, startingState, cancellationToken)
         {
         }
 

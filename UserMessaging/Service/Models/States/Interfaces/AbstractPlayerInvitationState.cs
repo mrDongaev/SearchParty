@@ -1,11 +1,4 @@
-﻿using Service.Dtos.ActionResponse;
-using Service.Dtos.Message;
-using Service.Models.Message;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Service.Models.Message;
 
 namespace Service.Models.States.Interfaces
 {
@@ -27,11 +20,5 @@ namespace Service.Models.States.Interfaces
         {
             get => this.Message.InvitingTeamId;
         }
-
-        public new Task<ActionResponse<PlayerInvitationDto>> Accept();
-
-        public new abstract Task<ActionResponse<PlayerInvitationDto>> Reject();
-
-        public new abstract Task<ActionResponse<PlayerInvitationDto>> Rescind();
     }
 }

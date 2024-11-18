@@ -2,11 +2,6 @@
 using Service.Dtos.Message;
 using Service.Models.Message;
 using Service.Models.States.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Models.States.Implementations.ExpiredMessage
 {

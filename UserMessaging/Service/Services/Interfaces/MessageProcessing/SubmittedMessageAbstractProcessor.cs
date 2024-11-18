@@ -1,7 +1,5 @@
 ﻿using Library.Models.API.UserMessaging;
 using Service.Dtos.Message;
-using Service.Models.Message;
-using Service.Repositories.Interfaces;
 
 namespace Service.Services.Interfaces.MessageProcessing
 {

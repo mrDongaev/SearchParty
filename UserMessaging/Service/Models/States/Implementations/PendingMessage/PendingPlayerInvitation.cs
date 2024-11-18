@@ -6,17 +6,12 @@ using Service.Models.Message;
 using Service.Models.States.Implementations.ExpiredMessage;
 using Service.Models.States.Interfaces;
 using Service.Services.Interfaces.TeamInterfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Models.States.Implementations.PendingMessage
 {
     public class PendingPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {
-        public override async Task<ActionResponse<PlayerInvitationDto>> Accept()
+        public override async Task<ActionResponse<MessageDto>> Accept()
         {
             var actionResponse = new ActionResponse<PlayerInvitationDto>();
             if (DateTime.UtcNow >= this.ExpiresAt)
@@ -43,16 +38,15 @@ namespace Service.Models.States.Implementations.PendingMessage
                     }
                 }
             }
-            actionResponse.Message =
             return actionResponse;
         }
 
-        public override Task<ActionResponse<PlayerInvitationDto>> Reject()
+        public override Task<ActionResponse<MessageDto>> Reject()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<ActionResponse<PlayerInvitationDto>> Rescind()
+        public override Task<ActionResponse<MessageDto>> Rescind()
         {
             throw new NotImplementedException();
         }
