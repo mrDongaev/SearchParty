@@ -8,7 +8,7 @@ namespace Service.Models.States.Interfaces
 {
     public abstract class AbstractMessageState<TMessageDto> where TMessageDto : MessageDto
     {
-        public virtual AbstractMessage Message { get; set; }
+        public virtual AbstractMessage<TMessageDto> Message { get; set; }
 
         public Guid Id
         {
@@ -70,7 +70,7 @@ namespace Service.Models.States.Interfaces
 
         public TMessageDto MessageDto
         {
-            get => this.Message.MessageDto;
+            get => (TMessageDto) this.Message.MessageDto;
         }
 
         public AbstractMessageState(AbstractMessage<TMessageDto> message)
