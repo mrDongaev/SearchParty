@@ -1,6 +1,7 @@
 ﻿namespace Service.Services.Interfaces.MessageManagement
 {
-    public interface IMessageManagementService
+    public abstract class AbstractMessageManagementService
     {
+
     }
 }

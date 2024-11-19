@@ -1,12 +1,12 @@
 ﻿using Library.Models.Enums;
+using Service.Domain.Message;
+using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Models.Message;
-using Service.Models.States.Interfaces;
 
-namespace Service.Models.States.Implementations.AcceptedMessage
+namespace Service.Domain.States.Implementations.ExpiredMessage
 {
-    public class AcceptedTeamApplication(TeamApplication message) : AbstractTeamApplicationState(message)
+    public class ExpiredTeamApplication(TeamApplication message) : AbstractTeamApplicationState(message)
     {
         public async override Task<ActionResponse<TeamApplicationDto>> Accept()
         {
@@ -26,7 +26,7 @@ namespace Service.Models.States.Implementations.AcceptedMessage
         private ActionResponse<TeamApplicationDto> _giveFailureResponse()
         {
             var actionResponse = new ActionResponse<TeamApplicationDto>();
-            actionResponse.ActionMessage = "The application has already been accepted";
+            actionResponse.ActionMessage = "The application has already expired";
             actionResponse.Status = ActionResponseStatus.Failure;
             actionResponse.Message = MessageDto;
             return actionResponse;

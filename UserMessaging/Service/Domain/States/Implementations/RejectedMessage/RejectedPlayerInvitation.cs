@@ -1,12 +1,12 @@
 ﻿using Library.Models.Enums;
+using Service.Domain.Message;
+using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Models.Message;
-using Service.Models.States.Interfaces;
 
-namespace Service.Models.States.Implementations.AcceptedMessage
+namespace Service.Domain.States.Implementations.RejectedMessage
 {
-    public class AcceptedPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
+    public class RejectedPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {
         public async override Task<ActionResponse<PlayerInvitationDto>> Accept()
         {
@@ -26,7 +26,7 @@ namespace Service.Models.States.Implementations.AcceptedMessage
         private ActionResponse<PlayerInvitationDto> _giveFailureResponse()
         {
             var actionResponse = new ActionResponse<PlayerInvitationDto>();
-            actionResponse.ActionMessage = "The invitation has already been accepted";
+            actionResponse.ActionMessage = "The invitation has already been rejected";
             actionResponse.Status = ActionResponseStatus.Failure;
             actionResponse.Message = MessageDto;
             return actionResponse;

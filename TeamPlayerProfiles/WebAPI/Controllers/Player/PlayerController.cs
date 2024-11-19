@@ -54,6 +54,7 @@ namespace WebAPI.Controllers.Player
         public async Task<Results<Ok<GetPlayer.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, [FromBody] UpdatePlayer.Request request, CancellationToken cancellationToken)
         {
             var userId = await userIdentity.GetPlayerUserId(id, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
             if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
@@ -67,9 +68,11 @@ namespace WebAPI.Controllers.Player
         [HttpDelete("{id}")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok<bool>, UnauthorizedHttpResult, NotFound>> Delete(Guid id, CancellationToken cancellationToken)
         {
             var userId = await userIdentity.GetPlayerUserId(id, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
             if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();

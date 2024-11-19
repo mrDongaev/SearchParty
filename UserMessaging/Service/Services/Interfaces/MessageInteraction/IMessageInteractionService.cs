@@ -8,7 +8,7 @@ namespace Service.Services.Interfaces.MessageInteraction
     {
         Task<TMessageDto?> GetMessage(Guid id, CancellationToken cancellationToken);
 
-        Task<ICollection<TMessageDto>> GetUserMessages(Guid userId, MessageStatus messageStatus, CancellationToken cancellationToken);
+        Task<ICollection<TMessageDto>> GetUserMessages(Guid userId, ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken);
 
         Task<ActionResponse<TMessageDto>> Accept(Guid id, CancellationToken cancellationToken);
 

@@ -1,12 +1,12 @@
 ﻿using Library.Models.Enums;
+using Service.Domain.Message;
+using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Models.Message;
-using Service.Models.States.Interfaces;
 
-namespace Service.Models.States.Implementations.ExpiredMessage
+namespace Service.Domain.States.Implementations.AcceptedMessage
 {
-    public class ExpiredPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
+    public class AcceptedPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {
         public async override Task<ActionResponse<PlayerInvitationDto>> Accept()
         {
@@ -26,7 +26,7 @@ namespace Service.Models.States.Implementations.ExpiredMessage
         private ActionResponse<PlayerInvitationDto> _giveFailureResponse()
         {
             var actionResponse = new ActionResponse<PlayerInvitationDto>();
-            actionResponse.ActionMessage = "The invitation has already expired";
+            actionResponse.ActionMessage = "The invitation has already been accepted";
             actionResponse.Status = ActionResponseStatus.Failure;
             actionResponse.Message = MessageDto;
             return actionResponse;

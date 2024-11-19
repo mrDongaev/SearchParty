@@ -10,7 +10,7 @@ namespace Service.Dtos.Message
         {
         }
 
-        public MessageDto(ProfileMessageSubmitted message) 
+        public MessageDto(ProfileMessageSubmitted message)
         {
             SendingUserId = message.SendingUserId;
             AcceptingUserId = message.AcceptingUserId;

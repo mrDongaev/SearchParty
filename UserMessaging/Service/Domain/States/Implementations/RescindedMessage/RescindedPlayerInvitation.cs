@@ -1,10 +1,10 @@
 ﻿using Library.Models.Enums;
+using Service.Domain.Message;
+using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Models.Message;
-using Service.Models.States.Interfaces;
 
-namespace Service.Models.States.Implementations.RescindedMessage
+namespace Service.Domain.States.Implementations.RescindedMessage
 {
     public class RescindedPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {

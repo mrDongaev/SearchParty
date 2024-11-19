@@ -1,18 +1,15 @@
 ﻿using Library.Models.API.UserMessaging;
-using Library.Services.Implementations.UserContextServices;
 using Library.Services.Interfaces.UserContextInterfaces;
-using Microsoft.Extensions.DependencyInjection;
+using Service.Domain.Message;
+using Service.Domain.States.Implementations.PendingMessage;
 using Service.Dtos.Message;
-using Service.Models.Message;
-using Service.Models.States.Implementations.PendingMessage;
-using Service.Repositories.Interfaces;
 using Service.Services.Interfaces.MessageProcessing;
 
 namespace Service.Services.Implementations.MessageProcessing
 {
-    public class SubmittedTeamApplicationProcessor(IServiceProvider serviceProvider, IUserHttpContext userHttpContext) : SubmittedMessageAbstractProcessor<TeamApplicationDto>
+    public class SubmittedTeamApplicationProcessor(IServiceProvider serviceProvider, IUserHttpContext userHttpContext) : AbstractSubmittedMessageProcessor<TeamApplicationDto>
     {
-        protected override AbstractMessage<TeamApplicationDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
+        public override AbstractMessage<TeamApplicationDto> CreateMessage(ProfileMessageSubmitted submittedMessage)
         {
             TeamApplicationDto messageDto = new TeamApplicationDto(submittedMessage);
             TeamApplication message = new TeamApplication(messageDto, serviceProvider, userHttpContext, CancellationToken.None);

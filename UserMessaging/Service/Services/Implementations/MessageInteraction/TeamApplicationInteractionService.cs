@@ -13,9 +13,9 @@ namespace Service.Services.Implementations.MessageInteraction
             return await teamApplicationRepo.GetMessage(id, cancellationToken);
         }
 
-        public async Task<ICollection<TeamApplicationDto>> GetUserMessages(Guid userId, MessageStatus messageStatus, CancellationToken cancellationToken)
+        public async Task<ICollection<TeamApplicationDto>> GetUserMessages(Guid userId, ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
         {
-            return await teamApplicationRepo.GetUserMessages(userId, messageStatus, cancellationToken);
+            return await teamApplicationRepo.GetUserMessages(userId, messageStatuses, cancellationToken);
         }
 
         public Task<ActionResponse<TeamApplicationDto>> Accept(Guid id, CancellationToken cancellationToken)

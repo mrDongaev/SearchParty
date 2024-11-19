@@ -15,20 +15,21 @@ namespace DataAccess.Context.EntitiesConfigurations
 
             builder.Property(e => e.AcceptingUserId).IsRequired();
 
+            builder.Property(e => e.PositionName).IsRequired();
+
             builder.Property(e => e.Status)
                 .IsRequired()
                 .HasDefaultValue(MessageStatus.Pending);
 
             builder.Property(e => e.IssuedAt)
-                .IsRequired()
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                .IsRequired();
+
+            builder.Property(e => e.ExpiresAt)
+                .IsRequired();
 
             builder.Property(e => e.UpdatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            builder.Property(e => e.ExpiresAt)
-                .IsRequired();
         }
     }
 }

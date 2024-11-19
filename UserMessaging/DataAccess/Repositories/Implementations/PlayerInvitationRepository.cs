@@ -13,29 +13,46 @@ namespace DataAccess.Repositories.Implementations
     {
         private readonly DbSet<PlayerInvitationEntity> _playerInvitations;
 
+        private readonly IMapper _mapper;
+
         public PlayerInvitationRepository(UserMessagingContext context, IMapper mapper) : base(context)
         {
             _playerInvitations = context.PlayerInvitations;
+            _mapper = mapper;
         }
 
-        public Task ClearMessages(ISet<MessageStatus> messageTypes, CancellationToken cancellationToken)
+        public async Task<bool> ClearMessages(ISet<MessageStatus> messageStatues, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var messageIds = await _playerInvitations.Where(pi => messageStatues.Contains(pi.Status)).Select(pi => pi.Id).ToListAsync(cancellationToken);
+            return await DeleteRange(messageIds, cancellationToken);
         }
 
-        public Task<PlayerInvitationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
+        public async Task<PlayerInvitationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var messages = await Get(id, cancellationToken);
+            return _mapper.Map<PlayerInvitationDto>(messages);
         }
 
-        public Task<ICollection<PlayerInvitationDto>> GetUserMessages(Guid userId, MessageStatus messageType, CancellationToken cancellationToken)
+        public async Task<ICollection<PlayerInvitationDto>> GetUserMessages(Guid userId, ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var messages = await _playerInvitations.AsNoTracking()
+                .Where(pi => pi.SendingUserId == userId || pi.AcceptingUserId == userId)
+                .Where(pi => messageStatuses.Contains(pi.Status))
+                .ToListAsync(cancellationToken);
+            return _mapper.Map<ICollection<PlayerInvitationDto>>(messages);
         }
 
-        Task<PlayerInvitationDto?> IMessageRepository<PlayerInvitationDto>.SaveMessage(PlayerInvitationDto message, CancellationToken cancellationToken)
+        public async Task<PlayerInvitationDto?> SaveMessage(PlayerInvitationDto messageDto, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            messageDto.UpdatedAt = DateTime.UtcNow;
+            var message = _mapper.Map<PlayerInvitationEntity>(messageDto);
+            bool createMessage = true;
+            if (messageDto.Id != Guid.Empty)
+            {
+                createMessage = await Get(messageDto.Id, cancellationToken) != null;
+            }
+            message = createMessage ? await Add(message, cancellationToken) : await Update(message, cancellationToken);
+            return message == null ? null : _mapper.Map<PlayerInvitationDto?>(message);
         }
     }
 }

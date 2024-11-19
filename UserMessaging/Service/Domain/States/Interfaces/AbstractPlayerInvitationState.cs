@@ -1,7 +1,7 @@
-﻿using Service.Dtos.Message;
-using Service.Models.Message;
+﻿using Service.Domain.Message;
+using Service.Dtos.Message;
 
-namespace Service.Models.States.Interfaces
+namespace Service.Domain.States.Interfaces
 {
     public abstract class AbstractPlayerInvitationState : AbstractMessageState<PlayerInvitationDto>
     {

@@ -1,10 +1,9 @@
 ﻿using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Dtos.Message;
-using Service.Models.States.Interfaces;
 using Service.Repositories.Interfaces;
 
-namespace Service.Models.Message
+namespace Service.Domain.Message
 {
     public class PlayerInvitation : AbstractMessage<PlayerInvitationDto>
     {

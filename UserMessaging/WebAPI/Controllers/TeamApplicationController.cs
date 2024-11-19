@@ -31,21 +31,24 @@ namespace WebAPI.Controllers
             return TypedResults.Ok(mapper.Map<GetTeamApplication.Response>(message));
         }
 
-        [HttpGet("{userId}/{messageStatus}")]
+        [HttpPost("{userId}")]
         [ProducesResponseType<IEnumerable<GetTeamApplication.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetTeamApplication.Response>>, BadRequest, UnauthorizedHttpResult>> GetPendingMessages(Guid userId, MessageStatus messageStatus, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetTeamApplication.Response>>, BadRequest, UnauthorizedHttpResult>> GetUserMessages(Guid userId, [FromBody] ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
         {
             if (userContext.UserId != userId)
             {
                 return TypedResults.Unauthorized();
             }
-            if (!Enum.IsDefined(messageStatus))
+            foreach (var status in messageStatuses)
             {
-                return TypedResults.BadRequest();
+                if (!Enum.IsDefined(status))
+                {
+                    return TypedResults.BadRequest();
+                }
             }
-            var messages = await teamApplicationService.GetUserMessages(userId, messageStatus, cancellationToken);
+            var messages = await teamApplicationService.GetUserMessages(userId, messageStatuses, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetTeamApplication.Response>>(messages));
         }
 

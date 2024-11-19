@@ -1,11 +1,11 @@
 ﻿using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
+using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Models.States.Interfaces;
 using System.Collections.Concurrent;
 
-namespace Service.Models.Message
+namespace Service.Domain.Message
 {
     public abstract class AbstractMessage<TMessageDto> where TMessageDto : MessageDto
     {

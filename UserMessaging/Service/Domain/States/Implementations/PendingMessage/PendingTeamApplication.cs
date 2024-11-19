@@ -1,16 +1,16 @@
 ﻿using Library.Models.Enums;
 using Microsoft.Extensions.DependencyInjection;
+using Service.Domain.Message;
+using Service.Domain.States.Implementations.AcceptedMessage;
+using Service.Domain.States.Implementations.ExpiredMessage;
+using Service.Domain.States.Implementations.RejectedMessage;
+using Service.Domain.States.Implementations.RescindedMessage;
+using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Models.Message;
-using Service.Models.States.Implementations.AcceptedMessage;
-using Service.Models.States.Implementations.ExpiredMessage;
-using Service.Models.States.Implementations.RejectedMessage;
-using Service.Models.States.Implementations.RescindedMessage;
-using Service.Models.States.Interfaces;
 using Service.Services.Interfaces.TeamInterfaces;
 
-namespace Service.Models.States.Implementations.PendingMessage
+namespace Service.Domain.States.Implementations.PendingMessage
 {
     public class PendingTeamApplication(TeamApplication message) : AbstractTeamApplicationState(message)
     {

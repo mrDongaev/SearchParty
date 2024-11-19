@@ -24,6 +24,7 @@ namespace WebAPI.Controllers.Player
         public async Task<Results<Ok<GetPlayer.Response>, NotFound, UnauthorizedHttpResult>> SetDisplayed(Guid playerId, bool displayed, CancellationToken cancellationToken)
         {
             var userId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
             if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();

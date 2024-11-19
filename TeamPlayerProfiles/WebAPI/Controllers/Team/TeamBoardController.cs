@@ -25,6 +25,7 @@ namespace WebAPI.Controllers.Team
         public async Task<Results<Ok<GetTeam.Response>, NotFound, UnauthorizedHttpResult>> SetDisplayed(Guid teamId, bool displayed, CancellationToken cancellationToken)
         {
             var userId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
             if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
