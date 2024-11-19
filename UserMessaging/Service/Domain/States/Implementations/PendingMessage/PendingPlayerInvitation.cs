@@ -19,28 +19,26 @@ namespace Service.Domain.States.Implementations.PendingMessage
             var actionResponse = new ActionResponse<PlayerInvitationDto>();
             if (DateTime.UtcNow >= ExpiresAt)
             {
-                Status = MessageStatus.Expired;
-                Message.ChangeState(new ExpiredPlayerInvitation(Message));
+                Message.ChangeState(MessageStatus.Expired);
                 actionResponse.ActionMessage = "The invitation to the team has expired";
                 actionResponse.Status = ActionResponseStatus.Failure;
             }
             else
             {
-                using var scope = ServiceProvider.CreateScope();
-                var teamService = scope.ServiceProvider.GetRequiredService<ITeamService>();
-                var response = await teamService.PushInvitedPlayerToTeam(InvitingTeamId, AcceptingPlayerId, PositionName, Id, CancellationToken);
-                if (response)
-                {
-                    Status = MessageStatus.Accepted;
-                    Message.ChangeState(new AcceptedPlayerInvitation(Message));
-                    actionResponse.ActionMessage = "Invitation to the team has been accepted";
-                    actionResponse.Status = ActionResponseStatus.Success;
-                }
-                else
-                {
-                    actionResponse.ActionMessage = "Could not accept the invitation to the team";
-                    actionResponse.Status = ActionResponseStatus.Failure;
-                }
+                //using var scope = ServiceProvider.CreateScope();
+                //var teamService = scope.ServiceProvider.GetRequiredService<ITeamService>();
+                //var response = await teamService.PushInvitedPlayerToTeam(InvitingTeamId, AcceptingPlayerId, PositionName, Id, CancellationToken);
+                //if (response)
+                //{
+                //    Message.ChangeState(MessageStatus.Accepted);
+                //    actionResponse.ActionMessage = "Invitation to the team has been accepted";
+                //    actionResponse.Status = ActionResponseStatus.Success;
+                //}
+                //else
+                //{
+                //    actionResponse.ActionMessage = "Could not accept the invitation to the team";
+                //    actionResponse.Status = ActionResponseStatus.Failure;
+                //}
             }
             PlayerInvitationDto? message = null;
             if (Status == MessageStatus.Accepted || Status == MessageStatus.Expired)
@@ -48,8 +46,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 message = await Message.SaveToDatabase();
                 if (message == null)
                 {
-                    Status = MessageStatus.Pending;
-                    Message.ChangeState(new PendingPlayerInvitation(Message));
+                    Message.ChangeState(MessageStatus.Pending);
                     actionResponse.ActionMessage = "Could not accept the invitation to the team";
                     actionResponse.Status = ActionResponseStatus.Failure;
                 }
@@ -63,15 +60,13 @@ namespace Service.Domain.States.Implementations.PendingMessage
             var actionResponse = new ActionResponse<PlayerInvitationDto>();
             if (DateTime.UtcNow >= ExpiresAt)
             {
-                Status = MessageStatus.Expired;
-                Message.ChangeState(new ExpiredPlayerInvitation(Message));
+                Message.ChangeState(MessageStatus.Expired);
                 actionResponse.ActionMessage = "The invitation to the team has expired";
                 actionResponse.Status = ActionResponseStatus.Failure;
             }
             else
             {
-                Status = MessageStatus.Rejected;
-                Message.ChangeState(new RejectedPlayerInvitation(Message));
+                Message.ChangeState(MessageStatus.Rejected);
                 actionResponse.ActionMessage = "Invitation to the team has been rejected";
                 actionResponse.Status = ActionResponseStatus.Success;
             }
@@ -81,8 +76,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 message = await Message.SaveToDatabase();
                 if (message == null)
                 {
-                    Status = MessageStatus.Pending;
-                    Message.ChangeState(new PendingPlayerInvitation(Message));
+                    Message.ChangeState(MessageStatus.Pending);
                     actionResponse.ActionMessage = "Could not accept the invitation to the team";
                     actionResponse.Status = ActionResponseStatus.Failure;
                 }
@@ -96,15 +90,13 @@ namespace Service.Domain.States.Implementations.PendingMessage
             var actionResponse = new ActionResponse<PlayerInvitationDto>();
             if (DateTime.UtcNow >= ExpiresAt)
             {
-                Status = MessageStatus.Expired;
-                Message.ChangeState(new ExpiredPlayerInvitation(Message));
+                Message.ChangeState(MessageStatus.Expired);
                 actionResponse.ActionMessage = "The invitation to the team has expired";
                 actionResponse.Status = ActionResponseStatus.Failure;
             }
             else
             {
-                Status = MessageStatus.Rescinded;
-                Message.ChangeState(new RescindedPlayerInvitation(Message));
+                Message.ChangeState(MessageStatus.Rescinded);
                 actionResponse.ActionMessage = "Invitation to the team has been rescinded";
                 actionResponse.Status = ActionResponseStatus.Success;
             }
@@ -114,8 +106,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 message = await Message.SaveToDatabase();
                 if (message == null)
                 {
-                    Status = MessageStatus.Pending;
-                    Message.ChangeState(new PendingPlayerInvitation(Message));
+                    Message.ChangeState(MessageStatus.Pending);
                     actionResponse.ActionMessage = "Could not rescind the invitation to the team";
                     actionResponse.Status = ActionResponseStatus.Failure;
                 }

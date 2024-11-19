@@ -40,16 +40,12 @@ namespace WebAPI.Controllers.Player
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet]
         [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetPlayer.Response>>, UnauthorizedHttpResult>> GetPlayersByUserId(Guid userId, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetPlayer.Response>>, UnauthorizedHttpResult>> GetPlayersOfUser(CancellationToken cancellationToken)
         {
-            if (userId != userContext.UserId)
-            {
-                return TypedResults.Unauthorized();
-            }
-            var players = await playerService.GetProfilesByUserId(userId, cancellationToken);
+            var players = await playerService.GetProfilesByUserId(userContext.UserId, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
         }
 

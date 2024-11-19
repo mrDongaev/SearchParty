@@ -31,16 +31,12 @@ namespace WebAPI.Controllers
             return TypedResults.Ok(mapper.Map<GetTeamApplication.Response>(message));
         }
 
-        [HttpPost("{userId}")]
+        [HttpPost]
         [ProducesResponseType<IEnumerable<GetTeamApplication.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetTeamApplication.Response>>, BadRequest, UnauthorizedHttpResult>> GetUserMessages(Guid userId, [FromBody] ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetTeamApplication.Response>>, BadRequest, UnauthorizedHttpResult>> GetUserMessages([FromBody] ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
         {
-            if (userContext.UserId != userId)
-            {
-                return TypedResults.Unauthorized();
-            }
             foreach (var status in messageStatuses)
             {
                 if (!Enum.IsDefined(status))
@@ -48,7 +44,7 @@ namespace WebAPI.Controllers
                     return TypedResults.BadRequest();
                 }
             }
-            var messages = await teamApplicationService.GetUserMessages(userId, messageStatuses, cancellationToken);
+            var messages = await teamApplicationService.GetUserMessages(userContext.UserId, messageStatuses, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetTeamApplication.Response>>(messages));
         }
 

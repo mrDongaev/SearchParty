@@ -13,7 +13,6 @@ namespace Service.Services.Implementations.MessageProcessing
         {
             TeamApplicationDto messageDto = new TeamApplicationDto(submittedMessage);
             TeamApplication message = new TeamApplication(messageDto, serviceProvider, userHttpContext, CancellationToken.None);
-            message.ChangeState(new PendingTeamApplication(message));
             return message;
         }
     }

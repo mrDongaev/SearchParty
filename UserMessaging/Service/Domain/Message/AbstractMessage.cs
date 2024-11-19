@@ -55,11 +55,13 @@ namespace Service.Domain.Message
             ServiceProvider = serviceProvider;
             UserContext = userContext;
             CancellationToken = cancellationToken;
+            State = CreateNewMessageState(Status);
         }
 
-        public void ChangeState(AbstractMessageState<TMessageDto> state)
+        public void ChangeState(MessageStatus status)
         {
-            State = state;
+            Status = status;
+            State = CreateNewMessageState(status);
         }
 
         protected async Task<T> Execute<T>(Func<Task<T>> task)
@@ -117,6 +119,8 @@ namespace Service.Domain.Message
         public abstract Task<TMessageDto?> SaveToDatabase();
 
         public abstract Task TrySendToUser();
+
+        protected abstract AbstractMessageState<TMessageDto> CreateNewMessageState(MessageStatus status);
 
         public void Dispose()
         {

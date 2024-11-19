@@ -31,16 +31,12 @@ namespace WebAPI.Controllers
             return TypedResults.Ok(mapper.Map<GetPlayerInvitation.Response>(message));
         }
 
-        [HttpPost("{userId}")]
+        [HttpPost]
         [ProducesResponseType<IEnumerable<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetPlayerInvitation.Response>>, BadRequest, UnauthorizedHttpResult>> GetUserMessages(Guid userId, [FromBody] ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetPlayerInvitation.Response>>, BadRequest, UnauthorizedHttpResult>> GetUserMessages([FromBody] ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
         {
-            if (userContext.UserId != userId)
-            {
-                return TypedResults.Unauthorized();
-            }
             foreach (var status in messageStatuses)
             {
                 if (!Enum.IsDefined(status))
@@ -48,7 +44,7 @@ namespace WebAPI.Controllers
                     return TypedResults.BadRequest();
                 }
             }
-            var messages = await playerInvitationService.GetUserMessages(userId, messageStatuses, cancellationToken);
+            var messages = await playerInvitationService.GetUserMessages(userContext.UserId, messageStatuses, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayerInvitation.Response>>(messages));
         }
 

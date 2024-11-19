@@ -13,7 +13,6 @@ namespace Service.Services.Implementations.MessageProcessing
         {
             PlayerInvitationDto messageDto = new PlayerInvitationDto(submittedMessage);
             PlayerInvitation message = new PlayerInvitation(messageDto, serviceProvider, userHttpContext, CancellationToken.None);
-            message.ChangeState(new PendingPlayerInvitation(message));
             return message;
 
         }

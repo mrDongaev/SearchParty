@@ -19,8 +19,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
             var actionResponse = new ActionResponse<TeamApplicationDto>();
             if (DateTime.UtcNow >= ExpiresAt)
             {
-                Status = MessageStatus.Expired;
-                Message.ChangeState(new ExpiredTeamApplication(Message));
+                Message.ChangeState(MessageStatus.Expired);
                 actionResponse.ActionMessage = "The application to the team has expired";
                 actionResponse.Status = ActionResponseStatus.Failure;
             }
@@ -31,8 +30,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 var response = await teamService.PushApplyingPlayerToTeam(AcceptingTeamId, ApplyingPlayerId, PositionName, Id, CancellationToken);
                 if (response)
                 {
-                    Status = MessageStatus.Accepted;
-                    Message.ChangeState(new AcceptedTeamApplication(Message));
+                    Message.ChangeState(MessageStatus.Accepted);
                     actionResponse.ActionMessage = "Application to the team has been accepted";
                     actionResponse.Status = ActionResponseStatus.Success;
                 }
@@ -48,8 +46,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 message = await Message.SaveToDatabase();
                 if (message == null)
                 {
-                    Status = MessageStatus.Pending;
-                    Message.ChangeState(new PendingTeamApplication(Message));
+                    Message.ChangeState(MessageStatus.Pending);
                     actionResponse.ActionMessage = "Could not accept the application to the team";
                     actionResponse.Status = ActionResponseStatus.Failure;
                 }
@@ -63,15 +60,13 @@ namespace Service.Domain.States.Implementations.PendingMessage
             var actionResponse = new ActionResponse<TeamApplicationDto>();
             if (DateTime.UtcNow >= ExpiresAt)
             {
-                Status = MessageStatus.Expired;
-                Message.ChangeState(new ExpiredTeamApplication(Message));
+                Message.ChangeState(MessageStatus.Expired);
                 actionResponse.ActionMessage = "The application to the team has expired";
                 actionResponse.Status = ActionResponseStatus.Failure;
             }
             else
             {
-                Status = MessageStatus.Rejected;
-                Message.ChangeState(new RejectedTeamApplication(Message));
+                Message.ChangeState(MessageStatus.Rejected);
                 actionResponse.ActionMessage = "Application to the team has been rejected";
                 actionResponse.Status = ActionResponseStatus.Success;
             }
@@ -81,8 +76,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 message = await Message.SaveToDatabase();
                 if (message == null)
                 {
-                    Status = MessageStatus.Pending;
-                    Message.ChangeState(new PendingTeamApplication(Message));
+                    Message.ChangeState(MessageStatus.Pending);
                     actionResponse.ActionMessage = "Could not accept the application to the team";
                     actionResponse.Status = ActionResponseStatus.Failure;
                 }
@@ -96,15 +90,13 @@ namespace Service.Domain.States.Implementations.PendingMessage
             var actionResponse = new ActionResponse<TeamApplicationDto>();
             if (DateTime.UtcNow >= ExpiresAt)
             {
-                Status = MessageStatus.Expired;
-                Message.ChangeState(new ExpiredTeamApplication(Message));
+                Message.ChangeState(MessageStatus.Expired);
                 actionResponse.ActionMessage = "The application to the team has expired";
                 actionResponse.Status = ActionResponseStatus.Failure;
             }
             else
             {
-                Status = MessageStatus.Rescinded;
-                Message.ChangeState(new RescindedTeamApplication(Message));
+                Message.ChangeState(MessageStatus.Rescinded);
                 actionResponse.ActionMessage = "Application to the team has been rescinded";
                 actionResponse.Status = ActionResponseStatus.Success;
             }
@@ -114,8 +106,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 message = await Message.SaveToDatabase();
                 if (message == null)
                 {
-                    Status = MessageStatus.Pending;
-                    Message.ChangeState(new PendingTeamApplication(Message));
+                    Message.ChangeState(MessageStatus.Pending);
                     actionResponse.ActionMessage = "Could not rescind the application to the team";
                     actionResponse.Status = ActionResponseStatus.Failure;
                 }

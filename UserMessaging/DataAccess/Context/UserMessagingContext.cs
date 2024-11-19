@@ -6,7 +6,7 @@ namespace DataAccess.Context
 {
     public class UserMessagingContext : DbContext
     {
-        public DbSet<PlayerInvitationEntity> PlayerInvitations { get; set; };
+        public DbSet<PlayerInvitationEntity> PlayerInvitations { get; set; }
 
         public DbSet<TeamApplicationEntity> TeamApplications { get; set; }
 
