@@ -6,9 +6,9 @@ namespace DataAccess.Context
 {
     public class UserMessagingContext : DbContext
     {
-        public DbSet<PlayerInvitationEntity> PlayerInvitations;
+        public DbSet<PlayerInvitationEntity> PlayerInvitations { get; set; };
 
-        public DbSet<TeamApplicationEntity> TeamApplications;
+        public DbSet<TeamApplicationEntity> TeamApplications { get; set; }
 
         public UserMessagingContext(DbContextOptions<UserMessagingContext> options) : base(options)
         {
@@ -16,9 +16,10 @@ namespace DataAccess.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfiguration(new PlayerInvitationConfiguration());
             modelBuilder.ApplyConfiguration(new TeamApplicationConfiguration());
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

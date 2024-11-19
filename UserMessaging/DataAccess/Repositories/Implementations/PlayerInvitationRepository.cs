@@ -17,7 +17,7 @@ namespace DataAccess.Repositories.Implementations
 
         public PlayerInvitationRepository(UserMessagingContext context, IMapper mapper) : base(context)
         {
-            _playerInvitations = context.PlayerInvitations;
+            _playerInvitations = _context.PlayerInvitations;
             _mapper = mapper;
         }
 

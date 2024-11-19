@@ -34,17 +34,15 @@ namespace Service.Domain.Message
 
         public async override Task<PlayerInvitationDto?> SaveToDatabase()
         {
-            using (var scope = ServiceProvider.CreateScope())
+            using var scope = ServiceProvider.CreateScope();
+            var playerInvitationService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
+            var messageDto = await playerInvitationService.SaveMessage(MessageDto, CancellationToken);
+            if (messageDto != null)
             {
-                var playerInvitationService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
-                var messageDto = await playerInvitationService.SaveMessage(MessageDto, CancellationToken);
-                if (messageDto != null)
-                {
-                    Status = messageDto.Status;
-                    UpdatedAt = messageDto.UpdatedAt;
-                }
-                return messageDto;
+                Status = messageDto.Status;
+                UpdatedAt = messageDto.UpdatedAt;
             }
+            return messageDto;
         }
 
         public async override Task TrySendToUser()

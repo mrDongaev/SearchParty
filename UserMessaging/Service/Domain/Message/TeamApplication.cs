@@ -34,17 +34,15 @@ namespace Service.Domain.Message
 
         public async override Task<TeamApplicationDto?> SaveToDatabase()
         {
-            using (var scope = ServiceProvider.CreateScope())
+            using var scope = ServiceProvider.CreateScope();
+            var teamApplicationService = scope.ServiceProvider.GetRequiredService<ITeamApplicationRepository>();
+            var messageDto = await teamApplicationService.SaveMessage(MessageDto, CancellationToken);
+            if (messageDto != null)
             {
-                var teamApplicationService = scope.ServiceProvider.GetRequiredService<ITeamApplicationRepository>();
-                var messageDto = await teamApplicationService.SaveMessage(MessageDto, CancellationToken);
-                if (messageDto != null)
-                {
-                    Status = messageDto.Status;
-                    UpdatedAt = messageDto.UpdatedAt;
-                }
-                return messageDto;
+                Status = messageDto.Status;
+                UpdatedAt = messageDto.UpdatedAt;
             }
+            return messageDto;
         }
 
         public async override Task TrySendToUser()

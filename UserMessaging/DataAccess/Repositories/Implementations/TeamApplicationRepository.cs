@@ -17,7 +17,7 @@ namespace DataAccess.Repositories.Implementations
 
         public TeamApplicationRepository(UserMessagingContext context, IMapper mapper) : base(context)
         {
-            _teamApplications = context.TeamApplications;
+            _teamApplications = _context.TeamApplications;
             _mapper = mapper;
         }
         public async Task<bool> ClearMessages(ISet<MessageStatus> messageStatues, CancellationToken cancellationToken)

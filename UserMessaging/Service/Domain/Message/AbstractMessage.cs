@@ -3,11 +3,12 @@ using Library.Services.Interfaces.UserContextInterfaces;
 using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
+using Service.Services.Interfaces.MessageManagement;
 using System.Collections.Concurrent;
 
 namespace Service.Domain.Message
 {
-    public abstract class AbstractMessage<TMessageDto> where TMessageDto : MessageDto
+    public abstract class AbstractMessage<TMessageDto> : IDisposable where TMessageDto : MessageDto
     {
         public Guid Id { get; protected set; }
 
@@ -39,6 +40,8 @@ namespace Service.Domain.Message
 
         public abstract MessageDto MessageDto { get; }
 
+        private bool _disposed = false;
+
         public AbstractMessage(TMessageDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
         {
             Id = messageDto.Id;
@@ -61,6 +64,11 @@ namespace Service.Domain.Message
 
         protected async Task<T> Execute<T>(Func<Task<T>> task)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(AbstractMessage<TMessageDto>));
+            }
+
             var tcs = new TaskCompletionSource<T>();
             _taskQueue.Enqueue(async () =>
             {
@@ -75,7 +83,7 @@ namespace Service.Domain.Message
                 }
             });
 
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync(CancellationToken);
             try
             {
                 while (_taskQueue.TryDequeue(out var queuedTask))
@@ -109,5 +117,16 @@ namespace Service.Domain.Message
         public abstract Task<TMessageDto?> SaveToDatabase();
 
         public abstract Task TrySendToUser();
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            _semaphore?.Dispose();
+            _taskQueue.Clear();
+            _disposed = true;
+
+            GC.SuppressFinalize(this);
+        }
     }
 }
