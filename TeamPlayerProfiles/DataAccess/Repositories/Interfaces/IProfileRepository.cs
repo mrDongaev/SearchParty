@@ -7,5 +7,7 @@ namespace DataAccess.Repositories.Interfaces
         where TProfile : class, IProfile
     {
         Task<Guid?> GetProfileUserId(Guid entityId, CancellationToken cancellationToken);
+
+        Task<ICollection<TProfile>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken);
     }
 }

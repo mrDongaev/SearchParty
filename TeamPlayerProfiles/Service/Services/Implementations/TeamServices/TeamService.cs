@@ -46,6 +46,12 @@ namespace Service.Services.Implementations.TeamServices
             return mapper.Map<ICollection<TeamDto>>(teams);
         }
 
+        public async Task<ICollection<TeamDto>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            var teams = await teamRepo.GetProfilesByUserId(userId, cancellationToken);
+            return mapper.Map<ICollection<TeamDto>>(teams);
+        }
+
         public async Task<TeamDto?> Update(UpdateTeamDto dto, CancellationToken cancellationToken = default)
         {
             var team = mapper.Map<Team>(dto);

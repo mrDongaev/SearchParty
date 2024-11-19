@@ -71,7 +71,7 @@ namespace APIAuth
                     {
                         var logger = services.GetRequiredService<ILogger<Program>>(); // Get the logger
 
-                        logger.LogError(ex, "An error occurred during migration"); // Log migration error
+                        logger.LogError(ex, "An error occurred during seeding"); // Log migration error
                     }
                 }
 

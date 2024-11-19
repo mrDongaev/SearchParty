@@ -31,6 +31,13 @@ namespace DataAccess.Repositories.Implementations
                 .SingleOrDefaultAsync(t => t.Id == id, cancellationToken);
         }
 
+        public async Task<ICollection<Team>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            return await _teams.GetEntities(true)
+                    .Where(t => t.UserId == userId)
+                    .ToListAsync(cancellationToken);
+        }
+
         public async Task<Guid?> GetProfileUserId(Guid teamId, CancellationToken cancellationToken)
         {
             var team = await _teams.AsNoTracking().SingleOrDefaultAsync(t => t.Id == teamId, cancellationToken);
