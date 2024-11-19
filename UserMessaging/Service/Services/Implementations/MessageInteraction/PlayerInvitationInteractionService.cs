@@ -13,9 +13,9 @@ namespace Service.Services.Implementations.MessageInteraction
             return await playerInvitationRepo.GetMessage(id, cancellationToken);
         }
 
-        public async Task<ICollection<PlayerInvitationDto>> GetPendingUserMessages(Guid userId, CancellationToken cancellationToken)
+        public async Task<ICollection<PlayerInvitationDto>> GetUserMessages(Guid userId, MessageStatus messageStatus, CancellationToken cancellationToken)
         {
-            return await playerInvitationRepo.GetUserMessages(userId, MessageStatus.Pending, cancellationToken);
+            return await playerInvitationRepo.GetUserMessages(userId, messageStatus, cancellationToken);
         }
 
         public Task<ActionResponse<PlayerInvitationDto>> Accept(Guid id, CancellationToken cancellationToken)

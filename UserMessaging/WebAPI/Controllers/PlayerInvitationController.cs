@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -30,16 +31,21 @@ namespace WebAPI.Controllers
             return TypedResults.Ok(mapper.Map<GetPlayerInvitation.Response>(message));
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{userId}/{messageStatus}")]
         [ProducesResponseType<IEnumerable<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetPlayerInvitation.Response>>, UnauthorizedHttpResult>> GetPendingMessages(Guid userId, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetPlayerInvitation.Response>>, BadRequest, UnauthorizedHttpResult>> GetUserMessages(Guid userId, MessageStatus messageStatus, CancellationToken cancellationToken)
         {
             if (userContext.UserId != userId)
             {
                 return TypedResults.Unauthorized();
             }
-            var messages = await playerInvitationService.GetPendingUserMessages(userId, cancellationToken);
+            if (!Enum.IsDefined(messageStatus))
+            {
+                return TypedResults.BadRequest();
+            }
+            var messages = await playerInvitationService.GetUserMessages(userId, messageStatus, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayerInvitation.Response>>(messages));
         }
 

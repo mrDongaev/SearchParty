@@ -8,8 +8,8 @@ namespace Service.Models.Message
 {
     public class TeamApplication : AbstractMessage<TeamApplicationDto>
     {
-        public TeamApplication(TeamApplicationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TeamApplicationDto> startingState, CancellationToken cancellationToken)
-            : base(messageDto, serviceProvider, userContext, startingState, cancellationToken)
+        public TeamApplication(TeamApplicationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
+            : base(messageDto, serviceProvider, userContext, cancellationToken)
         {
             ApplyingPlayerId = messageDto.ApplyingPlayerId;
             AcceptingTeamId = messageDto.AcceptingTeamId;
@@ -46,6 +46,12 @@ namespace Service.Models.Message
                 }
                 return messageDto;
             }
+        }
+
+        public async override Task TrySendToUser()
+        {
+            await Task.CompletedTask;
+            //todo
         }
     }
 }

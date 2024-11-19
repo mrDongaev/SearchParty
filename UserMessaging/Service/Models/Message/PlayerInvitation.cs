@@ -8,8 +8,8 @@ namespace Service.Models.Message
 {
     public class PlayerInvitation : AbstractMessage<PlayerInvitationDto>
     {
-        public PlayerInvitation(PlayerInvitationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<PlayerInvitationDto> startingState, CancellationToken cancellationToken)
-            : base(messageDto, serviceProvider, userContext, startingState, cancellationToken)
+        public PlayerInvitation(PlayerInvitationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
+            : base(messageDto, serviceProvider, userContext, cancellationToken)
         {
             AcceptingPlayerId = messageDto.AcceptingPlayerId;
             InvitingTeamId = messageDto.InvitingTeamId;
@@ -46,6 +46,12 @@ namespace Service.Models.Message
                 }
                 return messageDto;
             }
+        }
+
+        public async override Task TrySendToUser()
+        {
+            await Task.CompletedTask;
+            //todo
         }
     }
 }

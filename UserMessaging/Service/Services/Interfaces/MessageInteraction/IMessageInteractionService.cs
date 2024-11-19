@@ -1,4 +1,5 @@
-﻿using Service.Dtos.ActionResponse;
+﻿using Library.Models.Enums;
+using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 
 namespace Service.Services.Interfaces.MessageInteraction
@@ -7,7 +8,7 @@ namespace Service.Services.Interfaces.MessageInteraction
     {
         Task<TMessageDto?> GetMessage(Guid id, CancellationToken cancellationToken);
 
-        Task<ICollection<TMessageDto>> GetPendingUserMessages(Guid userId, CancellationToken cancellationToken);
+        Task<ICollection<TMessageDto>> GetUserMessages(Guid userId, MessageStatus messageStatus, CancellationToken cancellationToken);
 
         Task<ActionResponse<TMessageDto>> Accept(Guid id, CancellationToken cancellationToken);
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -30,16 +31,21 @@ namespace WebAPI.Controllers
             return TypedResults.Ok(mapper.Map<GetTeamApplication.Response>(message));
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{userId}/{messageStatus}")]
         [ProducesResponseType<IEnumerable<GetTeamApplication.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetTeamApplication.Response>>, UnauthorizedHttpResult>> GetPendingMessages(Guid userId, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetTeamApplication.Response>>, BadRequest, UnauthorizedHttpResult>> GetPendingMessages(Guid userId, MessageStatus messageStatus, CancellationToken cancellationToken)
         {
             if (userContext.UserId != userId)
             {
                 return TypedResults.Unauthorized();
             }
-            var messages = await teamApplicationService.GetPendingUserMessages(userId, cancellationToken);
+            if (!Enum.IsDefined(messageStatus))
+            {
+                return TypedResults.BadRequest();
+            }
+            var messages = await teamApplicationService.GetUserMessages(userId, messageStatus, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetTeamApplication.Response>>(messages));
         }
 

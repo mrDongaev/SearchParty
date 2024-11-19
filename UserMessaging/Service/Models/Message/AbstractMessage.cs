@@ -39,7 +39,7 @@ namespace Service.Models.Message
 
         public abstract MessageDto MessageDto { get; }
 
-        public AbstractMessage(TMessageDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, AbstractMessageState<TMessageDto> startingState, CancellationToken cancellationToken)
+        public AbstractMessage(TMessageDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
         {
             Id = messageDto.Id;
             SendingUserId = messageDto.SendingUserId;
@@ -52,7 +52,6 @@ namespace Service.Models.Message
             ServiceProvider = serviceProvider;
             UserContext = userContext;
             CancellationToken = cancellationToken;
-            State = startingState;
         }
 
         public void ChangeState(AbstractMessageState<TMessageDto> state)
@@ -107,6 +106,8 @@ namespace Service.Models.Message
             return Execute(State.Rescind);
         }
 
-        public abstract Task<TMessageDto> SaveToDatabase();
+        public abstract Task<TMessageDto?> SaveToDatabase();
+
+        public abstract Task TrySendToUser();
     }
 }
