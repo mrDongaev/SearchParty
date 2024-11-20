@@ -23,7 +23,7 @@
         "DATABASE_PORT": "5432",
         "DATABASE_NAME": "user_auth",
         "DATABASE_USER": "postgres",
-        "DATABASE_PASSWORD": "postgres"
+        "DATABASE_PASSWORD": "root123"
       }
     },
     "https": {
@@ -40,7 +40,7 @@
         "DATABASE_PORT": "5432",
         "DATABASE_NAME": "user_auth",
         "DATABASE_USER": "postgres",
-        "DATABASE_PASSWORD": "postgres"
+        "DATABASE_PASSWORD": "root123"
       }
     },
     "IIS Express": {

@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Library.Utils;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Infrastructure.Clients;
 
 namespace APIAuth
 {
@@ -142,6 +143,12 @@ namespace APIAuth
             services.AddMediatR(config =>
             {
                 config.RegisterServicesFromAssembly(typeof(LoginHandler).Assembly);
+            });
+
+            // Регистрация HttpClient и UserInfoClient
+            services.AddHttpClient<IUserInfoClient, UserInfoClient>((httpClient) =>
+            {
+                httpClient.BaseAddress = new Uri("https://localhost:7133/"); //Базовый адрес для API
             });
 
             AddAuthAndBearer(services);

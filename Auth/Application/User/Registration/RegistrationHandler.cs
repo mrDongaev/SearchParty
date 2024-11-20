@@ -1,5 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces;
+using Application.User.ExternalModels;
 using Application.User.Login;
 using Application.User.Refresh;
 using Application.User.Settings;
@@ -20,9 +21,17 @@ namespace Application.User.Registration
     {
         private readonly UserManager<Domain.AppUser>? _userManager;
 
-        public RegistrationHandler(UserManager<Domain.AppUser>? userManager) 
+        private readonly IUserInfoClient _userInfoClient;
+
+        private readonly IMediator _mediator;
+
+        public RegistrationHandler(UserManager<Domain.AppUser>? userManager, IUserInfoClient userInfoClient, IMediator mediator) 
         {
             _userManager = userManager;
+
+            _userInfoClient = userInfoClient;
+
+            _mediator = mediator;
         }
 
         public async Task<IdentityResult> Handle(RegistrationQuery request, CancellationToken cancellationToken)
@@ -42,13 +51,42 @@ namespace Application.User.Registration
 
                     UserName = request.Username,
 
-                    Email = request.Email
+                    Email = request.Email,
+
+                    Id = Guid.NewGuid().ToString()
                 };
 
                 try
                 {
                     var result = await _userManager.CreateAsync(userEF, request.Password.ToString());
 
+                    if (result.Succeeded)
+                    {
+                        // Логин пользователя для получения токенов
+                        var loginQuery = new LoginQuery
+                        {
+                            Email = request.Email,
+
+                            Password = request.Password
+                        };
+
+                        var userData = await _mediator.Send(loginQuery);
+
+                        //Создание нового пользователя через внешний API
+                        var createUserInfoRequest = new CreateUserInfoRequest
+                        {
+                            Name = userEF.DisplayName,
+
+                            Id = Guid.Parse(userEF.Id)
+                        };
+
+                        var response = await _userInfoClient.CreateUserInfoAsync(createUserInfoRequest, userData.AccessToken);
+
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            throw new Exception("Failed to create user in external service during registration.");
+                        }
+                    }
                     return result;
                 }
                 catch (Exception ex)

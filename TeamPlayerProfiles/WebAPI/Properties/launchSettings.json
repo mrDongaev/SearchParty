@@ -13,7 +13,7 @@
         "DATABASE_PORT": "5432",
         "DATABASE_NAME": "team_player_profiles",
         "DATABASE_USER": "postgres",
-        "DATABASE_PASSWORD": "postgres"
+        "DATABASE_PASSWORD": "root123"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5222"
@@ -31,7 +31,7 @@
         "DATABASE_PORT": "5432",
         "DATABASE_NAME": "team_player_profiles",
         "DATABASE_USER": "postgres",
-        "DATABASE_PASSWORD": "postgres"
+        "DATABASE_PASSWORD": "root123"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7004;http://localhost:5222"
