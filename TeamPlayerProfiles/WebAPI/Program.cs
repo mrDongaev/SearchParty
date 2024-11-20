@@ -22,7 +22,7 @@ try
         .AddEndpointsApiExplorer()
         .AddSwagger()
         .AddAuthenticationConfiguration()
-        .AddRabbitMQ()
+        //.AddRabbitMQ()
         .AddControllers();
 
     builder.Host
