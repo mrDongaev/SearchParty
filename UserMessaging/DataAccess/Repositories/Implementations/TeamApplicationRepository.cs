@@ -22,7 +22,7 @@ namespace DataAccess.Repositories.Implementations
         }
         public async Task<bool> ClearMessages(ISet<MessageStatus> messageStatues, CancellationToken cancellationToken)
         {
-            var messageIds = await _teamApplications.Where(pi => messageStatues.Contains(pi.Status)).Select(pi => pi.Id).ToListAsync(cancellationToken);
+            var messageIds = await _teamApplications.Where(pi => messageStatues.AsQueryable().Contains(pi.Status)).Select(pi => pi.Id).ToListAsync(cancellationToken);
             return await DeleteRange(messageIds, cancellationToken);
         }
 
@@ -36,7 +36,7 @@ namespace DataAccess.Repositories.Implementations
         {
             var messages = await _teamApplications.AsNoTracking()
                 .Where(pi => pi.SendingUserId == userId || pi.AcceptingUserId == userId)
-                .Where(pi => messageStatuses.Contains(pi.Status))
+                .Where(pi => messageStatuses.AsQueryable().Contains(pi.Status))
                 .ToListAsync(cancellationToken);
             return _mapper.Map<ICollection<TeamApplicationDto>>(messages);
         }
