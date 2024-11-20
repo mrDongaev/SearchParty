@@ -89,7 +89,7 @@ namespace WebAPI.Controllers.Team
             {
                 return TypedResults.NotFound();
             }
-            if (teamUserId != userContext.UserId || playerUserId != userContext.UserId)
+            if (teamUserId != userContext.UserId && playerUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -113,7 +113,7 @@ namespace WebAPI.Controllers.Team
             {
                 return TypedResults.NotFound();
             }
-            if (teamUserId != userContext.UserId || playerUserId != userContext.UserId)
+            if (teamUserId != userContext.UserId && playerUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }

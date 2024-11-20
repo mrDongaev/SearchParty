@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.NotFound();
             }
-            if (message.AcceptingUserId != userContext.UserId || message.SendingUserId != userContext.UserId)
+            if (message.AcceptingUserId != userContext.UserId && message.SendingUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -63,7 +63,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.Unauthorized();
             }
-            var response = playerInvitationService.Accept(id, cancellationToken);
+            var response = await playerInvitationService.Accept(id, cancellationToken);
             return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetPlayerInvitation.Response>>(response));
         }
 
@@ -82,7 +82,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.Unauthorized();
             }
-            var response = playerInvitationService.Reject(id, cancellationToken);
+            var response = await playerInvitationService.Reject(id, cancellationToken);
             return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetPlayerInvitation.Response>>(response));
         }
 
@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.Unauthorized();
             }
-            var response = playerInvitationService.Rescind(id, cancellationToken);
+            var response = await playerInvitationService.Rescind(id, cancellationToken);
             return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetPlayerInvitation.Response>>(response));
         }
 

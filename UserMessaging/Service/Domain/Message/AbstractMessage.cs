@@ -1,10 +1,12 @@
 ﻿using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Services.Interfaces.MessageManagement;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
 namespace Service.Domain.Message
 {
@@ -30,11 +32,17 @@ namespace Service.Domain.Message
 
         protected readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
+        private int _activeThreads = 0;
+
+        private bool _isProcessingQueue = false;
+
+        private bool _processingStarted = false;
+
         protected AbstractMessageState<TMessageDto> State { get; set; }
 
         public readonly CancellationToken CancellationToken;
 
-        public readonly IServiceProvider ServiceProvider;
+        public readonly IServiceScopeFactory ScopeFactory;
 
         public readonly IUserHttpContext UserContext;
 
@@ -42,7 +50,7 @@ namespace Service.Domain.Message
 
         private bool _disposed = false;
 
-        public AbstractMessage(TMessageDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
+        public AbstractMessage(TMessageDto messageDto, IServiceScopeFactory scopeFactory, IUserHttpContext userContext, CancellationToken cancellationToken)
         {
             Id = messageDto.Id;
             SendingUserId = messageDto.SendingUserId;
@@ -52,7 +60,7 @@ namespace Service.Domain.Message
             IssuedAt = messageDto.IssuedAt;
             ExpiresAt = messageDto.ExpiresAt;
             UpdatedAt = messageDto.UpdatedAt;
-            ServiceProvider = serviceProvider;
+            ScopeFactory = scopeFactory;
             UserContext = userContext;
             CancellationToken = cancellationToken;
             State = CreateNewMessageState(Status);
@@ -64,41 +72,81 @@ namespace Service.Domain.Message
             State = CreateNewMessageState(status);
         }
 
-        protected async Task<T> Execute<T>(Func<Task<T>> task)
+        protected async Task<TResult> Execute<TResult>(Func<Task<TResult>> operation)
         {
             if (_disposed)
             {
                 throw new ObjectDisposedException(nameof(AbstractMessage<TMessageDto>));
             }
 
-            var tcs = new TaskCompletionSource<T>();
+            var tcs = new TaskCompletionSource<TResult>();
+
+            Interlocked.Increment(ref _activeThreads);
+
             _taskQueue.Enqueue(async () =>
             {
                 try
                 {
-                    T result = await task();
+                    var result = await operation();
                     tcs.SetResult(result);
                 }
                 catch (Exception ex)
                 {
                     tcs.SetException(ex);
                 }
+                finally
+                {
+                    Interlocked.Decrement(ref _activeThreads);
+                    await ProcessQueue();
+                }
             });
 
-            await _semaphore.WaitAsync(CancellationToken);
-            try
-            {
-                while (_taskQueue.TryDequeue(out var queuedTask))
-                {
-                    await queuedTask();
-                }
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            StartProcessingQueueIfNotRunning();
 
             return await tcs.Task;
+        }
+
+        private void StartProcessingQueueIfNotRunning()
+        {
+            lock (_taskQueue)
+            {
+                if (!_isProcessingQueue)
+                {
+                    _isProcessingQueue = true;
+                    _processingStarted = true;
+                    _ = ProcessQueue();
+                }
+            }
+        }
+
+        private async Task ProcessQueue()
+        {
+            while (true)
+            {
+                if (!_taskQueue.TryDequeue(out var task))
+                {
+                    lock (_taskQueue)
+                    {
+                        _isProcessingQueue = false;
+                    }
+                    return;
+                }
+
+                await _semaphore.WaitAsync();
+                try
+                {
+                    await task();
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
+            }
+        }
+
+        public bool IsIdle()
+        {
+            return _processingStarted && !_isProcessingQueue && _taskQueue.IsEmpty && _activeThreads == 0;
         }
 
         public Task<ActionResponse<TMessageDto>> Accept()

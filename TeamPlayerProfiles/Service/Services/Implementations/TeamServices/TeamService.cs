@@ -12,7 +12,7 @@ using Service.Services.Interfaces.TeamInterfaces;
 
 namespace Service.Services.Implementations.TeamServices
 {
-    public class TeamService(IMapper mapper, ITeamRepository teamRepo, IPlayerRepository playerRepo, IServiceProvider serviceProvider) : ITeamService
+    public class TeamService(IMapper mapper, ITeamRepository teamRepo, IPlayerRepository playerRepo, IPlayerInvitationService playerInvitationService, ITeamApplicationService teamApplicationService) : ITeamService
     {
         public async Task<TeamDto> Create(CreateTeamDto dto, CancellationToken cancellationToken = default)
         {
@@ -79,23 +79,18 @@ namespace Service.Services.Implementations.TeamServices
             Player pushedPlayer = await playerRepo.Get(playerId, cancellationToken);
             if (messageId != null && messageType != null)
             {
-                using (var scope = serviceProvider.CreateScope())
+                GetMessage.Response? message;
+                if (messageType == MessageType.PlayerInvitation)
                 {
-                    GetMessage.Response? message;
-                    if (messageType == MessageType.PlayerInvitation)
-                    {
-                        var messageService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationService>();
-                        message = await messageService.Get(messageId.Value, cancellationToken);
-                    }
-                    else
-                    {
-                        var messageService = scope.ServiceProvider.GetRequiredService<ITeamApplicationService>();
-                        message = await messageService.Get(messageId.Value, cancellationToken);
-                    }
-                    if (message == null || message.Status != MessageStatus.Pending)
-                    {
-                        throw new NoPendingMessageException(messageType.Value);
-                    }
+                    message = await playerInvitationService.Get(messageId.Value, cancellationToken);
+                }
+                else
+                {
+                    message = await teamApplicationService.Get(messageId.Value, cancellationToken);
+                }
+                if (message == null || message.Status != MessageStatus.Pending)
+                {
+                    throw new NoPendingMessageException(messageType.Value);
                 }
             }
             else if (currentTeam.UserId != pushedPlayer.UserId)

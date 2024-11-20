@@ -1,5 +1,6 @@
 ﻿using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.Message;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
@@ -59,9 +60,9 @@ namespace Service.Domain.States.Interfaces
             get => this.Message.CancellationToken;
         }
 
-        public IServiceProvider ServiceProvider
+        public IServiceScopeFactory ScopeFactory
         {
-            get => this.Message.ServiceProvider;
+            get => this.Message.ScopeFactory;
         }
 
         public IUserHttpContext UserContext

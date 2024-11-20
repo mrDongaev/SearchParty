@@ -15,8 +15,8 @@ namespace Service.Domain.Message
 {
     public class PlayerInvitation : AbstractMessage<PlayerInvitationDto>
     {
-        public PlayerInvitation(PlayerInvitationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
-            : base(messageDto, serviceProvider, userContext, cancellationToken)
+        public PlayerInvitation(PlayerInvitationDto messageDto, IServiceScopeFactory scopeFactory, IUserHttpContext userContext, CancellationToken cancellationToken)
+            : base(messageDto, scopeFactory, userContext, cancellationToken)
         {
             AcceptingPlayerId = messageDto.AcceptingPlayerId;
             InvitingTeamId = messageDto.InvitingTeamId;
@@ -55,7 +55,7 @@ namespace Service.Domain.Message
 
         public async override Task<PlayerInvitationDto?> SaveToDatabase()
         {
-            using var scope = ServiceProvider.CreateScope();
+            using var scope = ScopeFactory.CreateScope();
             var playerInvitationService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
             var messageDto = await playerInvitationService.SaveMessage(MessageDto, CancellationToken);
             if (messageDto != null)

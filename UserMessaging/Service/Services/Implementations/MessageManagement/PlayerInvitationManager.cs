@@ -1,4 +1,5 @@
-﻿using Library.Services.Interfaces.UserContextInterfaces;
+﻿using Library.Models.Enums;
+using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.Message;
 using Service.Dtos.Message;
@@ -12,14 +13,27 @@ using System.Threading.Tasks;
 
 namespace Service.Services.Implementations.MessageManagement
 {
-    public class PlayerInvitationManager : AbstractMessageManager<PlayerInvitationDto>
+    public class PlayerInvitationManager(IServiceScopeFactory scopeFactory) : AbstractMessageManager<PlayerInvitationDto>(scopeFactory)
     {
-        protected async override Task<AbstractMessage<PlayerInvitationDto>?> CreateMessageModel(Guid id, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
+        protected async override Task ClearResolvedMessages()
         {
-            using var scope = serviceProvider.CreateScope();
+            using var scope = scopeFactory.CreateScope();
+            var playerInvitationRepository = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
+            await playerInvitationRepository.ClearMessages(new HashSet<MessageStatus>()
+            {
+                MessageStatus.Expired,
+                MessageStatus.Accepted,
+                MessageStatus.Rejected,
+                MessageStatus.Rescinded,
+            }, CancellationToken.None);
+        }
+
+        protected async override Task<AbstractMessage<PlayerInvitationDto>?> CreateMessageModel(Guid id, IUserHttpContext userContext, CancellationToken cancellationToken)
+        {
+            using var scope = scopeFactory.CreateScope();
             var playerInvitationRepository = scope.ServiceProvider.GetRequiredService<IPlayerInvitationRepository>();
             var messageDto = await playerInvitationRepository.GetMessage(id, cancellationToken);
-            return messageDto == null ? null : new PlayerInvitation(messageDto, serviceProvider, userContext, cancellationToken);
+            return messageDto == null ? null : new PlayerInvitation(messageDto, scopeFactory, userContext, cancellationToken);
         }
     }
 }

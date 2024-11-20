@@ -15,8 +15,8 @@ namespace Service.Domain.Message
 {
     public class TeamApplication : AbstractMessage<TeamApplicationDto>
     {
-        public TeamApplication(TeamApplicationDto messageDto, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
-            : base(messageDto, serviceProvider, userContext, cancellationToken)
+        public TeamApplication(TeamApplicationDto messageDto, IServiceScopeFactory scopeFactory, IUserHttpContext userContext, CancellationToken cancellationToken)
+            : base(messageDto, scopeFactory, userContext, cancellationToken)
         {
             ApplyingPlayerId = messageDto.ApplyingPlayerId;
             AcceptingTeamId = messageDto.AcceptingTeamId;
@@ -55,7 +55,7 @@ namespace Service.Domain.Message
 
         public async override Task<TeamApplicationDto?> SaveToDatabase()
         {
-            using var scope = ServiceProvider.CreateScope();
+            using var scope = ScopeFactory.CreateScope();
             var teamApplicationService = scope.ServiceProvider.GetRequiredService<ITeamApplicationRepository>();
             var messageDto = await teamApplicationService.SaveMessage(MessageDto, CancellationToken);
             if (messageDto != null)

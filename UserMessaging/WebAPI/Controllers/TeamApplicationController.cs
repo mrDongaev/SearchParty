@@ -24,7 +24,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.NotFound();
             }
-            if (message.AcceptingUserId != userContext.UserId || message.SendingUserId != userContext.UserId)
+            if (message.AcceptingUserId != userContext.UserId && message.SendingUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -63,7 +63,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.Unauthorized();
             }
-            var response = teamApplicationService.Accept(id, cancellationToken);
+            var response = await teamApplicationService.Accept(id, cancellationToken);
             return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetTeamApplication.Response>>(response));
         }
 
@@ -82,7 +82,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.Unauthorized();
             }
-            var response = teamApplicationService.Reject(id, cancellationToken);
+            var response = await teamApplicationService.Reject(id, cancellationToken);
             return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetTeamApplication.Response>>(response));
         }
 
@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
             {
                 return TypedResults.Unauthorized();
             }
-            var response = teamApplicationService.Rescind(id, cancellationToken);
+            var response = await teamApplicationService.Rescind(id, cancellationToken);
             return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetTeamApplication.Response>>(response));
         }
     }

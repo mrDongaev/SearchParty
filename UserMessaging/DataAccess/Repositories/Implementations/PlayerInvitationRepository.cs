@@ -49,7 +49,7 @@ namespace DataAccess.Repositories.Implementations
             bool createMessage = true;
             if (messageDto.Id != Guid.Empty)
             {
-                createMessage = await Get(messageDto.Id, cancellationToken) != null;
+                createMessage = await Get(messageDto.Id, cancellationToken) == null;
             }
             message = createMessage ? await Add(message, cancellationToken) : await Update(message, cancellationToken);
             return message == null ? null : _mapper.Map<PlayerInvitationDto?>(message);

@@ -57,9 +57,9 @@ namespace WebAPI.Controllers.Team
             }
             var message = new ProfileMessageSubmitted()
             {
-                SenderId = teamId,
+                SenderId = playerId,
                 SendingUserId = userContext.UserId,
-                AcceptorId = playerId,
+                AcceptorId = teamId,
                 AcceptingUserId = (Guid)teamUserId,
                 PositionName = (PositionName)position,
                 MessageType = MessageType.TeamApplication,

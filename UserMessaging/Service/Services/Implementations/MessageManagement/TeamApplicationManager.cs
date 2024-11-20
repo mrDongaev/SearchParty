@@ -1,4 +1,5 @@
-﻿using Library.Services.Interfaces.UserContextInterfaces;
+﻿using Library.Models.Enums;
+using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.Message;
 using Service.Dtos.Message;
@@ -13,14 +14,27 @@ using System.Threading.Tasks;
 
 namespace Service.Services.Implementations.MessageManagement
 {
-    public class TeamApplicationManager : AbstractMessageManager<TeamApplicationDto>
+    public class TeamApplicationManager(IServiceScopeFactory scopeFactory) : AbstractMessageManager<TeamApplicationDto>(scopeFactory)
     {
-        protected async override Task<AbstractMessage<TeamApplicationDto>?> CreateMessageModel(Guid id, IServiceProvider serviceProvider, IUserHttpContext userContext, CancellationToken cancellationToken)
+        protected async override Task ClearResolvedMessages()
         {
-            using var scope = serviceProvider.CreateScope();
+            using var scope = scopeFactory.CreateScope();
+            var teamApplicationRepository = scope.ServiceProvider.GetRequiredService<ITeamApplicationRepository>();
+            await teamApplicationRepository.ClearMessages(new HashSet<MessageStatus>()
+            {
+                MessageStatus.Expired,
+                MessageStatus.Accepted,
+                MessageStatus.Rejected,
+                MessageStatus.Rescinded,
+            }, CancellationToken.None);
+        }
+
+        protected async override Task<AbstractMessage<TeamApplicationDto>?> CreateMessageModel(Guid id, IUserHttpContext userContext, CancellationToken cancellationToken)
+        {
+            using var scope = scopeFactory.CreateScope();
             var teamApplicationRepository = scope.ServiceProvider.GetRequiredService<ITeamApplicationRepository>();
             var messageDto = await teamApplicationRepository.GetMessage(id, cancellationToken);
-            return messageDto == null ? null : new TeamApplication(messageDto, serviceProvider, userContext, cancellationToken);
+            return messageDto == null ? null : new TeamApplication(messageDto, scopeFactory, userContext, cancellationToken);
         }
     }
 }

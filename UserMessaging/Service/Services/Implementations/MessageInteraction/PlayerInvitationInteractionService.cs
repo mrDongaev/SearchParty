@@ -8,7 +8,7 @@ using Service.Services.Interfaces.MessageInteraction;
 
 namespace Service.Services.Implementations.MessageInteraction
 {
-    public class PlayerInvitationInteractionService(IPlayerInvitationRepository playerInvitationRepo, IServiceProvider serviceProvider, IUserHttpContext userContext, PlayerInvitationManager manager) : IPlayerInvitationInteractionService
+    public class PlayerInvitationInteractionService(IPlayerInvitationRepository playerInvitationRepo, IUserHttpContext userContext, PlayerInvitationManager manager) : IPlayerInvitationInteractionService
     {
         public async Task<PlayerInvitationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {
@@ -23,7 +23,7 @@ namespace Service.Services.Implementations.MessageInteraction
         public async Task<ActionResponse<PlayerInvitationDto>> Accept(Guid id, CancellationToken cancellationToken)
         {
             ActionResponse<PlayerInvitationDto> response;
-            var message = await manager.GetOrCreateMessage(id, serviceProvider, userContext, cancellationToken);
+            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
             if (message != null)
             {
                 return await message.Accept();
@@ -40,7 +40,7 @@ namespace Service.Services.Implementations.MessageInteraction
         public async Task<ActionResponse<PlayerInvitationDto>> Reject(Guid id, CancellationToken cancellationToken)
         {
             ActionResponse<PlayerInvitationDto> response;
-            var message = await manager.GetOrCreateMessage(id, serviceProvider, userContext, cancellationToken);
+            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
             if (message != null)
             {
                 return await message.Reject();
@@ -57,7 +57,7 @@ namespace Service.Services.Implementations.MessageInteraction
         public async Task<ActionResponse<PlayerInvitationDto>> Rescind(Guid id, CancellationToken cancellationToken)
         {
             ActionResponse<PlayerInvitationDto> response;
-            var message = await manager.GetOrCreateMessage(id, serviceProvider, userContext, cancellationToken);
+            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
             if (message != null)
             {
                 return await message.Rescind();

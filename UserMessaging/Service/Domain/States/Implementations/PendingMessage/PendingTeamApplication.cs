@@ -17,41 +17,52 @@ namespace Service.Domain.States.Implementations.PendingMessage
         public override async Task<ActionResponse<TeamApplicationDto>> Accept()
         {
             var actionResponse = new ActionResponse<TeamApplicationDto>();
-            if (DateTime.UtcNow >= ExpiresAt)
+            try
             {
-                Message.ChangeState(MessageStatus.Expired);
-                actionResponse.ActionMessage = "The application to the team has expired";
-                actionResponse.Status = ActionResponseStatus.Failure;
-            }
-            else
-            {
-                using var scope = ServiceProvider.CreateScope();
-                var teamService = scope.ServiceProvider.GetRequiredService<ITeamService>();
-                var response = await teamService.PushApplyingPlayerToTeam(AcceptingTeamId, ApplyingPlayerId, PositionName, Id, CancellationToken);
-                if (response)
+                if (DateTime.UtcNow >= ExpiresAt)
                 {
-                    Message.ChangeState(MessageStatus.Accepted);
-                    actionResponse.ActionMessage = "Application to the team has been accepted";
-                    actionResponse.Status = ActionResponseStatus.Success;
+                    Message.ChangeState(MessageStatus.Expired);
+                    actionResponse.ActionMessage = "The application to the team has expired";
+                    actionResponse.Status = ActionResponseStatus.Failure;
                 }
                 else
                 {
-                    actionResponse.ActionMessage = "Could not accept the application to the team";
-                    actionResponse.Status = ActionResponseStatus.Failure;
+                    using var scope = ScopeFactory.CreateScope();
+                    var teamService = scope.ServiceProvider.GetRequiredService<ITeamService>();
+                    teamService.UserContext = UserContext;
+                    var response = await teamService.PushApplyingPlayerToTeam(AcceptingTeamId, ApplyingPlayerId, PositionName, Id, CancellationToken);
+                    if (response)
+                    {
+                        Message.ChangeState(MessageStatus.Accepted);
+                        actionResponse.ActionMessage = "Application to the team has been accepted";
+                        actionResponse.Status = ActionResponseStatus.Success;
+                    }
+                    else
+                    {
+                        actionResponse.ActionMessage = "Could not accept the application to the team";
+                        actionResponse.Status = ActionResponseStatus.Failure;
+                    }
                 }
-            }
-            TeamApplicationDto? message = null;
-            if (Status == MessageStatus.Accepted || Status == MessageStatus.Expired)
-            {
-                message = await Message.SaveToDatabase();
-                if (message == null)
+                TeamApplicationDto? message = null;
+                if (Status == MessageStatus.Accepted || Status == MessageStatus.Expired)
                 {
-                    Message.ChangeState(MessageStatus.Pending);
-                    actionResponse.ActionMessage = "Could not accept the application to the team";
-                    actionResponse.Status = ActionResponseStatus.Failure;
+                    message = await Message.SaveToDatabase();
+                    if (message == null)
+                    {
+                        Message.ChangeState(MessageStatus.Pending);
+                        actionResponse.ActionMessage = "Could not accept the application to the team";
+                        actionResponse.Status = ActionResponseStatus.Failure;
+                    }
                 }
+                actionResponse.Message = message ?? MessageDto;
             }
-            actionResponse.Message = message ?? MessageDto;
+            catch
+            {
+                Message.ChangeState(MessageStatus.Pending);
+                actionResponse.ActionMessage = "Could not accept the application to the team";
+                actionResponse.Status = ActionResponseStatus.Failure;
+                actionResponse.Message = MessageDto;
+            }
             return actionResponse;
         }
 
@@ -70,18 +81,28 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 actionResponse.ActionMessage = "Application to the team has been rejected";
                 actionResponse.Status = ActionResponseStatus.Success;
             }
-            TeamApplicationDto? message = null;
-            if (Status == MessageStatus.Rejected || Status == MessageStatus.Expired)
+            try
             {
-                message = await Message.SaveToDatabase();
-                if (message == null)
+                TeamApplicationDto? message = null;
+                if (Status == MessageStatus.Rejected || Status == MessageStatus.Expired)
                 {
-                    Message.ChangeState(MessageStatus.Pending);
-                    actionResponse.ActionMessage = "Could not accept the application to the team";
-                    actionResponse.Status = ActionResponseStatus.Failure;
+                    message = await Message.SaveToDatabase();
+                    if (message == null)
+                    {
+                        Message.ChangeState(MessageStatus.Pending);
+                        actionResponse.ActionMessage = "Could not accept the application to the team";
+                        actionResponse.Status = ActionResponseStatus.Failure;
+                    }
                 }
+                actionResponse.Message = message ?? MessageDto;
             }
-            actionResponse.Message = message ?? MessageDto;
+            catch
+            {
+                Message.ChangeState(MessageStatus.Pending);
+                actionResponse.ActionMessage = "Could not accept the application to the team";
+                actionResponse.Status = ActionResponseStatus.Failure;
+                actionResponse.Message = MessageDto;
+            }
             return actionResponse;
         }
 
@@ -100,18 +121,28 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 actionResponse.ActionMessage = "Application to the team has been rescinded";
                 actionResponse.Status = ActionResponseStatus.Success;
             }
-            TeamApplicationDto? message = null;
-            if (Status == MessageStatus.Rescinded || Status == MessageStatus.Expired)
+            try
             {
-                message = await Message.SaveToDatabase();
-                if (message == null)
+                TeamApplicationDto? message = null;
+                if (Status == MessageStatus.Rescinded || Status == MessageStatus.Expired)
                 {
-                    Message.ChangeState(MessageStatus.Pending);
-                    actionResponse.ActionMessage = "Could not rescind the application to the team";
-                    actionResponse.Status = ActionResponseStatus.Failure;
+                    message = await Message.SaveToDatabase();
+                    if (message == null)
+                    {
+                        Message.ChangeState(MessageStatus.Pending);
+                        actionResponse.ActionMessage = "Could not rescind the application to the team";
+                        actionResponse.Status = ActionResponseStatus.Failure;
+                    }
                 }
+                actionResponse.Message = message ?? MessageDto;
             }
-            actionResponse.Message = message ?? MessageDto;
+            catch
+            {
+                Message.ChangeState(MessageStatus.Pending);
+                actionResponse.ActionMessage = "Could not rescind the application to the team";
+                actionResponse.Status = ActionResponseStatus.Failure;
+                actionResponse.Message = MessageDto;
+            }
             return actionResponse;
         }
     }

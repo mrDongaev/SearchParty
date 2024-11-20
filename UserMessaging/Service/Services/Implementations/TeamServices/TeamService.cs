@@ -12,11 +12,23 @@ namespace Service.Services.Implementations.TeamServices
     {
         private readonly HttpClient _httpClient;
 
+        private IUserHttpContext? _userContext;
+
+        public IUserHttpContext? UserContext
+        {
+            get => _userContext;
+            set
+            {
+                _userContext = value;
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _userContext?.AccessToken ?? "");
+                _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={_userContext?.RefreshToken ?? ""}");
+            }
+        }
+
         public TeamService(HttpClient httpClient, IUserHttpContext userContext)
         {
             _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userContext.AccessToken);
-            _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={userContext.RefreshToken}");
+            UserContext = userContext;
         }
 
         public async Task<bool> PushApplyingPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid messageId, CancellationToken cancellationToken)
@@ -40,7 +52,7 @@ namespace Service.Services.Implementations.TeamServices
                 Position = position,
             };
             using var response = await _httpClient.PostAsJsonAsync("/api/Team/PushPlayerToTeam", request, cancellationToken);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<bool>() : false;
+            return response.IsSuccessStatusCode;
         }
     }
 }
