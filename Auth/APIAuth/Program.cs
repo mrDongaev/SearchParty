@@ -53,7 +53,7 @@ namespace APIAuth
                 MigrationProcessing(app);
             }
 
-            if (app.Environment.IsDevelopment() || EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true")
+            if (app.Environment.IsDevelopment() || (EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true"))
             {
                 using (var scope = app.Services.CreateScope())
                 {
