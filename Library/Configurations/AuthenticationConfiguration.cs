@@ -5,6 +5,7 @@ using Library.Services.Interfaces.UserContextInterfaces;
 using Library.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Library.Configurations
@@ -13,7 +14,9 @@ namespace Library.Configurations
     {
         public static IServiceCollection AddAuthenticationConfiguration(this IServiceCollection services)
         {
-            byte[] key = Encoding.UTF8.GetBytes(EnvironmentUtils.GetEnvVariable("TOKEN_KEY"));
+            var publicKeyPem = EnvironmentUtils.GetEnvVariable("PUBLIC_KEY");
+            var publicKey = new RsaSecurityKey(AuthenticationUtils.LoadPublicKeyFromPem(publicKeyPem));
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -28,7 +31,7 @@ namespace Library.Configurations
                     ValidateIssuerSigningKey = true,
                     ValidateAudience = false,
                     ValidateIssuer = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                    IssuerSigningKey = publicKey,
                 };
             });
 

@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Library.Utils;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Infrastructure.Clients;
 
 namespace APIAuth
 {
@@ -144,14 +145,20 @@ namespace APIAuth
                 config.RegisterServicesFromAssembly(typeof(LoginHandler).Assembly);
             });
 
+            // ����������� HttpClient � UserInfoClient
+            services.AddHttpClient<IUserInfoClient, UserInfoClient>((httpClient) =>
+            {
+                httpClient.BaseAddress = new Uri(EnvironmentUtils.GetEnvVariable("USER_INFO_URL")); //������� ����� ��� API
+            });
+
             AddAuthAndBearer(services);
         }
 
         public static void AddAuthAndBearer(IServiceCollection services)
         {
-            byte[] keyByte = Encoding.UTF8.GetBytes(EnvironmentUtils.GetEnvVariable("TOKEN_KEY"));
+            var publicKeyPem = EnvironmentUtils.GetEnvVariable("PUBLIC_KEY");
 
-            var _key = new SymmetricSecurityKey(keyByte);
+            var publicKey = new RsaSecurityKey(AuthenticationUtils.LoadPublicKeyFromPem(publicKeyPem));
 
             // Add authentication
             services.AddAuthentication(options =>
@@ -170,7 +177,7 @@ namespace APIAuth
 
                     // The key that will be used to validate the token's signature.
                     // This should be an instance of a class that implements the SecurityKey interface.
-                    IssuerSigningKey = _key,
+                    IssuerSigningKey = publicKey,
 
                     // Indicates whether to validate the token's issuer.
                     // If true, it will be checked that the token was issued by a trusted issuer.
