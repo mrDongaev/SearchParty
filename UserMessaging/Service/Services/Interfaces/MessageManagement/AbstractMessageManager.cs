@@ -1,12 +1,8 @@
-﻿using Library.Models.API.UserMessaging;
-using Library.Services.Interfaces.UserContextInterfaces;
+﻿using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.Message;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Repositories.Interfaces;
 using System.Collections.Concurrent;
-using System.Threading;
 
 namespace Service.Services.Interfaces.MessageManagement
 {

@@ -5,11 +5,6 @@ using Service.Domain.Message;
 using Service.Dtos.Message;
 using Service.Repositories.Interfaces;
 using Service.Services.Interfaces.MessageManagement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services.Implementations.MessageManagement
 {

@@ -4,9 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Services.Interfaces.MessageManagement;
 using System.Collections.Concurrent;
-using System.Security.Cryptography;
 
 namespace Service.Domain.Message
 {

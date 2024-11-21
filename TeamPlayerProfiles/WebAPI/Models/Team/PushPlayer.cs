@@ -16,7 +16,7 @@ namespace WebAPI.Models.Team
             public Guid TeamId { get; set; }
 
             [Required]
-            public PositionName Position {  get; set; }
+            public PositionName Position { get; set; }
 
             public MessageType? MessageType { get; set; }
         }

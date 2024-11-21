@@ -5,14 +5,16 @@ using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Library.Models;
 using Library.Models.API.UserMessaging;
+using Library.Models.Enums;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Contracts.Team;
+using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
 
 namespace Service.Services.Implementations.TeamServices
 {
-    public class TeamBoardService(IMapper mapper, ITeamRepository teamRepo, IServiceProvider provider) : ITeamBoardService
+    public class TeamBoardService(IMapper mapper, ITeamRepository teamRepo, ITeamApplicationService teamApplicationService, IServiceProvider provider) : ITeamBoardService
     {
         public async Task<TeamDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
@@ -23,20 +25,27 @@ namespace Service.Services.Implementations.TeamServices
 
         public async Task SendTeamApplicationRequest(ProfileMessageSubmitted message, CancellationToken cancellationToken = default)
         {
-            using (var scope = provider.CreateScope())
+            using var scope = provider.CreateScope();
+            var messages = await teamApplicationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
+            if (messages != null)
             {
-                var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
-                var teamPlayers = await teamRepo.GetTeamPlayers(message.AcceptorId, cancellationToken);
-                if (teamPlayers.SingleOrDefault(tp => tp.PositionId == (int)message.PositionName) != null)
+                var existingMessage = messages.SingleOrDefault(m => m.AcceptingTeamId == message.AcceptorId && m.ApplyingPlayerId == message.SenderId);
+                if (existingMessage != null)
                 {
-                    throw new TeamPositionOverlapException();   
+                    throw new PendingMessageExistsException(message.MessageType);
                 }
-                else if (teamPlayers.SingleOrDefault(tp => tp.PlayerId == message.SenderId) != null)
-                {
-                    throw new TeamContainsPlayerException();
-                }
-                await sender.Publish(message, cancellationToken);
             }
+            var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+            var teamPlayers = await teamRepo.GetTeamPlayers(message.AcceptorId, cancellationToken);
+            if (teamPlayers.SingleOrDefault(tp => tp.PositionId == (int)message.PositionName) != null)
+            {
+                throw new TeamPositionOverlapException();
+            }
+            else if (teamPlayers.SingleOrDefault(tp => tp.PlayerId == message.SenderId) != null)
+            {
+                throw new TeamContainsPlayerException();
+            }
+            await sender.Publish(message, cancellationToken);
         }
 
         public async Task<ICollection<TeamDto>> GetFiltered(ConditionalTeamQuery query, CancellationToken cancellationToken = default)

@@ -29,8 +29,8 @@ namespace DataAccess.Repositories.Implementations
 
         public async Task<PlayerInvitationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {
-            var messages = await Get(id, cancellationToken);
-            return _mapper.Map<PlayerInvitationDto>(messages);
+            var message = await Get(id, cancellationToken);
+            return message == null ? null : _mapper.Map<PlayerInvitationDto>(message);
         }
 
         public async Task<ICollection<PlayerInvitationDto>> GetUserMessages(Guid userId, ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)

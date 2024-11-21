@@ -8,7 +8,7 @@ namespace DataAccess.Repositories.Interfaces
     {
         Task<Team?> Update(Team team, ISet<TeamPlayer>? teamPlayers, CancellationToken cancellationToken);
 
-        Task<ICollection<TeamPlayer>?> GetTeamPlayers(Guid teamId,  CancellationToken cancellationToken);
+        Task<ICollection<TeamPlayer>?> GetTeamPlayers(Guid teamId, CancellationToken cancellationToken);
 
         Task<ICollection<Team>> GetConditionalTeamRange(ConditionalTeamQuery config, CancellationToken cancellationToken);
 

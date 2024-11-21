@@ -37,7 +37,7 @@ namespace WebAPI.Middleware
             var statusCode = (HttpStatusCode)context.Response.StatusCode;
             if (ex is InvalidEnumMemberException || ex is InvalidClassMemberException ||
                 ex is TeamCountOverflowException || ex is TeamOwnerNotPresentException ||
-                ex is TeamPositionOverlapException || ex is TeamContainsPlayerException)
+                ex is TeamPositionOverlapException || ex is TeamContainsPlayerException || ex is PendingMessageExistsException)
             {
                 statusCode = HttpStatusCode.BadRequest;
             }

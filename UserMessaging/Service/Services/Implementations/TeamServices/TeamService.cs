@@ -1,7 +1,6 @@
 ﻿using Library.Models.API.TeamPlayerProfiles.Team;
 using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
-using Microsoft.AspNetCore.Http;
 using Service.Services.Interfaces.TeamInterfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
