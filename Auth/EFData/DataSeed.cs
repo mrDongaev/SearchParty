@@ -15,7 +15,7 @@ namespace EFData
         {
             if (!userManager.Users.Any())
             {
-                AppUser[] users = new AppUser[20];
+                AppUser[] users = new AppUser[100];
                 string emptyGuid = Guid.Empty.ToString();
                 for (int i = 0; i < users.Length; i++)
                 {
