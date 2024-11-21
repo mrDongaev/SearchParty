@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Player;
-using Service.Services.Implementations.TeamServices;
 using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Player;

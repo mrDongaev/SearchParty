@@ -23,6 +23,7 @@ FROM build AS publish
 RUN dotnet publish "./APIAuth.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+RUN apt-get update && apt-get install -y curl && apt-get clean
 ENV ASPNETCORE_URLS="http://*:8080"
 WORKDIR /app
 COPY --from=publish /app/publish .

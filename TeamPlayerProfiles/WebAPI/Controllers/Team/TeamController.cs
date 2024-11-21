@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;

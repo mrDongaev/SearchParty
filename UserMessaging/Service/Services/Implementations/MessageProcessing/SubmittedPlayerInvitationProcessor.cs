@@ -2,7 +2,6 @@
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.Message;
-using Service.Domain.States.Implementations.PendingMessage;
 using Service.Dtos.Message;
 using Service.Services.Interfaces.MessageProcessing;
 

@@ -8,7 +8,7 @@ namespace DataAccess.Context
         {
             Random random = new Random();
             var getRand = (int a, int b) => random.Next(a, b);
-            User[] users = new User[20];
+            User[] users = new User[100];
             string emptyGuid = Guid.Empty.ToString();
             for (int i = 0; i < users.Length; i++)
             {

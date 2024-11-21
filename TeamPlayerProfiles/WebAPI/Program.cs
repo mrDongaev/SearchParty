@@ -2,6 +2,8 @@ using DataAccess.Context;
 using Library.Configurations;
 using Library.Middleware;
 using Library.Utils;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
@@ -22,8 +24,10 @@ try
         .AddEndpointsApiExplorer()
         .AddSwagger()
         .AddAuthenticationConfiguration()
-        //.AddRabbitMQ()
+        .AddRabbitMQ()
         .AddControllers();
+
+    builder.Services.AddHealthChecks();
 
     builder.Host
         .AddSerilog();
@@ -59,6 +63,15 @@ try
     app.UseAuthorization();
     app.UseMiddleware<UserHttpContextMiddleware>();
     app.MapControllers();
+    app.MapHealthChecks("/healthcheck", new HealthCheckOptions
+    {
+        ResultStatusCodes =
+        {
+            [HealthStatus.Healthy] = StatusCodes.Status200OK,
+            [HealthStatus.Degraded] = StatusCodes.Status200OK,
+            [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+        }
+    });
     await app.RunAsync();
     Log.Information("Clean shutdown.");
     return 0;

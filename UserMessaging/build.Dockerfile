@@ -7,15 +7,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["./TeamPlayerProfiles/WebAPI/WebAPI.csproj", "./TeamPlayerProfiles/WebAPI/"]
-COPY ["./TeamPlayerProfiles/Common/Common.csproj", "./TeamPlayerProfiles/Common/"]
-COPY ["./TeamPlayerProfiles/DataAccess/DataAccess.csproj", "./TeamPlayerProfiles/DataAccess/"]
-COPY ["./TeamPlayerProfiles/Service/Service.csproj", "./TeamPlayerProfiles/Service/"]
+COPY ["./UserMessaging/WebAPI/WebAPI.csproj", "./UserMessaging/WebAPI/"]
+COPY ["./UserMessaging/DataAccess/DataAccess.csproj", "./UserMessaging/DataAccess/"]
+COPY ["./UserMessaging/Service/Service.csproj", "./UserMessaging/Service/"]
 COPY ["./Library/*.csproj", "./Library/"]
-RUN dotnet restore "./TeamPlayerProfiles/WebAPI/WebAPI.csproj"
-COPY ["./TeamPlayerProfiles/", "./TeamPlayerProfiles/"]
+RUN dotnet restore "./UserMessaging/WebAPI/WebAPI.csproj"
+COPY ["./UserMessaging/", "./UserMessaging/"]
 COPY ["./Library/", "./Library/"]
-WORKDIR "/src/TeamPlayerProfiles/WebAPI"
+WORKDIR "/src/UserMessaging/WebAPI"
 RUN dotnet build "./WebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

@@ -6,6 +6,8 @@ services:
     depends_on:
       team_player_profiles_db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy 
     build: 
       context: ../../
       dockerfile: TeamPlayerProfiles/migrate.Dockerfile
@@ -23,7 +25,11 @@ services:
       TEAM_PLAYER_PROFILES__MIGRATION_NAME: ${TEAM_PLAYER_PROFILES__MIGRATION_NAME}
       TEAM_PLAYER_PROFILES__STARTUP_PROJECT_NAME: ${TEAM_PLAYER_PROFILES__STARTUP_PROJECT_NAME}
       TEAM_PLAYER_PROFILES__CONTEXT_PROJECT_NAME: ${TEAM_PLAYER_PROFILES__CONTEXT_PROJECT_NAME}
-      TOKEN_KEY: ${TOKEN_KEY}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_LOGIN: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS}
+      PUBLIC_KEY: ${PUBLIC_KEY}
   team_player_profiles_db:
     container_name: team_player_profiles_db
     image: postgres:latest
@@ -65,7 +71,7 @@ services:
       USER_INFO__MIGRATION_NAME: ${USER_INFO__MIGRATION_NAME}
       USER_INFO__STARTUP_PROJECT_NAME: ${USER_INFO__STARTUP_PROJECT_NAME}
       USER_INFO__CONTEXT_PROJECT_NAME: ${USER_INFO__CONTEXT_PROJECT_NAME}
-      TOKEN_KEY: ${TOKEN_KEY}
+      PUBLIC_KEY: ${PUBLIC_KEY}
   user_info_db:
     container_name: user_info_db
     image: postgres:latest
@@ -107,7 +113,8 @@ services:
       USER_AUTH__MIGRATION_NAME: ${USER_AUTH__MIGRATION_NAME}
       USER_AUTH__STARTUP_PROJECT_NAME: ${USER_AUTH__STARTUP_PROJECT_NAME}
       USER_AUTH__CONTEXT_PROJECT_NAME: ${USER_AUTH__CONTEXT_PROJECT_NAME}
-      TOKEN_KEY: ${TOKEN_KEY}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      PUBLIC_KEY: ${PUBLIC_KEY}
       REFRESH_KEY: ${REFRESH_KEY}
   user_auth_db:
     container_name: user_auth_db
@@ -126,6 +133,74 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+  user_messaging_migrations:
+    container_name: user_messaging_migrations
+    depends_on:
+      user_messaging_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy  
+    build: 
+      context: ../../
+      dockerfile: UserMessaging/migrate.Dockerfile
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    ports: 
+      - "8086:8080" 
+      - "8087:8081" 
+    environment:
+      DATABASE_HOSTNAME: user_messaging_db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: user_messaging
+      DATABASE_USER: ${POSTGRES__USER}
+      DATABASE_PASSWORD: ${POSTGRES__PASSWORD}
+      USER_MESSAGING__ADD_MIGRATION: ${USER_MESSAGING__ADD_MIGRATION}
+      USER_MESSAGING__APPLY_MIGRATION: ${USER_MESSAGING__APPLY_MIGRATION}
+      USER_MESSAGING__MIGRATION_NAME: ${USER_MESSAGING__MIGRATION_NAME}
+      USER_MESSAGING__STARTUP_PROJECT_NAME: ${USER_MESSAGING__STARTUP_PROJECT_NAME}
+      USER_MESSAGING__CONTEXT_PROJECT_NAME: ${USER_MESSAGING__CONTEXT_PROJECT_NAME}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_LOGIN: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS}
+      PUBLIC_KEY: ${PUBLIC_KEY}
+  user_messaging_db:
+    container_name: user_messaging_db
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: user_messaging
+      POSTGRES_USER: ${POSTGRES__USER}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+    volumes: 
+      - user_messaging_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES__USER} -d user_messaging"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+  rabbitmq:
+    container_name: search_party_message_bus
+    build: 
+      context: ../../
+      dockerfile: Docker/rabbitmq/Dockerfile
+    hostname: search_party_message_bus
+    ports:
+    - 15672:15672
+    - 5672:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+    - search_party_message_bus_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics ping"]
+      start_period: 30s
+      interval: 10s
+      timeout: 10s
+      retries: 5  
 
 volumes:
   team_player_profiles_pg_data:
@@ -134,4 +209,9 @@ volumes:
     name: "user_info_pg_data"
   user_auth_pg_data:
     name: "user_auth_pg_data"
+  user_messaging_pg_data:
+    name: "user_messaging_pg_data"
+  search_party_message_bus_data:
+    name: "search_party_message_bus_data"   
+
 

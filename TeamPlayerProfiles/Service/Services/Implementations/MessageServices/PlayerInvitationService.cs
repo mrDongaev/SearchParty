@@ -1,13 +1,9 @@
 ﻿using Library.Models.API.UserMessaging;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Service.Services.Interfaces.MessageInterfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services.Implementations.MessageServices
 {
@@ -26,6 +22,12 @@ namespace Service.Services.Implementations.MessageServices
         {
             using var response = await _httpClient.GetAsync($"/api/PlayerInvitation/Get/{id}", cancellationToken);
             return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<GetPlayerInvitation.Response>() : null;
+        }
+
+        public async Task<ICollection<GetPlayerInvitation.Response>?> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        {
+            using var response = await _httpClient.PostAsJsonAsync($"/api/PlayerInvitation/GetUserMessages", messageStatuses, cancellationToken);
+            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<ICollection<GetPlayerInvitation.Response>>() : null;
         }
     }
 }

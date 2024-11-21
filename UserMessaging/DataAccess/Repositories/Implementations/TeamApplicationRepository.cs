@@ -28,8 +28,8 @@ namespace DataAccess.Repositories.Implementations
 
         public async Task<TeamApplicationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
         {
-            var messages = await Get(id, cancellationToken);
-            return _mapper.Map<TeamApplicationDto>(messages);
+            var message = await Get(id, cancellationToken);
+            return message == null ? null : _mapper.Map<TeamApplicationDto>(message);
         }
 
         public async Task<ICollection<TeamApplicationDto>> GetUserMessages(Guid userId, ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)

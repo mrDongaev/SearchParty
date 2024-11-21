@@ -1,4 +1,5 @@
 ﻿using DataAccess.Entities;
+using Library.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Context
@@ -9,9 +10,9 @@ namespace DataAccess.Context
         {
             Random random = new Random();
             var getRand = (int a, int b) => random.Next(a, b);
-            Player[] players = new Player[20];
-            Team[] teams = new Team[10];
-            User[] users = new User[20];
+            Player[] players = new Player[100];
+            Team[] teams = new Team[20];
+            User[] users = new User[100];
             List<Hero> heroes = await context.Heroes.ToListAsync();
             string emptyGuid = Guid.Empty.ToString();
 
@@ -21,7 +22,7 @@ namespace DataAccess.Context
                 users[i] = new User
                 {
                     Id = Guid.Parse("a" + emptyGuid[1..^indexStr.Length] + indexStr),
-                    Mmr = (uint)getRand(0, 20001),
+                    Mmr = (uint)getRand(SearchPartyConstants.MinMmr, SearchPartyConstants.MaxMmr + 1),
                 };
             }
             foreach (var user in users)
@@ -43,7 +44,7 @@ namespace DataAccess.Context
                 var max = getRand(0, 6);
                 for (int j = 0; j < max; j++)
                 {
-                    players[i].Heroes.Add(heroes[getRand(0, 5)]);
+                    players[i].Heroes.Add(heroes[getRand(0, 114)]);
                 }
             }
             foreach (var player in players)

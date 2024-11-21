@@ -2,7 +2,7 @@
 
 # Define the image and container name
 IMAGE_NAME="search-party-rabbitmq"
-CONTAINER_NAME="search-party-message-bus"
+CONTAINER_NAME="search-party-message-bus-dev"
 
 # Build the Docker image from the Dockerfile
 echo "Building the Docker image..."

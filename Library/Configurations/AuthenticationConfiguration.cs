@@ -5,8 +5,6 @@ using Library.Services.Interfaces.UserContextInterfaces;
 using Library.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace Library.Configurations
 {

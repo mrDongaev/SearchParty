@@ -4,9 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.States.Interfaces;
 using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
-using Service.Services.Interfaces.MessageManagement;
 using System.Collections.Concurrent;
-using System.Security.Cryptography;
 
 namespace Service.Domain.Message
 {
@@ -28,9 +26,11 @@ namespace Service.Domain.Message
 
         public DateTime UpdatedAt { get; protected set; }
 
-        protected readonly ConcurrentQueue<Func<Task>> _taskQueue = new ConcurrentQueue<Func<Task>>();
+        private readonly ConcurrentQueue<Func<Task>> _taskQueue = new ConcurrentQueue<Func<Task>>();
 
-        protected readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+        private readonly object _stateLock = new();
 
         private int _activeThreads = 0;
 
@@ -68,8 +68,11 @@ namespace Service.Domain.Message
 
         public void ChangeState(MessageStatus status)
         {
-            Status = status;
-            State = CreateNewMessageState(status);
+            lock (_stateLock)
+            {
+                Status = status;
+                State = CreateNewMessageState(status);
+            }
         }
 
         protected async Task<TResult> Execute<TResult>(Func<Task<TResult>> operation)
@@ -87,8 +90,16 @@ namespace Service.Domain.Message
             {
                 try
                 {
-                    var result = await operation();
-                    tcs.SetResult(result);
+                    await _semaphore.WaitAsync();
+                    try
+                    {
+                        var result = await operation();
+                        tcs.SetResult(result);
+                    }
+                    finally
+                    {
+                        _semaphore.Release();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -132,14 +143,9 @@ namespace Service.Domain.Message
                     return;
                 }
 
-                await _semaphore.WaitAsync();
-                try
+                if (task != null)
                 {
                     await task();
-                }
-                finally
-                {
-                    _semaphore.Release();
                 }
             }
         }
@@ -151,17 +157,17 @@ namespace Service.Domain.Message
 
         public Task<ActionResponse<TMessageDto>> Accept()
         {
-            return Execute(State.Accept);
+            return Execute(() => State.Accept());
         }
 
         public Task<ActionResponse<TMessageDto>> Reject()
         {
-            return Execute(State.Reject);
+            return Execute(() => State.Reject());
         }
 
         public Task<ActionResponse<TMessageDto>> Rescind()
         {
-            return Execute(State.Rescind);
+            return Execute(() => State.Rescind());
         }
 
         public abstract Task<TMessageDto?> SaveToDatabase();

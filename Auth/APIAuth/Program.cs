@@ -22,6 +22,8 @@ using Library.Utils;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Infrastructure.Clients;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace APIAuth
 {
@@ -31,6 +33,8 @@ namespace APIAuth
         {
             // Create a web application with default settings
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddHealthChecks();
 
             // Add services to the dependency injection container
             ConfigureServices(builder.Services, builder.Configuration);
@@ -90,6 +94,16 @@ namespace APIAuth
             app.UseAuthorization(); // Enable authorization
 
             app.MapControllers(); // Map controllers
+
+            app.MapHealthChecks("/healthcheck", new HealthCheckOptions
+            {
+                ResultStatusCodes =
+                {
+                    [HealthStatus.Healthy] = StatusCodes.Status200OK,
+                    [HealthStatus.Degraded] = StatusCodes.Status200OK,
+                    [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+                }
+            });
 
             //app.UseMiddleware<RefreshTokenMiddleware>();
         }

@@ -4,8 +4,6 @@ using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
-using Microsoft.Extensions.DependencyInjection;
-using Service.Contracts.Player;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
