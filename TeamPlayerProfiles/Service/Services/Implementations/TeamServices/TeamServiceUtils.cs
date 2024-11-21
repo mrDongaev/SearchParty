@@ -8,7 +8,7 @@ namespace Service.Services.Implementations.TeamServices
     {
         public static bool TeamOwnerPlayerIsInTeam(ICollection<Player> players, Guid teamUserId)
         {
-            return players.SingleOrDefault(tp => tp.UserId == teamUserId) != null;
+            return players.Count == 0 || players.SingleOrDefault(tp => tp.UserId == teamUserId) != null;
         }
 
         public static bool TeamPositionHasNoOverlap(ICollection<TeamPlayerDto.Write> players)

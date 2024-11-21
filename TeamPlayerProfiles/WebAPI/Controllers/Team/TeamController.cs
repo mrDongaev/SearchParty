@@ -1,18 +1,19 @@
 ﻿using AutoMapper;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.TeamInterfaces;
+using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Team;
-using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Team
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class TeamController(ITeamService teamService, IUserHttpContext userContext, IServiceProvider serviceProvider, IMapper mapper) : WebApiController
+    public class TeamController(ITeamService teamService, IUserHttpContext userContext, IUserIdentityService userIdentity, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
@@ -39,16 +40,12 @@ namespace WebAPI.Controllers.Team
             return TypedResults.Ok(mapper.Map<IEnumerable<GetTeam.Response>>(teams));
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet]
         [ProducesResponseType<IEnumerable<GetTeam.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetTeam.Response>>, UnauthorizedHttpResult>> GetTeamsByUserId(Guid userId, CancellationToken cancellationToken)
+        public async Task<Results<Ok<IEnumerable<GetTeam.Response>>, UnauthorizedHttpResult>> GetTeamsOfUser(CancellationToken cancellationToken)
         {
-            if (userId != userContext.UserId)
-            {
-                return TypedResults.Unauthorized();
-            }
-            var teams = await teamService.GetProfilesByUserId(userId, cancellationToken);
+            var teams = await teamService.GetProfilesByUserId(userContext.UserId, cancellationToken);
             return TypedResults.Ok(mapper.Map<IEnumerable<GetTeam.Response>>(teams));
         }
 
@@ -67,7 +64,9 @@ namespace WebAPI.Controllers.Team
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok<GetTeam.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, [FromBody] UpdateTeam.Request request, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            var userId = await userIdentity.GetTeamUserId(id, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -77,12 +76,60 @@ namespace WebAPI.Controllers.Team
             return updatedTeam == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedTeam));
         }
 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok, NotFound, BadRequest, UnauthorizedHttpResult>> PushPlayerToTeam(PushPlayer.Request request, CancellationToken cancellationToken)
+        {
+            var playerUserId = await userIdentity.GetPlayerUserId(request.PlayerId, cancellationToken);
+            var teamUserId = await userIdentity.GetTeamUserId(request.TeamId, cancellationToken);
+            if (playerUserId == null || teamUserId == null)
+            {
+                return TypedResults.NotFound();
+            }
+            if (teamUserId != userContext.UserId && playerUserId != userContext.UserId)
+            {
+                return TypedResults.Unauthorized();
+            }
+            if (request.MessageType != null && !Enum.IsDefined(request.MessageType.Value))
+            {
+                return TypedResults.BadRequest();
+            }
+            await teamService.PushPlayerToTeam(request.TeamId, request.PlayerId, request.Position, request.MessageId, request.MessageType, cancellationToken);
+            return TypedResults.Ok();
+        }
+
+        [HttpPost("{teamId}/{playerId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok, NotFound, UnauthorizedHttpResult>> PullPlayerFromTeam(Guid teamId, Guid playerId, CancellationToken cancellationToken)
+        {
+            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            if (playerUserId == null || teamUserId == null)
+            {
+                return TypedResults.NotFound();
+            }
+            if (teamUserId != userContext.UserId && playerUserId != userContext.UserId)
+            {
+                return TypedResults.Unauthorized();
+            }
+            await teamService.PullPlayerFromTeam(teamId, playerId, cancellationToken);
+            return TypedResults.Ok();
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok<bool>, UnauthorizedHttpResult, NotFound>> Delete(Guid id, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            var userId = await userIdentity.GetTeamUserId(id, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }

@@ -8,7 +8,7 @@ namespace Service.Services.Implementations.UserProfileServices
 {
     public class UserProfilesService : IUserProfileService
     {
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         public UserProfilesService(HttpClient httpClient, IUserHttpContext userContext)
         {

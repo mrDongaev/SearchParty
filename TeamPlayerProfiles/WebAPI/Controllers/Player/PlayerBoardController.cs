@@ -1,19 +1,21 @@
 ﻿using AutoMapper;
 using Common.Models;
 using Library.Models;
+using Library.Models.API.UserMessaging;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.PlayerInterfaces;
+using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Player;
-using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Player
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class PlayerBoardController(IMapper mapper, IPlayerBoardService boardService, IServiceProvider serviceProvider, IUserHttpContext userContext) : WebApiController
+    public class PlayerBoardController(IMapper mapper, IPlayerBoardService boardService, IUserIdentityService userIdentity, IUserHttpContext userContext) : WebApiController
     {
         [HttpPost("{playerId}/{displayed}")]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
@@ -21,7 +23,9 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok<GetPlayer.Response>, NotFound, UnauthorizedHttpResult>> SetDisplayed(Guid playerId, bool displayed, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, playerId, cancellationToken) == false)
+            var userId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -29,21 +33,37 @@ namespace WebAPI.Controllers.Player
             return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetPlayer.Response>(updatedPlayer));
         }
 
-        [HttpPost("{playerId}/{teamId}")]
+        [HttpPost("{playerId}/{teamId}/{position}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok, BadRequest, UnauthorizedHttpResult>> InvitePlayerToTeam(Guid playerId, Guid teamId, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok, BadRequest, NotFound, UnauthorizedHttpResult>> InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, teamId, cancellationToken) == false)
+            var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            if (teamUserId == null || playerUserId == null)
+            {
+                return TypedResults.NotFound();
+            }
+            if (teamUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
-            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, playerId, cancellationToken) == true)
+            if (playerUserId == userContext.UserId || !Enum.IsDefined(typeof(PositionName), position))
             {
                 return TypedResults.BadRequest();
             }
-            await boardService.InvitePlayerToTeam(playerId, teamId, cancellationToken);
+            var message = new ProfileMessageSubmitted()
+            {
+                SenderId = teamId,
+                SendingUserId = userContext.UserId,
+                AcceptorId = playerId,
+                AcceptingUserId = (Guid)playerUserId,
+                PositionName = (PositionName)position,
+                MessageType = MessageType.PlayerInvitation,
+            };
+            await boardService.InvitePlayerToTeam(message, cancellationToken);
             return TypedResults.Ok();
         }
 

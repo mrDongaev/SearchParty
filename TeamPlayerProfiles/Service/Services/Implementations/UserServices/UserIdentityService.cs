@@ -1,11 +1,13 @@
-﻿using Service.Services.Interfaces.PlayerInterfaces;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
+using Service.Services.Interfaces.UserInterfaces;
 
-namespace WebAPI.Utils
+namespace Service.Services.Implementations.UserServices
 {
-    public static class OwnershipValidation
+    public class UserIdentityService(IServiceProvider serviceProvider) : IUserIdentityService
     {
-        public static async Task<bool> OwnsPlayer(IServiceProvider serviceProvider, Guid contextUserId, Guid playerId, CancellationToken cancellationToken)
+        public async Task<Guid?> GetPlayerUserId(Guid playerId, CancellationToken cancellationToken)
         {
             Guid? userId = null;
             using (var scope = serviceProvider.CreateScope())
@@ -13,10 +15,10 @@ namespace WebAPI.Utils
                 var playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
                 userId = await playerService.GetProfileUserId(playerId, cancellationToken);
             }
-            return userId != null && userId == contextUserId;
+            return userId;
         }
 
-        public static async Task<bool> OwnsTeam(IServiceProvider serviceProvider, Guid contextUserId, Guid teamId, CancellationToken cancellationToken)
+        public async Task<Guid?> GetTeamUserId(Guid teamId, CancellationToken cancellationToken)
         {
             Guid? userId = null;
             using (var scope = serviceProvider.CreateScope())
@@ -24,7 +26,7 @@ namespace WebAPI.Utils
                 var playerService = scope.ServiceProvider.GetRequiredService<ITeamService>();
                 userId = await playerService.GetProfileUserId(teamId, cancellationToken);
             }
-            return userId != null && userId == contextUserId;
+            return userId;
         }
     }
 }

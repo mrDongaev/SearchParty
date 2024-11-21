@@ -54,7 +54,7 @@ namespace APIAuth
                 MigrationProcessing(app);
             }
 
-            if (app.Environment.IsDevelopment() || EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true")
+            if (app.Environment.IsDevelopment() || (EnvironmentUtils.TryGetEnvVariable("USER_AUTH__SEED_DATABASE", out var doSeed) && doSeed == "true"))
             {
                 using (var scope = app.Services.CreateScope())
                 {
@@ -145,10 +145,10 @@ namespace APIAuth
                 config.RegisterServicesFromAssembly(typeof(LoginHandler).Assembly);
             });
 
-            // Регистрация HttpClient и UserInfoClient
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ HttpClient пїЅ UserInfoClient
             services.AddHttpClient<IUserInfoClient, UserInfoClient>((httpClient) =>
             {
-                httpClient.BaseAddress = new Uri(EnvironmentUtils.GetEnvVariable("USER_INFO_URL")); //Базовый адрес для API
+                httpClient.BaseAddress = new Uri(EnvironmentUtils.GetEnvVariable("USER_INFO_URL")); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ API
             });
 
             AddAuthAndBearer(services);

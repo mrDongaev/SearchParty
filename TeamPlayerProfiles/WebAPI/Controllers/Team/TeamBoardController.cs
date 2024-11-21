@@ -1,20 +1,22 @@
 ﻿using AutoMapper;
 using Common.Models;
 using Library.Models;
+using Library.Models.API.UserMessaging;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interfaces.TeamInterfaces;
+using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Player;
 using WebAPI.Models.Team;
-using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Team
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class TeamBoardController(IMapper mapper, ITeamBoardService teamService, IUserHttpContext userContext, IServiceProvider serviceProvider) : WebApiController
+    public class TeamBoardController(IMapper mapper, ITeamBoardService teamService, IUserHttpContext userContext, IUserIdentityService userIdentity) : WebApiController
     {
         [HttpPost("{teamId}/{displayed}")]
         [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
@@ -22,7 +24,9 @@ namespace WebAPI.Controllers.Team
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok<GetTeam.Response>, NotFound, UnauthorizedHttpResult>> SetDisplayed(Guid teamId, bool displayed, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, teamId, cancellationToken) == false)
+            var userId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -30,21 +34,37 @@ namespace WebAPI.Controllers.Team
             return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetTeam.Response>(updatedPlayer));
         }
 
-        [HttpPost("{teamId}/{playerId}")]
+        [HttpPost("{teamId}/{playerId}/{position}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok, BadRequest, UnauthorizedHttpResult>> SendTeamApplicationRequest(Guid teamId, Guid playerId, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok, BadRequest, NotFound, UnauthorizedHttpResult>> SendTeamApplicationRequest(Guid teamId, Guid playerId, int position, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, playerId, cancellationToken) == false)
+            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
+            var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
+            if (playerUserId == null || teamUserId == null)
+            {
+                return TypedResults.NotFound();
+            }
+            if (playerUserId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
-            if (await OwnershipValidation.OwnsTeam(serviceProvider, userContext.UserId, teamId, cancellationToken) == true)
+            if (teamUserId == userContext.UserId || !Enum.IsDefined(typeof(PositionName), position))
             {
                 return TypedResults.BadRequest();
             }
-            await teamService.SendTeamApplicationRequest(teamId, playerId, cancellationToken);
+            var message = new ProfileMessageSubmitted()
+            {
+                SenderId = playerId,
+                SendingUserId = userContext.UserId,
+                AcceptorId = teamId,
+                AcceptingUserId = (Guid)teamUserId,
+                PositionName = (PositionName)position,
+                MessageType = MessageType.TeamApplication,
+            };
+            await teamService.SendTeamApplicationRequest(message, cancellationToken);
             return TypedResults.Ok();
         }
 
