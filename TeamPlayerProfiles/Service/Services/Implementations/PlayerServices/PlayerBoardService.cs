@@ -18,7 +18,7 @@ namespace Service.Services.Implementations.PlayerServices
         public async Task<PlayerDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
             var player = new Player() { Id = id, Displayed = displayed };
-            var updatedPlayer = await playerRepo.Update(player, cancellationToken);
+            var updatedPlayer = await playerRepo.Update(player, null, cancellationToken);
             return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
         }
 

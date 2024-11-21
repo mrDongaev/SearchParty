@@ -17,7 +17,7 @@ namespace Service.Services.Implementations.TeamServices
         public async Task<TeamDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
             var team = new Team() { Id = id, Displayed = displayed };
-            var updatedTeam = await teamRepo.Update(team, cancellationToken);
+            var updatedTeam = await teamRepo.Update(team, null, cancellationToken);
             return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
         }
 
