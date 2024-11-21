@@ -30,9 +30,7 @@ namespace Infrastructure.Security
             // В данном случае мы добавляем только одно утверждение - имя пользователя.
             var claims = new List<Claim> 
             {
-                new Claim(JwtRegisteredClaimNames.NameId, user.UserName),
-                
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id)
             };
 
             var credentials = new SigningCredentials(_refreshKey, SecurityAlgorithms.HmacSha512Signature);

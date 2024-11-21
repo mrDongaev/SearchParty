@@ -28,9 +28,9 @@ namespace Application.User.Refresh
 
         public async Task<UserData> Handle(RefreshQuery request, CancellationToken cancellationToken)
         {
-            var email = _refreshGenerator.DecodeRefreshToken(request.RefreshToken, "email");
+            var id = _refreshGenerator.DecodeRefreshToken(request.RefreshToken, "nameid");
 
-            var userEF = await _userManager.FindByEmailAsync(email);
+            var userEF = await _userManager.FindByIdAsync(id);
 
             if (userEF == null)
             {

@@ -20,10 +20,11 @@ namespace Infrastructure.Clients
             _httpClient = httpClient;
         }
 
-        public async Task<HttpResponseMessage> CreateUserInfoAsync(CreateUserInfoRequest createUserInfoRequest, string accessToken)
+        public async Task<HttpResponseMessage> CreateUserInfoAsync(CreateUserInfoRequest createUserInfoRequest, string accessToken, string refreshToken)
         {
             // Установка заголовка авторизации
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={refreshToken}");
 
             var json = JsonSerializer.Serialize(createUserInfoRequest);
 

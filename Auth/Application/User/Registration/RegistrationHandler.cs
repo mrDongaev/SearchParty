@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Application.User.Registration
 {
-    public class RegistrationHandler : IRequestHandler<RegistrationQuery, IdentityResult>
+    public class RegistrationHandler : IRequestHandler<RegistrationQuery, UserData>
     {
         private readonly UserManager<Domain.AppUser>? _userManager;
 
@@ -25,7 +25,7 @@ namespace Application.User.Registration
 
         private readonly IMediator _mediator;
 
-        public RegistrationHandler(UserManager<Domain.AppUser>? userManager, IUserInfoClient userInfoClient, IMediator mediator) 
+        public RegistrationHandler(UserManager<Domain.AppUser>? userManager, IUserInfoClient userInfoClient, IMediator mediator)
         {
             _userManager = userManager;
 
@@ -34,18 +34,19 @@ namespace Application.User.Registration
             _mediator = mediator;
         }
 
-        public async Task<IdentityResult> Handle(RegistrationQuery request, CancellationToken cancellationToken)
+        public async Task<UserData> Handle(RegistrationQuery request, CancellationToken cancellationToken)
         {
             var userEF = await _userManager.FindByNameAsync(request.Email);
+            UserData userData = new();
 
             // Проверяем, есть ли пользователь с таким именем в базе данных
             if (userEF != null)
             {
                 throw new InvalidOperationException("Пользователь с таким email уже существует");
             }
-            else 
+            else
             {
-                userEF = new AppUser 
+                userEF = new AppUser
                 {
                     DisplayName = request.Username,
 
@@ -70,7 +71,7 @@ namespace Application.User.Registration
                             Password = request.Password
                         };
 
-                        var userData = await _mediator.Send(loginQuery);
+                        userData = await _mediator.Send(loginQuery);
 
                         //Создание нового пользователя через внешний API
                         var createUserInfoRequest = new CreateUserInfoRequest
@@ -80,21 +81,25 @@ namespace Application.User.Registration
                             Id = Guid.Parse(userEF.Id)
                         };
 
-                        var response = await _userInfoClient.CreateUserInfoAsync(createUserInfoRequest, userData.AccessToken);
+                        var response = await _userInfoClient.CreateUserInfoAsync(createUserInfoRequest, userData.AccessToken, userData.RefreshToken);
 
                         if (!response.IsSuccessStatusCode)
                         {
+                            await _userManager.DeleteAsync(userEF);
                             throw new Exception("Failed to create user in external service during registration.");
                         }
                     }
-                    return result;
+                    else
+                    {
+                        throw new Exception("Failed to create user in internal service during registration.");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    throw;
                 }
             }
-            return IdentityResult.Success;
+            return userData;
         }
     }
 }

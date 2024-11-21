@@ -23,11 +23,20 @@ namespace APIAuth.API.Controllers
         }
 
         [HttpPost("refreshtoken")]
-        public async Task<ActionResult<UserData>> LoginAsync(RefreshQuery query)
+        public async Task<ActionResult<AuthenticatedUser>> LoginAsync(RefreshQuery query)
         {
             try
             {
-                var res = await Mediator.Send(query);
+                var userData = await Mediator.Send(query);
+
+                var res = new AuthenticatedUser
+                {
+                    Id = userData.Id,
+                    AccessToken = userData.AccessToken,
+                    DisplayName = userData.DisplayName,
+                    Email = userData.Email,
+                    RefreshToken = userData.RefreshToken,
+                };
 
                 return Ok(res);
             }
