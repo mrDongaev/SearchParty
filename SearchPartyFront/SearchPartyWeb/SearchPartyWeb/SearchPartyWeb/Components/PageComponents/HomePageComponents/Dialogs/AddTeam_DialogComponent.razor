@@ -1,0 +1,73 @@
+﻿
+@inject IProfileService _profileService
+@inject ILocalStorageService _localStorage
+
+<MudDialog>
+    <TitleContent>
+        Dialog Title
+    </TitleContent>
+    <DialogContent>
+        <MudForm  Spacing="2">
+            <MudTextField T="string" @bind-Value="team.Name" Label="Имя" />
+            <MudTextField T="string" @bind-Value="team.Description" Label="" />
+            <MudSelect T="Profile" Label="Профили"  @bind-Value="value">
+                @foreach (var profile in userProfiles)
+                {
+                <MudSelectItem T="Profile" Value="@profile">@profile.Name </MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    Profile value;
+    List<Profile> userProfiles = new();
+    CreateTeamModel team = new CreateTeamModel();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        userProfiles = await _profileService.GetUserProfilesAsync(user.Id.ToString(), user.AccessToken);
+    }
+
+    async Task Submit()
+    {
+        var team = await AddTeam();
+
+        if (team!=null)
+        {
+            
+            MudDialog.Close<CreateTeamModel>(team);
+        }
+       
+        
+    }
+
+    void Cancel() => MudDialog.Cancel();
+    
+    async Task<CreateTeamModel> AddTeam()
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        team.PlayersInTeam = new()
+        {
+            new ()
+            {
+                Position = value.Position,
+                PlayerId = value.Id.ToString()
+            }
+        };
+        team.UserId = user.Id;
+        var result = await _profileService.AddNewTeamAsync(team ,user.AccessToken);
+        return result;
+    }
+}

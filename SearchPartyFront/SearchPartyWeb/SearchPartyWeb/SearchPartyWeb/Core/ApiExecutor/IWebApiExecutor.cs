@@ -2,9 +2,10 @@
 
 public interface IWebApiExecutor
 {
-    Task InvokeDelete<T>(string uri);
-    Task<T> InvokeGet<T>(string uri);
-    Task<T> InvokePost<T>(string uri, T obj);
+    Task<bool>  InvokeDelete<T>(string uri,string accessToken);
+    Task<T> InvokeGet<T>(string uri, string accessToken);
+    Task<T> InvokePost<T>(string uri, T obj,string accessToken="");
+    Task<T> InvokePost<T, K>(string uri, K obj,string accessToken="");
     Task<bool> InvokePut<T>(string uri, T obj);
    
 }

@@ -2,5 +2,5 @@
 
 public interface IAuthService
 {
-    Task Login(string email, string password);
+    Task<LoginResponse> Login(string email, string password);
 }

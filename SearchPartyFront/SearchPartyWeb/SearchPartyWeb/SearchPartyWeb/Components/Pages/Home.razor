@@ -1,16 +1,98 @@
 ﻿@page "/"
+
 @rendermode InteractiveAuto
 @inject IAuthService _authService
+@inject NavigationManager _navMan
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IProfileService _profileService
+@inject ILocalStorageService _localStorage
+@inject IDialogService DialogService
+
 <PageTitle>Home</PageTitle>
+<MudGrid>
+    <MudItem xs="12">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full m-4 p-3">
+            <MudGrid>
+                <MudItem lg="12" Class="d-flex">
+                    <MudText Typo="Typo.h3"> Мои профили</MudText>
+                    <MudButton OnClick="@OpenAddProfileDialogAsync" Color="@Color.Success" Class="add-item-btn">Добавить профиль</MudButton>
+                </MudItem>
+                <MudItem lg="12" Class="d-flex">
+                    <UserProfilesComponent Profiles="profiles"/>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full m-4 p-3">
+            <MudGrid>
+                <MudItem lg="12" Class="d-flex">
+                    <MudText Typo="Typo.h3">Мои команды</MudText>
+                    <MudButton OnClick="@OpenAddTeamDialogAsync" Color="@Color.Success" Class="add-item-btn">Добавить команду</MudButton>
+                </MudItem>
+                <MudItem lg="12" Class="d-flex">
+                    <UserTeamsComponent Teams="teams"/>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
-<h1>Hello, world!</h1>
-
-<MudButton Variant="Variant.Filled" OnClick="@(()=>Login())">Default</MudButton>
 @code{
 
-    async Task Login()
+
+    List<Profile> profiles = new List<Profile>();
+    List<Team> teams = new List<Team>();
+    List<string> _events = new();
+    
+
+    protected async override Task OnInitializedAsync()
     {
-        await _authService.Login("user1@test.com", "Qwe123@");
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s); 
+        profiles = await _profileService.GetUserProfilesAsync(user.Id.ToString(), user.AccessToken);
+        teams = await _profileService.GetUserTeamsAsync(user.Id.ToString(), user.AccessToken);
+    }
+
+  
+
+    void RemoveProfile()
+    {
+        
+    }
+    
+    private async Task OpenAddProfileDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var dialog = await DialogService.ShowAsync<AddProfile_DialogComponent>("Добавление профиля", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var newProfile = await dialog.GetReturnValueAsync<Profile>();
+            profiles.Add(newProfile);
+            StateHasChanged();
+        }
+    }
+    private async Task OpenAddTeamDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var dialog = await DialogService.ShowAsync<AddTeam_DialogComponent>("Добавление команды", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var newTeam = await dialog.GetReturnValueAsync<CreateTeamModel>();
+            if (newTeam!=null)
+            {
+                var s = await _localStorage.GetItemAsStringAsync("Authentication");
+                var user = JsonSerializer.Deserialize<LoginResponse>(s); 
+                teams = await _profileService.GetUserTeamsAsync(user.Id.ToString(), user.AccessToken);
+            }
+            StateHasChanged();
+        }
     }
 
 }

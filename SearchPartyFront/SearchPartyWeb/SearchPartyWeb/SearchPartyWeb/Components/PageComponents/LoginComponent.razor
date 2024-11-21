@@ -1,0 +1,46 @@
+﻿@rendermode InteractiveAuto
+@inject IAuthService _authService
+@inject NavigationManager _navMan
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+<MudContainer >
+    <MudGrid Class="align-items-center">
+        <MudItem Align="Align.Center">
+            <MudPaper Class="d-flex justify-center  flex-grow-1 gap-4 m-3 p-5 " Elevation="3">
+                <MudForm >
+                    <MudTextField T="string" Label="Email" Value="@email" InputType="InputType.Email"/>
+                    <MudTextField T="string" Label="Password" Value="@password" InputType="InputType.Password"/>
+                        <MudButton OnClick="@Login"> Login </MudButton>
+                </MudForm>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    string email="user1@test.com";
+    string password="Qwe123@";
+    protected override void OnInitialized()
+    {
+        email="user1@test.com";
+        password="Qwe123@";
+    }
+
+    async Task Login()
+    {
+        var loginResponse = await _authService.Login(email, password);
+        if (loginResponse == null)
+        {
+        }
+        else if (String.IsNullOrWhiteSpace(loginResponse.AccessToken))
+        {
+        }
+        else
+        {
+            var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
+            await customAuthenticationStateProvider.UpdateAuthenticationStateAsync(loginResponse);
+            _navMan.NavigateTo("/");
+        }
+    }
+
+}

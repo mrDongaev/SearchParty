@@ -1,0 +1,52 @@
+﻿@page "/teamsBoard"
+@using System.Text.Json
+@rendermode InteractiveAuto
+@inject IAuthService _authService
+@inject NavigationManager _navMan
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IProfileService _profileService
+@inject ILocalStorageService _localStorage
+
+<MudText Typo="Typo.h4">Teams Board</MudText>
+
+@if (Teams== null)
+{
+    <MudProgressCircular Color="Color.Primary" Size="Size.Medium" Indeterminate="true" />
+}else if (!Teams.Any())
+{
+    <MudText Typo="Typo.h6">Команд не найдено </MudText> 
+}
+else
+{
+    <MudDataGrid Items="@Teams" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+        <Columns>
+            <PropertyColumn Property="x => x.Name" Title="Название"/>
+            <PropertyColumn Property="x => x.AvgMmr" Title="Средний MMR"/>
+            <PropertyColumn Property="x => x.Description" Title="Описание" />
+            <PropertyColumn Property="x => x.Displayed"  Title="WTF" />
+            <PropertyColumn Property="x => x.PlayersInTeam.Count" Title="Всего игорьков"  />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Вступить</MudButton>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
+
+@code {
+
+    [Parameter]  public List<Team> Teams { get; set; }
+
+
+    protected async override Task OnParametersSetAsync()
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var token = JsonSerializer.Deserialize<LoginResponse>(s);
+        Teams = await _profileService.GetTeamsListAsync(token.AccessToken);
+        StateHasChanged();
+    }
+
+}

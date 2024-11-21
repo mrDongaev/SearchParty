@@ -1,6 +1,31 @@
-﻿@page "/loginPage"
-<h3>LoginPage</h3>
+﻿@page "/login"
+
+@rendermode InteractiveAuto
+@inject IAuthService _authService
+@inject NavigationManager _navMan
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+
+    <h3>LoginPage</h3>
 
 @code {
     
+    async Task Login()
+    {
+      var loginResponse =   await _authService.Login("user1@test.com", "Qwe123@");
+      if (loginResponse==null)
+      {
+          
+      }
+      else if (String.IsNullOrWhiteSpace(loginResponse.AccessToken))
+      {
+          
+      }
+      else
+      {
+          var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
+          await customAuthenticationStateProvider.UpdateAuthenticationStateAsync(loginResponse);
+          _navMan.NavigateTo("/");
+      }
+    }
 }
