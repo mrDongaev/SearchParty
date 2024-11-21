@@ -1,0 +1,16 @@
+﻿@page "/"
+@rendermode InteractiveAuto
+@inject IAuthService _authService
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<MudButton Variant="Variant.Filled" OnClick="@(()=>Login())">Default</MudButton>
+@code{
+
+    async Task Login()
+    {
+        await _authService.Login("user1@test.com", "Qwe123@");
+    }
+
+}
