@@ -22,6 +22,7 @@ using Library.Utils;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Infrastructure.Clients;
+using System.Security.Cryptography;
 
 namespace APIAuth
 {
@@ -37,8 +38,11 @@ namespace APIAuth
 
             // Build the web application
             var app = builder.Build();
+
             app.UseSwagger();
+
             app.UseSwaggerUI();
+
             // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
@@ -97,10 +101,15 @@ namespace APIAuth
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             string hostname = EnvironmentUtils.GetEnvVariable("DATABASE_HOSTNAME");
+
             string portnum = EnvironmentUtils.GetEnvVariable("DATABASE_PORT");
+
             string dbname = EnvironmentUtils.GetEnvVariable("DATABASE_NAME");
+
             string username = EnvironmentUtils.GetEnvVariable("DATABASE_USER");
+
             string password = EnvironmentUtils.GetEnvVariable("DATABASE_PASSWORD");
+
             var connectionString = $"Host={hostname};Port={portnum};Database={dbname};Username={username};Password={password}";
 
             services.AddDbContext<DataContext>(options =>
@@ -114,13 +123,14 @@ namespace APIAuth
                 options.Password.RequireNonAlphanumeric = false; // Disable requirement for non-alphanumeric characters in the password
             })
             .AddEntityFrameworkStores<DataContext>() // Use Entity Framework for Identity data storage
+
             .AddDefaultTokenProviders(); // Add default token providers
 
             // Call AddAuthProcess to add authentication related services
-            AddAuthProcess(services);
+            AddAuthProcess(services, configuration);
         }
 
-        public static void AddAuthProcess(IServiceCollection services)
+        public static void AddAuthProcess(IServiceCollection services, IConfiguration configuration)
         {
             // Add user manager as a transient dependency
             services.AddTransient<UserManager<AppUser>>();
@@ -151,14 +161,20 @@ namespace APIAuth
                 httpClient.BaseAddress = new Uri("https://localhost:7133/"); //Базовый адрес для API
             });
 
-            AddAuthAndBearer(services);
+            AddAuthAndBearer(services, configuration);
         }
 
-        public static void AddAuthAndBearer(IServiceCollection services)
+        public static void AddAuthAndBearer(IServiceCollection services, IConfiguration configuration)
         {
-            byte[] keyByte = Encoding.UTF8.GetBytes(EnvironmentUtils.GetEnvVariable("TOKEN_KEY"));
+            var publicKeyPem = configuration["ENCRYPTION_PUBLIC_KEY"];
 
-            var _key = new SymmetricSecurityKey(keyByte);
+            var publicKey = GetRSAPublicKeyFromPem(publicKeyPem);
+
+            var rsa = RSA.Create();
+
+            rsa.ImportSubjectPublicKeyInfo(publicKey, out _);
+
+            var issuerSigningKey = new RsaSecurityKey(rsa);
 
             // Add authentication
             services.AddAuthentication(options =>
@@ -171,22 +187,17 @@ namespace APIAuth
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // Indicates whether to validate the token's signature.
-                    // If true, the token must be signed with the key specified in IssuerSigningKey.
                     ValidateIssuerSigningKey = true,
 
-                    // The key that will be used to validate the token's signature.
-                    // This should be an instance of a class that implements the SecurityKey interface.
-                    IssuerSigningKey = _key,
+                    IssuerSigningKey = issuerSigningKey,
 
-                    // Indicates whether to validate the token's issuer.
-                    // If true, it will be checked that the token was issued by a trusted issuer.
-                    ValidateIssuer = false,
+                    ValidateIssuer = false, // Издателя не проверяем
 
-                    // Indicates whether to validate the token's audience.
-                    // If true, it will be checked that the token is intended for a specific audience.
-                    ValidateAudience = false
+                    ValidateLifetime = true, // Проверяем срок действия
+
+                    ClockSkew = TimeSpan.Zero // Допустимое отклонение времени (по умолчанию 5 минут)
                 };
+
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
@@ -199,10 +210,8 @@ namespace APIAuth
                     },
                     OnChallenge = context =>
                     {
-                        // Skip standard response handling
                         context.HandleResponse();
 
-                        // Create custom response
                         context.Response.StatusCode = 401;
 
                         context.Response.ContentType = "application/json";
@@ -218,6 +227,7 @@ namespace APIAuth
         public static IServiceCollection AddSwagger(IServiceCollection services)
         {
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+
             Dictionary<string, int> counter = new Dictionary<string, int>();
 
             services.AddSwaggerGen(options =>
@@ -225,10 +235,15 @@ namespace APIAuth
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
+
                     Description = "Please enter token",
+
                     Name = "Authorization",
+
                     Type = SecuritySchemeType.Http,
+
                     BearerFormat = "JWT",
+
                     Scheme = "bearer"
                 });
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -239,6 +254,7 @@ namespace APIAuth
                             Reference = new OpenApiReference
                             {
                                 Type=ReferenceType.SecurityScheme,
+
                                 Id="Bearer"
                             }
                         },
@@ -254,12 +270,17 @@ namespace APIAuth
                 options.CustomSchemaIds(type =>
                 {
                     var name = type.Name;
+
                     var declaringName = type.DeclaringType?.Name ?? string.Empty;
+
                     if (declaringName != string.Empty) declaringName += ".";
+
                     var final = declaringName + name;
+
                     if (counter.ContainsKey(final))
                     {
                         counter[final] += 1;
+
                         final += $"({counter[final]})";
                     }
                     else
@@ -286,7 +307,8 @@ namespace APIAuth
                     var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
 
                     context.Database.EnsureDeleted();
-                    context.Database.EnsureCreated();    
+
+                    context.Database.EnsureCreated();
                 }
                 catch (Exception ex)
                 {
@@ -295,6 +317,32 @@ namespace APIAuth
                     logger.LogError(ex, "An error occurred during migration"); // Log migration error
                 }
             }
+        }
+
+        private static byte[] GetRSAPublicKeyFromPem(string pem)
+        {
+            const string header = "-----BEGIN PUBLIC KEY-----";
+
+            const string footer = "-----END PUBLIC KEY-----";
+
+            var start = pem.IndexOf(header, StringComparison.Ordinal);
+
+            if (start < 0)
+            {
+                throw new ArgumentException("Invalid PEM format: missing header");
+            }
+
+            start += header.Length;
+
+            var end = pem.IndexOf(footer, start, StringComparison.Ordinal);
+            if (end < 0)
+            {
+                throw new ArgumentException("Invalid PEM format: missing footer");
+            }
+
+            var base64 = pem.Substring(start, end - start).Replace("\n", "").Replace("\r", "").Replace(" ", "").Replace("\t", "");
+
+            return Convert.FromBase64String(base64);
         }
     }
 }
