@@ -28,7 +28,14 @@ namespace DataAccess.Repositories.Implementations
         public override async Task<Team?> Get(Guid id, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
-                .SingleAsync(t => t.Id == id, cancellationToken);
+                .SingleOrDefaultAsync(t => t.Id == id, cancellationToken);
+        }
+
+        public async Task<ICollection<Team>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        {
+            return await _teams.GetEntities(true)
+                    .Where(t => t.UserId == userId)
+                    .ToListAsync(cancellationToken);
         }
 
         public async Task<Guid?> GetProfileUserId(Guid teamId, CancellationToken cancellationToken)
@@ -156,6 +163,14 @@ namespace DataAccess.Repositories.Implementations
                 PageCount = (int)Math.Ceiling((double)count / pageSize),
                 List = list
             };
+        }
+
+        public async Task<ICollection<TeamPlayer>?> GetTeamPlayers(Guid teamId, CancellationToken cancellationToken)
+        {
+            var team = await _teams.AsNoTracking()
+                .Include(t => t.TeamPlayers)
+                .SingleOrDefaultAsync(t => t.Id == teamId, cancellationToken);
+            return team != null ? team.TeamPlayers : null;
         }
     }
 }

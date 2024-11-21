@@ -13,12 +13,21 @@ namespace APIAuth.Controllers
     public class UserController : BaseController
     {
         [HttpPost("login")]
-        public async Task<ActionResult<UserData>> LoginAsync(LoginQuery query)
+        public async Task<ActionResult<AuthenticatedUser>> LoginAsync(LoginQuery query)
         {
             //try catch
             try
             {
-                var res = await Mediator.Send(query);
+                var userData = await Mediator.Send(query);
+
+                var res = new AuthenticatedUser
+                {
+                    Id = userData.Id,
+                    AccessToken = userData.AccessToken,
+                    RefreshToken = userData.RefreshToken,
+                    DisplayName = userData.DisplayName,
+                    Email = userData.Email,
+                };
                 //Вернуть IActionResult
                 return Ok(res);
             }
@@ -37,9 +46,19 @@ namespace APIAuth.Controllers
         }
 
         [HttpPost("registration")]
-        public async Task<ActionResult<UserData>> RegistrationAsync(RegistrationCommand command)
+        public async Task<ActionResult<AuthenticatedUser>> RegistrationAsync(RegistrationQuery command)
         {
-            return await Mediator.Send(command);
+            var userData = await Mediator.Send(command);
+            var res = new AuthenticatedUser
+            {
+                Id = userData.Id,
+                AccessToken = userData.AccessToken,
+                RefreshToken = userData.RefreshToken,
+                DisplayName = userData.DisplayName,
+                Email = userData.Email,
+            };
+            //Вернуть IActionResult
+            return Ok(res);
         }
     }
 }

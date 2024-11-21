@@ -22,22 +22,25 @@ namespace Infrastructure.Security
 {
     public class JwtGenerator : IJwtGenerator
     {
-        private readonly SymmetricSecurityKey _secretKey;
+        private readonly RsaSecurityKey _rsaPrivateKey;
 
         public JwtGenerator()
         {
-            byte[] keyByte = Encoding.UTF8.GetBytes(EnvironmentUtils.GetEnvVariable("TOKEN_KEY"));
+            var privateKeyPem = EnvironmentUtils.GetEnvVariable("PRIVATE_KEY");
 
-            _secretKey = new SymmetricSecurityKey(keyByte);
+            _rsaPrivateKey = new RsaSecurityKey(AuthenticationUtils.LoadPrivateKeyFromPem(privateKeyPem));
         }
 
         public UserToken CreateJwtToken(AppUser user)
         {
             var refreshGenerator = new RefreshGenerator();
 
-            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.Id) };
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id)
+            };
 
-            var credentials = new SigningCredentials(_secretKey, SecurityAlgorithms.HmacSha512Signature);
+            var credentials = new SigningCredentials(_rsaPrivateKey, SecurityAlgorithms.RsaSha512);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

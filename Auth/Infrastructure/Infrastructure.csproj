@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Library.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\EFData\EFData.csproj" />
   </ItemGroup>
 
 </Project>

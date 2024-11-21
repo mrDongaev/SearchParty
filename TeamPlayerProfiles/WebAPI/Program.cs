@@ -1,9 +1,9 @@
 using DataAccess.Context;
+using Library.Configurations;
 using Library.Middleware;
 using Library.Utils;
 using Serilog;
 using WebAPI.Configurations;
-using Library.Configurations;
 using WebAPI.Middleware;
 
 Log.Logger = new Serilog.LoggerConfiguration()
@@ -21,10 +21,8 @@ try
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
         .AddSwagger()
-        .AddAuthenticationConfiguration();
-    //.AddRabbitMQ(builder.Configuration);
-
-    builder.Services
+        .AddAuthenticationConfiguration()
+        //.AddRabbitMQ()
         .AddControllers();
 
     builder.Host

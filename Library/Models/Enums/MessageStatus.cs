@@ -9,5 +9,6 @@ namespace Library.Models.Enums
         Accepted,
         Rejected,
         Expired,
+        Rescinded,
     }
 }

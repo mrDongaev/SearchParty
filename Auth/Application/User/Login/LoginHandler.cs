@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.User.Login
 {
-    public class LoginHandler : IRequestHandler<LoginQuery,UserData>
+    public class LoginHandler : IRequestHandler<LoginQuery, UserData>
     {
         private readonly UserManager<Domain.AppUser>? _userManager;
 

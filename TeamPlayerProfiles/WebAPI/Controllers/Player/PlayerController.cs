@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Player;
+using Service.Services.Implementations.TeamServices;
 using Service.Services.Interfaces.PlayerInterfaces;
+using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Player;
-using WebAPI.Utils;
 
 namespace WebAPI.Controllers.Player
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class PlayerController(IPlayerService playerService, IServiceProvider serviceProvider, IUserHttpContext userContext, IMapper mapper) : WebApiController
+    public class PlayerController(IPlayerService playerService, IUserIdentityService userIdentity, IUserHttpContext userContext, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
@@ -39,6 +40,15 @@ namespace WebAPI.Controllers.Player
             return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
         }
 
+        [HttpGet]
+        [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<Ok<IEnumerable<GetPlayer.Response>>, UnauthorizedHttpResult>> GetPlayersOfUser(CancellationToken cancellationToken)
+        {
+            var players = await playerService.GetProfilesByUserId(userContext.UserId, cancellationToken);
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
+        }
+
         [HttpPost]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
         public async Task<IResult> Create(CreatePlayer.Request request, CancellationToken cancellationToken)
@@ -53,7 +63,9 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<Ok<GetPlayer.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, [FromBody] UpdatePlayer.Request request, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            var userId = await userIdentity.GetPlayerUserId(id, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
@@ -66,9 +78,12 @@ namespace WebAPI.Controllers.Player
         [HttpDelete("{id}")]
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<Results<Ok<bool>, UnauthorizedHttpResult, NotFound>> Delete(Guid id, CancellationToken cancellationToken)
         {
-            if (await OwnershipValidation.OwnsPlayer(serviceProvider, userContext.UserId, id, cancellationToken) == false)
+            var userId = await userIdentity.GetPlayerUserId(id, cancellationToken);
+            if (!userId.HasValue) return TypedResults.NotFound();
+            if (userId != userContext.UserId)
             {
                 return TypedResults.Unauthorized();
             }
