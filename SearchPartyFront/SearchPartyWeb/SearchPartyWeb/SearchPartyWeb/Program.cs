@@ -19,18 +19,18 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<IAuthService>(
     new AuthService(
-        new WebApiExecutor("http://localhost:8084/", new HttpClient())
+        new WebApiExecutor(Environment.GetEnvironmentVariable("AUTHENTICATION_SERVICE_URL"), new HttpClient())
     ) 
 );
 builder.Services.AddSingleton<IInvitationService>(
     new InvitationService(
-        new WebApiExecutor("http://localhost:8086/", new HttpClient())
+        new WebApiExecutor(Environment.GetEnvironmentVariable("USER_MESSAGING_URL"), new HttpClient())
     ) 
 );
 
 builder.Services.AddSingleton<IProfileService>(
     new ProfileService(
-        new WebApiExecutor("http://localhost:8080/", new HttpClient())
+        new WebApiExecutor(Environment.GetEnvironmentVariable("TEAM_PLAYER_PROFILES_URL"), new HttpClient())
     ) 
 );
 
