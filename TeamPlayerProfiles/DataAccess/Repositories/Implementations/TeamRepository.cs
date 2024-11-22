@@ -34,7 +34,7 @@ namespace DataAccess.Repositories.Implementations
         public async Task<ICollection<Team>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
-                    .Where(t => t.UserId == userId)
+                    .Where(t => t.UserId == userId || t.TeamPlayers.AsQueryable().SingleOrDefault(tp => tp.UserId == userId) != null)
                     .ToListAsync(cancellationToken);
         }
 
