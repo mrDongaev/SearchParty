@@ -197,30 +197,30 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
-#  search_party_front:
-#    container_name: search_party_front
-#    depends_on:
-#      team_player_profiles_webapi:
-#        condition: service_healthy
-#      user_info_webapi:
-#        condition: service_healthy
-#      user_auth_webapi:
-#        condition: service_healthy  
-#      user_messaging_webapi:
-#        condition: service_healthy
-#    build: 
-#      context: ../../
-#      dockerfile: SearchPartyFront/SearchPartyWeb/Dockerfile
-#      args:
-#        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
-#    ports: 
-#      - "3000:8080" 
-#      - "3030:8081"
-#    environment:
-#      TEAM_PLAYER_PROFILES_URL: ${TEAM_PLAYER_PROFILES_URL}
-#      AUTHENTICATION_SERVICE_URL: ${AUTHENTICATION_SERVICE_URL}
-#      USER_INFO_URL: ${USER_INFO_URL}
-#      USER_MESSAGING_URL: ${AUTHENTICATION_SERVICE_URL}
+  search_party_front:
+    container_name: search_party_front
+    depends_on:
+      team_player_profiles_webapi:
+        condition: service_healthy
+      user_info_webapi:
+        condition: service_healthy
+      user_auth_webapi:
+        condition: service_healthy  
+      user_messaging_webapi:
+        condition: service_healthy
+    build: 
+      context: ../../
+      dockerfile: SearchPartyFront/SearchPartyWeb/Dockerfile
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    ports: 
+      - "3000:8080" 
+      - "3030:8081"
+    environment:
+      TEAM_PLAYER_PROFILES_URL: ${TEAM_PLAYER_PROFILES_URL}
+      AUTHENTICATION_SERVICE_URL: ${AUTHENTICATION_SERVICE_URL}
+      USER_INFO_URL: ${USER_INFO_URL}
+      USER_MESSAGING_URL: ${AUTHENTICATION_SERVICE_URL}
   rabbitmq:
     container_name: search_party_message_bus
     build: 
