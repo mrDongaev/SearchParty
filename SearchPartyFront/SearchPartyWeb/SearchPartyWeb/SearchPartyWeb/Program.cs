@@ -1,10 +1,13 @@
 
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using SearchPartyWeb.Components;
 using SearchPartyWeb.Core.ApiExecutor;
 using SearchPartyWeb.Core.Authentication;
+using SearchPartyWeb.Core.InvitationRepository;
 using SearchPartyWeb.Core.ProfileRepository;
+using SearchPartyWeb.Core.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,29 +15,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-//builder.Services.AddSingleton<IWebApiExecutor, WebApiExecutor>();
+
 builder.Services.AddMudServices();
-builder.Services.AddSingleton<IProfileService>(
-    new ProfileService(
-        new WebApiExecutor(Environment.GetEnvironmentVariable("TEAM_PLAYER_PROFILES_URL"), new HttpClient())
-        ) 
-    );
 builder.Services.AddSingleton<IAuthService>(
     new AuthService(
-        new WebApiExecutor("http://localhost:8084/", new HttpClient())
+        new WebApiExecutor(Environment.GetEnvironmentVariable("AUTHENTICATION_SERVICE_URL"), new HttpClient())
+    ) 
+);
+builder.Services.AddSingleton<IInvitationService>(
+    new InvitationService(
+        new WebApiExecutor(Environment.GetEnvironmentVariable("USER_MESSAGING_URL"), new HttpClient())
     ) 
 );
 
-// builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//     .AddCookie(options =>
-//     {
-//         options.Cookie.Name = "auth_token";
-//         options.LoginPath = "/login";
-//         options.Cookie.MaxAge = TimeSpan.FromDays(10);
-//         options.AccessDeniedPath = "/access-denied";
-//     });
-// builder.Services.AddAuthorization();
-// builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddSingleton<IProfileService>(
+    new ProfileService(
+        new WebApiExecutor(Environment.GetEnvironmentVariable("TEAM_PLAYER_PROFILES_URL"), new HttpClient())
+    ) 
+);
+
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
 
 var app = builder.Build();
 
@@ -54,8 +57,6 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-/*app.UseAuthentication();
-app.UseAuthorization();*/
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

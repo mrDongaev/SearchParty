@@ -1,0 +1,79 @@
+﻿@inject ILocalStorageService _localStorage
+@inject IProfileService _profileService
+
+@if (Profiles == null)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+}
+else if (!Profiles.Any())
+{
+    <MudText Typo="Typo.h6">У вас нет добавленных команд</MudText>
+}
+else
+{
+    <MudDataGrid T="Profile" Items="@Profiles" ReadOnly="true"
+                 StartedEditingItem="@StartedEditingItem"
+                 CanceledEditingItem="@CanceledEditingItem"
+                 CommittedItemChanges="@CommittedItemChanges"
+                 Bordered="true" Dense="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Displayed" Title="Nr" Editable="false"/>
+            <PropertyColumn Property="x => x.Mmr"/>
+            <PropertyColumn Property="x => x.Name"/>
+            <PropertyColumn Property="x => x.Position">
+                <EditTemplate>
+                    <MudSelect @bind-Value="context.Item.Position" Required RequiredError="You must select a Position!!!" Margin="@Margin.Dense">
+                        <MudSelectItem Value="0">zero</MudSelectItem>
+                        <MudSelectItem Value="1">one</MudSelectItem>
+                        <MudSelectItem Value="17">seventeen</MudSelectItem>
+                    </MudSelect>
+                </EditTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.Displayed"/>
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync"/>
+                    <MudSpacer></MudSpacer>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => Delete(context.Item))"/>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
+
+
+@code {
+    [Parameter] public List<Profile> Profiles { get; set; }
+
+    List<string> _events = new();
+
+    async Task Delete(Profile profile)
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        var result = await _profileService.DeleteProfileAsync(profile.Id.ToString(), user.AccessToken);
+        if (result == true)
+        {
+            Profiles.Remove(profile);
+            StateHasChanged();
+        }
+    }
+
+
+    // events
+    void StartedEditingItem(Profile item)
+    {
+        _events.Insert(0, $"Event = StartedEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    void CanceledEditingItem(Profile item)
+    {
+        _events.Insert(0, $"Event = CanceledEditingItem, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+    void CommittedItemChanges(Profile item)
+    {
+        _events.Insert(0, $"Event = CommittedItemChanges, Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+    }
+
+}

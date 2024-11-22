@@ -1,0 +1,70 @@
+﻿@page "/invites"
+@using SearchPartyWeb.Core.InvitationRepository
+@inject ILocalStorageService _localStorage
+@inject IInvitationService _invitationService
+
+<h3>InvitesPage</h3>
+
+<MudContainer>
+    <MudGrid>
+        <MudItem xs="12" Class="d-flex">
+            <MudSelect T="string" Label="US States" MultiSelection="true" @bind-Value="value" @bind-SelectedValues="selectedStates">
+                @foreach (var state in inviteState)
+                {
+                <MudSelectItem T="string" Value="@state">@state</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" Class="d-flex">
+            <MudDataGrid T="Invantion" Items="@requests" ReadOnly="true"
+                         Bordered="true" Dense="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.PositionName" Title="Nr" Editable="false"/>
+                    
+                    <PropertyColumn Property="x => x.Status"/>
+                        
+                
+                    
+                    <TemplateColumn CellClass="d-flex justify-end">
+                        <CellTemplate>
+                            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Approval" OnClick="@context.Actions.StartEditingItemAsync"/>
+                            <MudSpacer></MudSpacer>
+                            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    IEnumerable<string> selectedStates;
+    string[] inviteState = Enum.GetNames(typeof(InviteState));
+    string value;
+    List<Invantion> invations = new();
+    List<Invantion> requests = new();
+    protected async override Task OnInitializedAsync()
+    {
+        selectedStates = inviteState;
+        invations = await GetInvantionAsync(selectedStates.ToArray());
+        requests = await GetInvantionAsync(selectedStates.ToArray());
+    }
+
+    async Task<List<Invantion>> GetInvantionAsync(string[] states)
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        var result = await _invitationService.GetMyInvantionsAsync(states, user.AccessToken);
+        return result;
+    }
+    
+    async Task<List<Invantion>> GetRequestsAsync(string[] states)
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        var result = await _invitationService.GetMyRequestsAsync(states, user.AccessToken);
+        return result;
+    }
+
+}

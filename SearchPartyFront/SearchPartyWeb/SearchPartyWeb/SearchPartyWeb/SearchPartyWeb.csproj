@@ -8,6 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>       
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />       
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.10" />       
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.10" />       
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7"/>
         <PackageReference Include="MudBlazor" Version="7.15.0" />
     </ItemGroup>
@@ -19,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Core\Models\" />
+      <Folder Include="Core\ProfileRepository\Models\" />
       <Folder Include="Core\Profile\" />
       <Folder Include="Core\Team\" />
     </ItemGroup>

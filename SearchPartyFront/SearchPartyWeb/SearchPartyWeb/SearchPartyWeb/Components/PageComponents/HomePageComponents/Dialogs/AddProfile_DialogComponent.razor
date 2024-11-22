@@ -1,0 +1,79 @@
+﻿@using Position = SearchPartyWeb.Core.Models.Position
+@inject IProfileService _profileService
+@inject ILocalStorageService _localStorage
+
+<MudDialog>
+    <TitleContent>
+        Dialog Title
+    </TitleContent>
+    <DialogContent>
+        <MudForm  Spacing="2">
+            <MudTextField T="string" @bind-Value="profile.Name" Label="Имя" />
+            <MudTextField T="string" @bind-Value="profile.Description" Label="" />
+            <MudRadioGroup T="string" @bind-Value="@selectedPosition">
+                @foreach (var position in positions)
+                {
+                    <MudRadio Value="@(position.Name.ToString())">@position.Name</MudRadio>
+                }
+            </MudRadioGroup>
+            <MudNumericField T="long" Label="MMR" bind-Value="profile.Mmr"/>
+            <MudSwitch T="bool" Color="Color.Success" Label="Отображение" @bind-Value="profile.Displayed"/>
+            <MudSelect T="Hero" Label="Герои" MultiSelection="true" @bind-Value="value" @bind-SelectedValues="selectedHeros">
+                @foreach (var hero in heroes)
+                {
+                <MudSelectItem T="Hero" Value="@hero">@hero.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    Profile profile = new Profile();
+    List<Position> positions = new();
+    IEnumerable<Hero> heroes = new List<Hero>();
+    IEnumerable<Hero> selectedHeros { get; set; } = new HashSet<Hero>() ;
+    Hero value { get; set; }
+    string selectedPosition = "";
+
+    protected async override Task OnInitializedAsync()
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        positions = await _profileService.GetPositionsAsync(user.AccessToken);
+        heroes= await _profileService.GetHerosAsync(user.AccessToken);
+    }
+
+    async Task Submit()
+    {
+        var profile = await AddProfile();
+
+        if (profile!=null&&profile.Id!=null)
+        {
+            
+            MudDialog.Close<Profile>(profile);
+        }
+       
+        
+    }
+
+    void Cancel() => MudDialog.Cancel();
+    
+    async Task<Profile> AddProfile()
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        profile.Position = selectedPosition;
+        profile.Heroes = selectedHeros.ToList();
+        profile.UserId = user.Id;
+        var result = await _profileService.AddNewUserProfileAsync(profile ,user.AccessToken);
+        return result;
+    }
+}

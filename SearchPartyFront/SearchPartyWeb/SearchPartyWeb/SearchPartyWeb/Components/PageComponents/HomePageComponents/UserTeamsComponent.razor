@@ -1,0 +1,48 @@
+﻿@inject ILocalStorageService _localStorage
+@inject IProfileService _profileService
+
+@if (Teams == null)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+}
+else if (!Teams.Any())
+{
+    <MudText Typo="Typo.h6">У вас нет добавленных команд</MudText>
+}
+else
+{
+    <MudDataGrid Items="@Teams" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+        <Columns>
+            <PropertyColumn Property="x => x.Name"/>
+            <PropertyColumn Property="x => x.Description"/>
+            <PropertyColumn Property="x => x.AvgMmr" />
+            <PropertyColumn Property="x => x.PlayersInTeam.Count"/>
+            <PropertyColumn Property="x => x.Displayed"/>
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync"/>
+                    <MudSpacer></MudSpacer>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(()=>Delete(context.Item))"/>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
+
+@code {
+    [Parameter] public List<Team> Teams { get; set; }
+    
+    async Task Delete(Team team)
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s); 
+        var result = await _profileService.DeleteTeamAsync(team.Id.ToString(), user.AccessToken);
+        if (result==true)
+        {
+            Teams.Remove(team);
+            StateHasChanged();
+        }
+    }
+    
+}
+

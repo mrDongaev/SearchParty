@@ -1,0 +1,94 @@
+﻿@rendermode InteractiveAuto
+@inject IAuthService _authService
+@inject NavigationManager _navMan
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+@if (!registration)
+{
+    <MudContainer >
+        <MudGrid Class="align-items-center">
+            <MudItem Align="Align.Center">
+                <MudPaper Class="d-flex justify-center  flex-grow-1 gap-4 m-3 p-5 " Elevation="3">
+                    <MudForm >
+                        <MudTextField T="string" Label="Email" Value="@email" InputType="InputType.Email"/>
+                        <MudTextField T="string" Label="Password" Value="@password" InputType="InputType.Password"/>
+                        <MudButton OnClick="@Login"> Login </MudButton>
+                        <MudButton OnClick="@Registration"> Зарегестрироваться </MudButton>
+                    </MudForm>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>  
+}
+else
+{
+    <MudContainer >
+        <MudGrid Class="align-items-center">
+            <MudItem Align="Align.Center">
+                <MudPaper Class="d-flex justify-center  flex-grow-1 gap-4 m-3 p-5 " Elevation="3">
+                    <MudForm >
+                        <MudTextField T="string" Label="Name" @bind-Value="@userRegistrationModel.Username" InputType="InputType.Text"/>
+                        <MudTextField T="string" Label="Email" @bind-Value="@userRegistrationModel.Email" InputType="InputType.Email"/>
+                        <MudTextField T="string" Label="Password" @bind-Value="@userRegistrationModel.Password" InputType="InputType.Password"/>
+                        <MudButton OnClick="@Registrate"> Registrate </MudButton>
+                        
+                    </MudForm>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>  
+      
+}
+
+
+@code {
+    string email="user1@test.com";
+    string password="Qwe123@";
+    bool registration = false;
+    UserRegistrationModel userRegistrationModel = new();
+    protected override void OnInitialized()
+    {
+        email="user1@test.com";
+        password="Qwe123@";
+    }
+
+    async Task Login()
+    {
+        var loginResponse = await _authService.Login(email, password);
+        if (loginResponse == null)
+        {
+        }
+        else if (String.IsNullOrWhiteSpace(loginResponse.AccessToken))
+        {
+        }
+        else
+        {
+            var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
+            await customAuthenticationStateProvider.UpdateAuthenticationStateAsync(loginResponse);
+            _navMan.NavigateTo("/");
+        }
+    }
+
+    void Registration()
+    {
+        registration = !registration;
+    }
+
+    async Task Registrate()
+    {
+        var loginResponse = await _authService.Registrate(userRegistrationModel);
+        if (loginResponse == null)
+        {
+        }
+        else if (String.IsNullOrWhiteSpace(loginResponse.AccessToken))
+        {
+        }
+        else
+        {
+            var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
+            await customAuthenticationStateProvider.UpdateAuthenticationStateAsync(loginResponse);
+            _navMan.NavigateTo("/");
+        }
+    }
+
+}
