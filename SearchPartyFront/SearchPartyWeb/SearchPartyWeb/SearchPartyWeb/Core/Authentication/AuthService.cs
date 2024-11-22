@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using SearchPartyWeb.Core.ApiExecutor;
+using SearchPartyWeb.Core.Models;
 
 namespace SearchPartyWeb.Core.Authentication;
 
@@ -26,4 +27,20 @@ public class AuthService : IAuthService
 
         return null;
     }
+    
+    
+    
+    public async Task<LoginResponse> Registrate(UserRegistrationModel user)
+    {
+        
+        var response = await _webApiExecutor.InvokePost<LoginResponse,UserRegistrationModel >(
+            $"api/User/registration", user);
+        if (response!=null)
+        {
+            return response;
+        }
+
+        return null;
+    }
+    
 }

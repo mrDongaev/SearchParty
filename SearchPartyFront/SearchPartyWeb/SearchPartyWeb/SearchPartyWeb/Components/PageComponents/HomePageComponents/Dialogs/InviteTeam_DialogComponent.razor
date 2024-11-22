@@ -1,0 +1,66 @@
+﻿@using Position = SearchPartyWeb.Core.Models.Position
+@inject IAuthService _authService
+@inject NavigationManager _navMan
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject IProfileService _profileService
+@inject ILocalStorageService _localStorage
+
+
+<MudDialog>
+    <TitleContent>
+        Dialog Title
+    </TitleContent>
+
+    <DialogContent>
+        <MudSelect T="Profile" Label="Профили" @bind-Value="selectedProfile">
+            @foreach (var profile in profiles)
+            {
+                <MudSelectItem T="Profile" Value="@profile">@profile.Name </MudSelectItem>
+            }
+        </MudSelect>
+        <MudRadioGroup T="long" @bind-Value="@selectedPosition">
+            @foreach (var position in positions)
+            {
+                <MudRadio Value="@(position.Id)">@position.Name</MudRadio>
+            }
+        </MudRadioGroup>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string TeamId { get; set; }
+
+    List<Position> positions = new();
+    List<Profile> profiles = new();
+    long selectedPosition;
+    Profile selectedProfile;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        positions = await _profileService.GetPositionsAsync(user.AccessToken);
+        profiles = await _profileService.GetUserProfilesAsync(user.Id.ToString(), user.AccessToken);
+    }
+
+
+    async Task Submit()
+    {
+        await Invite();
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+
+    async Task Invite()
+    {
+        var s = await _localStorage.GetItemAsStringAsync("Authentication");
+        var user = JsonSerializer.Deserialize<LoginResponse>(s);
+        await _profileService.AddTeamToPlayerAsync(TeamId, selectedProfile.Id.ToString(), selectedPosition, user.AccessToken);
+    }
+}

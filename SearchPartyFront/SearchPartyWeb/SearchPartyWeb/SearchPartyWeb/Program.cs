@@ -5,6 +5,7 @@ using MudBlazor.Services;
 using SearchPartyWeb.Components;
 using SearchPartyWeb.Core.ApiExecutor;
 using SearchPartyWeb.Core.Authentication;
+using SearchPartyWeb.Core.InvitationRepository;
 using SearchPartyWeb.Core.ProfileRepository;
 using SearchPartyWeb.Core.Utils;
 
@@ -21,6 +22,12 @@ builder.Services.AddSingleton<IAuthService>(
         new WebApiExecutor("http://localhost:8084/", new HttpClient())
     ) 
 );
+builder.Services.AddSingleton<IInvitationService>(
+    new InvitationService(
+        new WebApiExecutor("http://localhost:8086/", new HttpClient())
+    ) 
+);
+
 builder.Services.AddSingleton<IProfileService>(
     new ProfileService(
         new WebApiExecutor("http://localhost:8080/", new HttpClient())

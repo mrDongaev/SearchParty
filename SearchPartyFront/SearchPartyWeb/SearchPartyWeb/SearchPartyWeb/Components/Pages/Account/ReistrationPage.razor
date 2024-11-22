@@ -1,5 +1,12 @@
-﻿@page "/reistrationPage"
-<h3>ReistrationPage</h3>
+﻿@page "/registration"
+<AuthorizeView>
+    <NotAuthorized>
+        
+            <h3>ReistrationPage</h3>
+      
+    </NotAuthorized>
+
+</AuthorizeView>
 
 @code {
     

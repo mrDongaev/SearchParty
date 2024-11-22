@@ -13,4 +13,7 @@ public interface IProfileService
     Task<CreateTeamModel> AddNewTeamAsync(CreateTeamModel team,string accessToken);
     Task<bool> DeleteProfileAsync(string id, string accessToken);
     Task<bool> DeleteTeamAsync(string id, string accessToken);
+    Task<List<Profile>> GetProfilesListAsync(string accessToken);
+    Task AddPlayerToTeamAsync(string playerId,string teamId, long position, string accessToken);
+    Task AddTeamToPlayerAsync(string playerId, string teamId, long position, string accessToken);
 }

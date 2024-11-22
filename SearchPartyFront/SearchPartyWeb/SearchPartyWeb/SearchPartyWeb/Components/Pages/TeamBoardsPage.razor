@@ -6,6 +6,7 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject IProfileService _profileService
 @inject ILocalStorageService _localStorage
+@inject IDialogService DialogService
 
 <MudText Typo="Typo.h4">Teams Board</MudText>
 
@@ -28,7 +29,7 @@ else
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Вступить</MudButton>
+                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="@(()=>OpenInviteDialogAsync(context.Item.Id.ToString()))">Вступить</MudButton>
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
@@ -47,6 +48,22 @@ else
         var token = JsonSerializer.Deserialize<LoginResponse>(s);
         Teams = await _profileService.GetTeamsListAsync(token.AccessToken);
         StateHasChanged();
+    }
+    
+    
+    private async Task OpenInviteDialogAsync(string teamId)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true};
+        var parameters = new DialogParameters<InviteTeam_DialogComponent>
+        {
+            { x => x.TeamId, teamId },
+                
+        };
+
+        var dialog = await DialogService.ShowAsync<InviteTeam_DialogComponent>("Заявка в команду",parameters, options);
+        var result = await dialog.Result;
+
+            
     }
 
 }

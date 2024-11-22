@@ -15,7 +15,7 @@ public class WebApiExecutor : IWebApiExecutor
         _httpClient = httpClient;
         _httpClient.DefaultRequestHeaders.Accept.Clear();
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+      
 
     }
 
@@ -45,7 +45,7 @@ public class WebApiExecutor : IWebApiExecutor
         var d = JsonSerializer.Serialize(obj);
         var response = await _httpClient.PostAsJsonAsync(GetUrl(uri), obj);
         await HandleError(response);
-        return await response.Content.ReadFromJsonAsync<T>();
+        return await response.Content?.ReadFromJsonAsync<T>();
     }
 
     
@@ -55,6 +55,7 @@ public class WebApiExecutor : IWebApiExecutor
         var d = JsonSerializer.Serialize(obj);
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer",accessToken);
         var response = await _httpClient.PostAsJsonAsync(GetUrl(uri), obj);
+        var r = response.ToString();
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
