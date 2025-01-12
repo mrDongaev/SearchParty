@@ -11,11 +11,27 @@ namespace Service.Services.Implementations.MessageServices
     {
         private readonly HttpClient _httpClient;
 
+        public string AccessToken
+        {
+            set
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
+            }
+        }
+
+        public string RefreshToken
+        {
+            set
+            {
+                _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={value}");
+            }
+        }
+
         public TeamApplicationService(HttpClient httpClient, IUserHttpContext userContext)
         {
             _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userContext.AccessToken);
-            _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={userContext.RefreshToken}");
+            if (!string.IsNullOrEmpty(userContext.AccessToken)) _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userContext.AccessToken);
+            if (!string.IsNullOrEmpty(userContext.RefreshToken)) _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={userContext.RefreshToken}");
         }
 
         public async Task<GetTeamApplication.Response?> Get(Guid id, CancellationToken cancellationToken)

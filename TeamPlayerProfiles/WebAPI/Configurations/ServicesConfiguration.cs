@@ -5,14 +5,12 @@ using Service.Services.Implementations.MessageServices;
 using Service.Services.Implementations.PlayerServices;
 using Service.Services.Implementations.PositionServices;
 using Service.Services.Implementations.TeamServices;
-using Service.Services.Implementations.UserServices;
 using Service.Services.Interfaces;
 using Service.Services.Interfaces.HeroInterfaces;
 using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.PositionInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
-using Service.Services.Interfaces.UserInterfaces;
 
 namespace WebAPI.Configurations
 {
@@ -27,8 +25,7 @@ namespace WebAPI.Configurations
                 .AddScoped<ITeamService, TeamService>()
                 .AddScoped<IPlayerBoardService, PlayerBoardService>()
                 .AddScoped<ITeamBoardService, TeamBoardService>()
-                .AddScoped<IUserService, UserService>()
-                .AddTransient<IUserIdentityService, UserIdentityService>();
+                .AddScoped<IUserService, UserService>();
             services
                 .AddHttpClient<IPlayerInvitationService, PlayerInvitationService>(cfg =>
             {

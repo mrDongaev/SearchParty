@@ -8,6 +8,6 @@ namespace DataAccess.Repositories.Interfaces
     {
         Task<Guid?> GetProfileUserId(Guid entityId, CancellationToken cancellationToken);
 
-        Task<ICollection<TProfile>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken);
+        Task<ICollection<TProfile>> GetProfilesByUserId(Guid userId, bool onlyDisplayed, CancellationToken cancellationToken);
     }
 }

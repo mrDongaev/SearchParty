@@ -1,6 +1,7 @@
 ﻿using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Service.Services.Interfaces.MessageInterfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -10,6 +11,22 @@ namespace Service.Services.Implementations.MessageServices
     public class PlayerInvitationService : IPlayerInvitationService
     {
         private readonly HttpClient _httpClient;
+
+        public string AccessToken
+        {
+            set
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
+            }
+        }
+
+        public string RefreshToken
+        {
+            set
+            {
+                _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={value}");
+            }
+        }
 
         public PlayerInvitationService(HttpClient httpClient, IUserHttpContext userContext)
         {

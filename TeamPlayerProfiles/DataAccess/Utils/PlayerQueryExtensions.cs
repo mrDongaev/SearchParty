@@ -100,9 +100,10 @@ namespace DataAccess.Utils
             return builder.GetSortedQuery();
         }
 
-        public static IQueryable<Player> GetEntities(this IQueryable<Player> query, bool asNoTracking)
+        public static IQueryable<Player> GetEntities(this IQueryable<Player> query, bool asNoTracking, bool onlyDisplayed = true)
         {
             query = asNoTracking ? query.AsNoTracking() : query;
+            query = onlyDisplayed ? query.Where(p => p.Displayed == true) : query;
             return query
                 .Include(p => p.Heroes)
                 .Include(p => p.Position)
