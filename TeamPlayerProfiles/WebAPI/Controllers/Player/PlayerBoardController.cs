@@ -22,8 +22,8 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetPlayer.Response>>, 
-            NotFound<HttpResponseBody<GetPlayer.Response?>>, 
+            Ok<HttpResponseBody<GetPlayer.Response>>,
+            NotFound<HttpResponseBody<GetPlayer.Response?>>,
             UnauthorizedHttpResult>>
             SetDisplayed(Guid playerId, bool displayed, CancellationToken cancellationToken)
         {
@@ -50,10 +50,10 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody>, 
-            BadRequest<HttpResponseBody>, 
-            NotFound<HttpResponseBody>, 
-            UnauthorizedHttpResult>> 
+            Ok<HttpResponseBody>,
+            BadRequest<HttpResponseBody>,
+            NotFound<HttpResponseBody>,
+            UnauthorizedHttpResult>>
             InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
         {
             var result = await boardService.InvitePlayerToTeam(playerId, teamId, position, cancellationToken);
@@ -79,8 +79,8 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetPlayer.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>>
             GetFiltered(GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
             var result = await boardService.GetFiltered(mapper.Map<ConditionalPlayerQuery>(request), cancellationToken);
@@ -97,8 +97,8 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>, 
-            NotFound<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>>> 
+            Ok<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>,
+            NotFound<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>>>
             GetPaginated(uint page, uint pageSize, GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
             var result = await boardService.GetPaginated(mapper.Map<ConditionalPlayerQuery>(request), page, pageSize, cancellationToken);

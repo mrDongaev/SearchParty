@@ -34,7 +34,7 @@ namespace Service.Services.Implementations.PlayerServices
                 return Result.Ok(true);
             }
 
-            return Result.Fail<bool>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(false); 
+            return Result.Fail<bool>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(false);
         }
 
         public async Task<Result<PlayerDto?>> Get(Guid id, CancellationToken cancellationToken = default)

@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.Validation.Team
+﻿namespace Library.Results.Errors.Validation.Team
 {
     public class TeamOwnerNotPresentError : ValidationError
     {

@@ -3,7 +3,6 @@ using FluentResults;
 using Library.Models.API.UserMessaging;
 using Library.Results.Errors.Validation.Message;
 using Library.Results.Errors.Validation.Team;
-using Library.Services.Interfaces.UserContextInterfaces;
 
 namespace Service.Services.Utils
 {

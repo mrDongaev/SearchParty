@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.EntityRequest
+﻿namespace Library.Results.Errors.EntityRequest
 {
     public class EntityRangeNotFoundError : EntityNotFoundError
     {

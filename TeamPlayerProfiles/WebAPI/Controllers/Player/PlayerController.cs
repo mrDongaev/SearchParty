@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DataAccess.Entities;
 using Library.Models.HttpResponses;
 using Library.Results.Errors.Authorization;
 using Library.Services.Interfaces.UserContextInterfaces;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Player;
 using Service.Services.Interfaces.PlayerInterfaces;
-using System.Collections.Generic;
 using WebAPI.Models.Player;
 
 namespace WebAPI.Controllers.Player
@@ -22,9 +20,9 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<
-                Results<Ok<HttpResponseBody<GetPlayer.Response>>, 
-                NotFound<HttpResponseBody<GetPlayer.Response?>>, 
-                UnauthorizedHttpResult>> 
+                Results<Ok<HttpResponseBody<GetPlayer.Response>>,
+                NotFound<HttpResponseBody<GetPlayer.Response?>>,
+                UnauthorizedHttpResult>>
             Get(Guid id, CancellationToken cancellationToken)
         {
             var result = await playerService.Get(id, cancellationToken);
@@ -34,7 +32,7 @@ namespace WebAPI.Controllers.Player
                 if (result.HasError<UnauthorizedError>())
                 {
                     return TypedResults.Unauthorized();
-                } 
+                }
                 else
                 {
                     return TypedResults.NotFound(result.MapToHttpResponseBody<PlayerDto?, GetPlayer.Response?>(res => null));
@@ -48,8 +46,8 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetPlayer.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>>
             GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
             var result = await playerService.GetRange(ids, cancellationToken);
@@ -66,8 +64,8 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetPlayer.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>>
             GetAll(CancellationToken cancellationToken)
         {
             var result = await playerService.GetAll(cancellationToken);
@@ -84,8 +82,8 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetPlayer.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>>
             GetPlayersOfUser(CancellationToken cancellationToken)
         {
             var result = await playerService.GetProfilesByUserId(userContext.UserId, cancellationToken);
@@ -111,9 +109,9 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetPlayer.Response>>, 
-            NotFound<HttpResponseBody<GetPlayer.Response?>>, 
-            UnauthorizedHttpResult>> 
+            Ok<HttpResponseBody<GetPlayer.Response>>,
+            NotFound<HttpResponseBody<GetPlayer.Response?>>,
+            UnauthorizedHttpResult>>
             Update(Guid id, [FromBody] UpdatePlayer.Request request, CancellationToken cancellationToken)
         {
             var tempPlayer = mapper.Map<UpdatePlayerDto>(request);
@@ -140,9 +138,9 @@ namespace WebAPI.Controllers.Player
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody<bool>>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<bool>>, 
-            NotFound<HttpResponseBody<bool>>, 
-            UnauthorizedHttpResult>> 
+            Ok<HttpResponseBody<bool>>,
+            NotFound<HttpResponseBody<bool>>,
+            UnauthorizedHttpResult>>
             Delete(Guid id, CancellationToken cancellationToken)
         {
             var result = await playerService.Delete(id, cancellationToken);

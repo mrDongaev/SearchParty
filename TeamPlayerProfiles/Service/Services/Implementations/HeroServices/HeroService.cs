@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DataAccess.Repositories.Interfaces;
 using FluentResults;
-using Library.Results.Errors;
 using Library.Results.Errors.EntityRequest;
 using Service.Contracts.Hero;
 using Service.Services.Interfaces.HeroInterfaces;

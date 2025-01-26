@@ -17,7 +17,7 @@ namespace WebAPI.Controllers.Position
         [ProducesResponseType<GetPosition.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetPosition.Response>>, 
+            Ok<HttpResponseBody<GetPosition.Response>>,
             NotFound<HttpResponseBody<GetPosition.Response?>>>> Get(int id, CancellationToken cancellationToken)
         {
             var result = await positionService.Get(id, cancellationToken);
@@ -34,8 +34,8 @@ namespace WebAPI.Controllers.Position
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetPosition.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetPosition.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetPosition.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetPosition.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetPosition.Response>>>>>
             GetAll(CancellationToken cancellationToken)
         {
             var result = await positionService.GetAll(cancellationToken);
@@ -53,7 +53,7 @@ namespace WebAPI.Controllers.Position
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
             Ok<HttpResponseBody<IEnumerable<GetPosition.Response>>>,
-            NotFound<HttpResponseBody<IEnumerable<GetPosition.Response>>>>> 
+            NotFound<HttpResponseBody<IEnumerable<GetPosition.Response>>>>>
             GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {
             var result = await positionService.GetRange(ids, cancellationToken);

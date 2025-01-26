@@ -87,7 +87,7 @@ namespace Service.Services.Implementations
             var user = mapper.Map<User>(dto);
             var updatedUser = await userRepo.Update(user, cancellationToken);
 
-            if (updatedUser == null) 
+            if (updatedUser == null)
             {
                 return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(null);
             }

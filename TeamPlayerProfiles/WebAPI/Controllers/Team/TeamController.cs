@@ -6,10 +6,7 @@ using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Service.Contracts.Player;
 using Service.Contracts.Team;
-using Service.Services.Implementations.PlayerServices;
-using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
 using WebAPI.Models.Team;
 
@@ -193,7 +190,7 @@ namespace WebAPI.Controllers.Team
             Ok<HttpResponseBody<GetTeam.Response>>,
             NotFound<HttpResponseBody<GetTeam.Response?>>,
             BadRequest<HttpResponseBody<GetTeam.Response?>>,
-            UnauthorizedHttpResult>> 
+            UnauthorizedHttpResult>>
             PullPlayerFromTeam(Guid teamId, Guid playerId, CancellationToken cancellationToken)
         {
             var result = await teamService.PullPlayerFromTeam(teamId, playerId, cancellationToken);

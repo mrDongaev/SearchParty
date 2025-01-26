@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Library.Models.HttpResponses;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace WebAPI.Configurations
@@ -43,6 +44,10 @@ namespace WebAPI.Configurations
                 });
                 options.CustomSchemaIds(type =>
                 {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(HttpResponseBody<>))
+                    {
+                        type = type.GetGenericArguments()[0];
+                    }
                     var name = type.Name;
                     var declaringName = type.DeclaringType?.Name ?? string.Empty;
                     if (declaringName != string.Empty) declaringName += ".";
@@ -60,6 +65,21 @@ namespace WebAPI.Configurations
                 });
             });
             return services;
+        }
+
+        public static string GetReadableTypeName(Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(HttpResponseBody<>))
+            {
+                // Extract the generic type argument (T)
+                Type genericTypeArgument = type.GetGenericArguments()[0];
+
+                // Combine the names
+                return $"HttpResponseBodyOf{genericTypeArgument.Name}";
+            }
+
+            // Handle non-generic types or unexpected cases
+            return type.Name;
         }
     }
 }

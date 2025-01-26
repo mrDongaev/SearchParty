@@ -20,8 +20,8 @@ namespace WebAPI.Controllers
         [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetUser.Response>>, 
-            NotFound<HttpResponseBody<GetUser.Response?>>>> 
+            Ok<HttpResponseBody<GetUser.Response>>,
+            NotFound<HttpResponseBody<GetUser.Response?>>>>
             Get(Guid id, CancellationToken cancellationToken)
         {
             var result = await userService.Get(id, cancellationToken);
@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
             Ok<HttpResponseBody<IEnumerable<GetUser.Response>>>,
-            NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>>> 
+            NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>>>
             GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
             var result = await userService.GetRange(ids, cancellationToken);
@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
             Ok<HttpResponseBody<IEnumerable<GetUser.Response>>>,
-            NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>>> 
+            NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>>>
             GetAll(CancellationToken cancellationToken)
         {
             var result = await userService.GetAll(cancellationToken);
@@ -75,9 +75,9 @@ namespace WebAPI.Controllers
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetUser.Response>>, 
-            BadRequest<HttpResponseBody<GetUser.Response>>, 
-            UnauthorizedHttpResult>> 
+            Ok<HttpResponseBody<GetUser.Response>>,
+            BadRequest<HttpResponseBody<GetUser.Response>>,
+            UnauthorizedHttpResult>>
             Create(CreateUser.Request request, CancellationToken cancellationToken)
         {
             var result = await userService.Create(mapper.Map<CreateUserDto>(request), cancellationToken);
@@ -104,7 +104,7 @@ namespace WebAPI.Controllers
         public async Task<Results<
             Ok<HttpResponseBody<GetUser.Response>>,
             NotFound<HttpResponseBody<GetUser.Response>>,
-            UnauthorizedHttpResult>> 
+            UnauthorizedHttpResult>>
             Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken)
         {
             var user = mapper.Map<UpdateUserDto>(request);
@@ -133,7 +133,7 @@ namespace WebAPI.Controllers
         public async Task<Results<
             Ok<HttpResponseBody<bool>>,
             NotFound<HttpResponseBody<bool>>,
-            UnauthorizedHttpResult>> 
+            UnauthorizedHttpResult>>
             Delete(Guid id, CancellationToken cancellationToken)
         {
             var result = await userService.Delete(id, cancellationToken);

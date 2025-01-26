@@ -18,12 +18,12 @@ namespace WebAPI.Controllers.Hero
         [ProducesResponseType<HttpResponseBody<GetHero.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetHero.Response>>, 
-            NotFound<HttpResponseBody<GetHero.Response?>>>> 
+            Ok<HttpResponseBody<GetHero.Response>>,
+            NotFound<HttpResponseBody<GetHero.Response?>>>>
             Get(int id, CancellationToken cancellationToken)
         {
-            Result<HeroDto?> result = await heroService.Get(id, cancellationToken);      
-            
+            Result<HeroDto?> result = await heroService.Get(id, cancellationToken);
+
             if (result.IsFailed)
             {
                 return TypedResults.NotFound(result.MapToHttpResponseBody<HeroDto?, GetHero.Response?>(res => null));
@@ -36,8 +36,8 @@ namespace WebAPI.Controllers.Hero
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetHero.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>>
             GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {
             var result = await heroService.GetRange(ids, cancellationToken);
@@ -54,8 +54,8 @@ namespace WebAPI.Controllers.Hero
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetHero.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>>
             GetAll(CancellationToken cancellationToken)
         {
             var result = await heroService.GetAll(cancellationToken);

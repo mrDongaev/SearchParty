@@ -3,7 +3,6 @@ using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
 using Library.Results.Errors.EntityRequest;
 using Library.Services.Interfaces.UserContextInterfaces;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 using Service.Services.Interfaces.MessageInterfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;

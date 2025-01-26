@@ -58,7 +58,7 @@ namespace Service.Services.Implementations.TeamServices
             {
                 return Result.Fail(new EntityNotFoundError("User associated with the given team profile has not been found"));
             }
-            
+
 
             var message = new ProfileMessageSubmitted()
             {

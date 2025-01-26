@@ -1,20 +1,13 @@
 ﻿using AutoMapper;
 using Common.Models;
 using Library.Models;
-using Library.Models.API.UserMessaging;
-using Library.Models.Enums;
 using Library.Models.HttpResponses;
 using Library.Results.Errors.Authorization;
 using Library.Results.Errors.EntityRequest;
-using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Writers;
-using Service.Contracts.Player;
 using Service.Contracts.Team;
-using Service.Services.Interfaces.Common;
-using Service.Services.Interfaces.PlayerInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
 using WebAPI.Models.Player;
 using WebAPI.Models.Team;
@@ -30,9 +23,9 @@ namespace WebAPI.Controllers.Team
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetTeam.Response>>, 
-            NotFound<HttpResponseBody<GetTeam.Response?>>, 
-            UnauthorizedHttpResult>> 
+            Ok<HttpResponseBody<GetTeam.Response>>,
+            NotFound<HttpResponseBody<GetTeam.Response?>>,
+            UnauthorizedHttpResult>>
             SetDisplayed(Guid teamId, bool displayed, CancellationToken cancellationToken)
         {
             var result = await boardService.SetDisplayed(teamId, displayed, cancellationToken);
@@ -61,7 +54,7 @@ namespace WebAPI.Controllers.Team
             Ok<HttpResponseBody>,
             BadRequest<HttpResponseBody>,
             NotFound<HttpResponseBody>,
-            UnauthorizedHttpResult>> 
+            UnauthorizedHttpResult>>
             SendTeamApplicationRequest(Guid teamId, Guid playerId, int position, CancellationToken cancellationToken)
         {
             var result = await boardService.SendTeamApplicationRequest(playerId, teamId, position, cancellationToken);
@@ -87,8 +80,8 @@ namespace WebAPI.Controllers.Team
         [ProducesResponseType<HttpResponseBody<IEnumerable<GetPlayer.Response>>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetTeam.Response>>>, 
-            NotFound<HttpResponseBody<IEnumerable<GetTeam.Response>>>>> 
+            Ok<HttpResponseBody<IEnumerable<GetTeam.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetTeam.Response>>>>>
             GetFiltered(GetConditionalTeam.Request request, CancellationToken cancellationToken)
         {
             var result = await boardService.GetFiltered(mapper.Map<ConditionalTeamQuery>(request), cancellationToken);
