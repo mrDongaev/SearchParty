@@ -1,5 +1,7 @@
-﻿using Library.Models.API.UserMessaging;
+﻿using FluentResults;
+using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
+using Library.Results.Errors.EntityRequest;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Service.Services.Interfaces.MessageInterfaces;
@@ -35,16 +37,30 @@ namespace Service.Services.Implementations.MessageServices
             _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={userContext.RefreshToken}");
         }
 
-        public async Task<GetPlayerInvitation.Response?> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<GetPlayerInvitation.Response?>> Get(Guid id, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.GetAsync($"/api/PlayerInvitation/Get/{id}", cancellationToken);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<GetPlayerInvitation.Response>() : null;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<GetPlayerInvitation.Response>(cancellationToken);
+                return Result.Ok(data);
+            }
+
+            return Result.Fail<GetPlayerInvitation.Response?>(new EntityNotFoundError("Failed to get messages of the user")).WithValue(null);
         }
 
-        public async Task<ICollection<GetPlayerInvitation.Response>?> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        public async Task<Result<ICollection<GetPlayerInvitation.Response>>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.PostAsJsonAsync($"/api/PlayerInvitation/GetUserMessages", messageStatuses, cancellationToken);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<ICollection<GetPlayerInvitation.Response>>() : null;
+            var data = await response.Content.ReadFromJsonAsync<ICollection<GetPlayerInvitation.Response>>(cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return Result.Ok(data ?? []);
+            }
+
+            return Result.Fail<ICollection<GetPlayerInvitation.Response>>("Failed to get messages of the user").WithValue([]);
         }
     }
 }

@@ -8,6 +8,6 @@ namespace Service.Services.Interfaces.TeamInterfaces
 {
     public interface ITeamBoardService : IBoardService<TeamDto, ConditionalTeamQuery>
     {
-        Task<Result> SendTeamApplicationRequest(ProfileMessageSubmitted message, CancellationToken cancellationToken);
+        Task<Result> SendTeamApplicationRequest(Guid playerId, Guid teamId, int positionId, CancellationToken cancellationToken);
     }
 }

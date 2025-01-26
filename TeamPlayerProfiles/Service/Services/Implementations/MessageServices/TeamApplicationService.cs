@@ -1,5 +1,7 @@
-﻿using Library.Models.API.UserMessaging;
+﻿using FluentResults;
+using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
+using Library.Results.Errors.EntityRequest;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Service.Services.Interfaces.MessageInterfaces;
 using System.Net.Http.Headers;
@@ -34,16 +36,30 @@ namespace Service.Services.Implementations.MessageServices
             if (!string.IsNullOrEmpty(userContext.RefreshToken)) _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={userContext.RefreshToken}");
         }
 
-        public async Task<GetTeamApplication.Response?> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<GetTeamApplication.Response?>> Get(Guid id, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.GetAsync($"/api/TeamApplication/Get/{id}", cancellationToken);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<GetTeamApplication.Response>() : null;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<GetTeamApplication.Response?>(cancellationToken);
+                return Result.Ok(data);
+            }
+
+            return Result.Fail<GetTeamApplication.Response?>(new EntityNotFoundError("Failed to get messages of the user")).WithValue(null);
         }
 
-        public async Task<ICollection<GetTeamApplication.Response>?> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        public async Task<Result<ICollection<GetTeamApplication.Response>>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.PostAsJsonAsync($"/api/TeamApplication/GetUserMessages", messageStatuses, cancellationToken);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<ICollection<GetTeamApplication.Response>>() : null;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<ICollection<GetTeamApplication.Response>>(cancellationToken);
+                return Result.Ok(data ?? []);
+            }
+
+            return Result.Fail<ICollection<GetTeamApplication.Response>>(new EntityNotFoundError("Failed to get messages of the user")).WithValue([]);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace DataAccess.Repositories.Implementations
 
         public override async Task<ICollection<Player>> GetAll(CancellationToken cancellationToken)
         {
-            return await _players.GetEntities(true, true)
+            return await _players.GetEntities(true)
                 .ToListAsync(cancellationToken);
         }
 
@@ -36,9 +36,9 @@ namespace DataAccess.Repositories.Implementations
                 .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
         }
 
-        public async Task<ICollection<Player>> GetProfilesByUserId(Guid userId, bool onlyDisplayed, CancellationToken cancellationToken)
+        public async Task<ICollection<Player>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
         {
-            return await _players.GetEntities(true, onlyDisplayed)
+            return await _players.GetEntities(true)
                     .Where(t => t.UserId == userId)
                     .ToListAsync(cancellationToken);
         }
@@ -49,7 +49,7 @@ namespace DataAccess.Repositories.Implementations
             return player?.UserId;
         }
 
-        public async new Task<ICollection<Player>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
+        public override async Task<ICollection<Player>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
             return await _players.GetEntities(true)
                 .Where(p => ids.Contains(p.Id))
@@ -73,7 +73,7 @@ namespace DataAccess.Repositories.Implementations
                 position = await _positions.SingleOrDefaultAsync(p => p.Id == (int)PositionName.Carry, cancellationToken);
             }
             player.Position = position;
-            var newPlayer = await base.Add(player, cancellationToken);
+            Player newPlayer = await base.Add(player, cancellationToken);
             return newPlayer;
         }
 

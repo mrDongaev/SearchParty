@@ -3,11 +3,14 @@ using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using FluentResults;
+using Library.Exceptions;
 using Library.Models;
 using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
+using Library.Results.Errors.Authorization;
 using Library.Results.Errors.EntityRequest;
 using Library.Results.Successes.Message;
+using Library.Services.Interfaces.UserContextInterfaces;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Contracts.Team;
@@ -17,7 +20,7 @@ using Service.Services.Utils;
 
 namespace Service.Services.Implementations.TeamServices
 {
-    public class TeamBoardService(IMapper mapper, ITeamRepository teamRepo, ITeamApplicationService teamApplicationService, IServiceProvider provider) : ITeamBoardService
+    public class TeamBoardService(IMapper mapper, ITeamRepository teamRepo, IUserHttpContext userContext, IServiceProvider provider) : ITeamBoardService
     {
         public async Task<Result<TeamDto?>> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
@@ -32,12 +35,44 @@ namespace Service.Services.Implementations.TeamServices
             return Result.Ok(mapper.Map<TeamDto?>(updatedTeam));
         }
 
-        public async Task<Result> SendTeamApplicationRequest(ProfileMessageSubmitted message, CancellationToken cancellationToken = default)
+        public async Task<Result> SendTeamApplicationRequest(Guid playerId, Guid teamId, int positionId, CancellationToken cancellationToken = default)
         {
+            if (!Enum.IsDefined(typeof(PositionName), positionId))
+            {
+                throw new InvalidEnumMemberException(positionId.ToString(), typeof(PositionName).Name);
+            }
             using var scope = provider.CreateScope();
-            var messages = await teamApplicationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
-            var teamPlayers = await teamRepo.GetTeamPlayers(message.AcceptorId, cancellationToken);
-            var validationResult = MessageValidation.ValidateApplication(messages, teamPlayers, message);
+            var teamApplicationService = scope.ServiceProvider.GetRequiredService<ITeamApplicationService>();
+            teamApplicationService.AccessToken = userContext.AccessToken;
+            teamApplicationService.RefreshToken = userContext.RefreshToken;
+            var playerRepo = scope.ServiceProvider.GetRequiredService<IPlayerRepository>();
+
+            var playerUserId = await playerRepo.GetProfileUserId(playerId, cancellationToken);
+            if (playerUserId == null || playerUserId != userContext.UserId)
+            {
+                return Result.Fail(new UnauthorizedError());
+
+            }
+            var teamUserId = await teamRepo.GetProfileUserId(teamId, cancellationToken);
+            if (teamUserId == null)
+            {
+                return Result.Fail(new EntityNotFoundError("User associated with the given team profile has not been found"));
+            }
+            
+
+            var message = new ProfileMessageSubmitted()
+            {
+                SenderId = playerId,
+                SendingUserId = userContext.UserId,
+                AcceptorId = teamId,
+                AcceptingUserId = (Guid)teamUserId,
+                PositionName = (PositionName)positionId,
+                MessageType = MessageType.TeamApplication,
+            };
+            var messageResult = await teamApplicationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
+            if (messageResult.IsFailed) return messageResult.ToResult();
+            var teamPlayers = await teamRepo.GetTeamPlayers(teamId, cancellationToken);
+            var validationResult = MessageValidation.ValidateApplication(teamUserId.Value, messageResult.Value, teamPlayers, message);
             if (validationResult.IsSuccess)
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();

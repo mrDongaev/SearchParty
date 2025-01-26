@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using Common.Models;
 using Library.Models;
-using Library.Models.API.UserMessaging;
-using Library.Models.Enums;
 using Library.Models.HttpResponses;
 using Library.Results.Errors.Authorization;
 using Library.Results.Errors.EntityRequest;
-using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +17,14 @@ namespace WebAPI.Controllers.Player
     [Route("api/[controller]/[action]")]
     public class PlayerBoardController(IMapper mapper, IPlayerBoardService boardService) : WebApiController
     {
-        [HttpPost("{playerId}/{displayed}")]
-        [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
+        [HttpGet("{playerId}/{displayed}")]
+        [ProducesResponseType<HttpResponseBody<GetPlayer.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<HttpResponseBody<GetPlayer.Response>>, NotFound<HttpResponseBody<GetPlayer.Response?>>, UnauthorizedHttpResult>>
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetPlayer.Response>>, 
+            NotFound<HttpResponseBody<GetPlayer.Response?>>, 
+            UnauthorizedHttpResult>>
             SetDisplayed(Guid playerId, bool displayed, CancellationToken cancellationToken)
         {
             var result = await boardService.SetDisplayed(playerId, displayed, cancellationToken);
@@ -45,11 +45,16 @@ namespace WebAPI.Controllers.Player
         }
 
         [HttpGet("{playerId}/{teamId}/{position}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<HttpResponseBody>, BadRequest<HttpResponseBody>, NotFound<HttpResponseBody>, UnauthorizedHttpResult>> InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody>, 
+            BadRequest<HttpResponseBody>, 
+            NotFound<HttpResponseBody>, 
+            UnauthorizedHttpResult>> 
+            InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
         {
             var result = await boardService.InvitePlayerToTeam(playerId, teamId, position, cancellationToken);
             if (result.IsFailed)
@@ -71,9 +76,12 @@ namespace WebAPI.Controllers.Player
         }
 
         [HttpPost]
-        [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>, NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>> GetFiltered(GetConditionalPlayer.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<IEnumerable<GetPlayer.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<IEnumerable<GetPlayer.Response>>>, 
+            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>> 
+            GetFiltered(GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
             var result = await boardService.GetFiltered(mapper.Map<ConditionalPlayerQuery>(request), cancellationToken);
 
@@ -86,9 +94,12 @@ namespace WebAPI.Controllers.Player
         }
 
         [HttpPost("{pageSize}/{page}")]
-        [ProducesResponseType<PaginatedResult<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>, NotFound<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>>> GetPaginated(uint page, uint pageSize, GetConditionalPlayer.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>, 
+            NotFound<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>>> 
+            GetPaginated(uint page, uint pageSize, GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
             var result = await boardService.GetPaginated(mapper.Map<ConditionalPlayerQuery>(request), page, pageSize, cancellationToken);
             var response = result.MapToHttpResponseBody(mapper.Map<PaginatedResult<GetPlayer.Response>>);

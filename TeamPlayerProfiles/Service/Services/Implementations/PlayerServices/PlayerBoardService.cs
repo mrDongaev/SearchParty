@@ -7,7 +7,6 @@ using Library.Exceptions;
 using Library.Models;
 using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
-using Library.Results.Errors;
 using Library.Results.Errors.Authorization;
 using Library.Results.Errors.EntityRequest;
 using Library.Results.Successes.Message;
@@ -17,9 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Service.Contracts.Player;
 using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.PlayerInterfaces;
-using Service.Services.Interfaces.TeamInterfaces;
 using Service.Services.Utils;
-using System.ComponentModel;
 
 namespace Service.Services.Implementations.PlayerServices
 {
@@ -30,7 +27,7 @@ namespace Service.Services.Implementations.PlayerServices
             var userId = await playerRepo.GetProfileUserId(id, cancellationToken);
             if (userId == null || userId != userContext.UserId)
             {
-                return Result.Fail(new UnauthorizedError());
+                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(null);
             }
             var player = new Player() { Id = id, Displayed = displayed };
             var updatedPlayer = await playerRepo.Update(player, null, cancellationToken);
@@ -74,9 +71,10 @@ namespace Service.Services.Implementations.PlayerServices
                 PositionName = (PositionName)positionId,
                 MessageType = MessageType.PlayerInvitation,
             };
-            var messages = await playerInvitationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
+            var messageResult = await playerInvitationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
+            if (messageResult.IsFailed) return messageResult.ToResult();
             var teamPlayers = await teamRepo.GetTeamPlayers(teamId, cancellationToken);
-            var validationResult = MessageValidation.ValidateInvitation(teamUserId.Value, messages, teamPlayers, message);
+            var validationResult = MessageValidation.ValidateInvitation(teamUserId.Value, messageResult.Value, teamPlayers, message);
             if (validationResult.IsSuccess)
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
@@ -90,6 +88,8 @@ namespace Service.Services.Implementations.PlayerServices
         {
             var players = await playerRepo.GetConditionalPlayerRange(query, cancellationToken);
 
+            players = players.Where(p => p.UserId == userContext.UserId || (p.Displayed.HasValue && p.Displayed.Value)).ToList();
+
             if (players.Count == 0)
             {
                 Result.Fail<ICollection<PlayerDto>>(new EntityFilteredRangeNotFoundError("Players matching given filtering query have not been been found")).WithValue([]);
@@ -101,6 +101,9 @@ namespace Service.Services.Implementations.PlayerServices
         public async Task<Result<PaginatedResult<PlayerDto>>> GetPaginated(ConditionalPlayerQuery query, uint page, uint pageSize, CancellationToken cancellationToken = default)
         {
             var players = await playerRepo.GetPaginatedPlayerRange(query, page, pageSize, cancellationToken);
+
+            players.List = players.List.Where(p => p.UserId == userContext.UserId || (p.Displayed.HasValue && p.Displayed.Value)).ToList();
+
             var result = mapper.Map<PaginatedResult<PlayerDto>>(players);
 
             if (result.Total == 0)

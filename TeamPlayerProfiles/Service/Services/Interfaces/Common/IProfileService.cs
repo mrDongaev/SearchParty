@@ -23,7 +23,7 @@ namespace Service.Services.Interfaces.Common
         /// </summary>
         /// <param name="dto">ДТО создаваемого профиля</param>
         /// <returns>ДТО созданного профиля</returns>
-        Task<Result<TGetDto?>> Create(TCreateDto dto, CancellationToken cancellationToken);
+        Task<Result<TGetDto>> Create(TCreateDto dto, CancellationToken cancellationToken);
 
         /// <summary>
         /// Обновить данные профиля

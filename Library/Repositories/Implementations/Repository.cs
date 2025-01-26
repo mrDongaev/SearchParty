@@ -43,7 +43,7 @@ namespace Library.Repositories.Implementations
         /// <param name="ids">Список идентификаторов</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Список сущностей</returns>
-        public async Task<ICollection<TEntity>> GetRange(ICollection<TId> ids, CancellationToken cancellationToken)
+        public virtual async Task<ICollection<TEntity>> GetRange(ICollection<TId> ids, CancellationToken cancellationToken)
         {
             return await _dbSet
                 .AsNoTracking()

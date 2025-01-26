@@ -15,9 +15,12 @@ namespace WebAPI.Controllers.Hero
     public class HeroController(IHeroService heroService, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
-        [ProducesResponseType<GetHero.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<HttpResponseBody<GetHero.Response>>, NotFound<HttpResponseBody<GetHero.Response?>>>> Get(int id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<GetHero.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetHero.Response>>, 
+            NotFound<HttpResponseBody<GetHero.Response?>>>> 
+            Get(int id, CancellationToken cancellationToken)
         {
             Result<HeroDto?> result = await heroService.Get(id, cancellationToken);      
             
@@ -30,9 +33,12 @@ namespace WebAPI.Controllers.Hero
         }
 
         [HttpPost]
-        [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>, NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>> GetRange(ICollection<int> ids, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<IEnumerable<GetHero.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>, 
+            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>> 
+            GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {
             var result = await heroService.GetRange(ids, cancellationToken);
 
@@ -45,9 +51,12 @@ namespace WebAPI.Controllers.Hero
         }
 
         [HttpGet]
-        [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>, NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>> GetAll(CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<IEnumerable<GetHero.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>, 
+            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>> 
+            GetAll(CancellationToken cancellationToken)
         {
             var result = await heroService.GetAll(cancellationToken);
 

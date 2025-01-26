@@ -31,6 +31,13 @@ namespace DataAccess.Repositories.Implementations
                 .SingleOrDefaultAsync(t => t.Id == id, cancellationToken);
         }
 
+        public override async Task<ICollection<Team>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
+        {
+            return await _teams.GetEntities(true)
+                .Where(t => ids.Contains(t.Id))
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<ICollection<Team>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)

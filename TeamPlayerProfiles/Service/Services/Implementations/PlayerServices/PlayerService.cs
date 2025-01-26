@@ -12,11 +12,11 @@ namespace Service.Services.Implementations.PlayerServices
 {
     public class PlayerService(IMapper mapper, IPlayerRepository playerRepo, IUserHttpContext userContext) : IPlayerService
     {
-        public async Task<Result<PlayerDto?>> Create(CreatePlayerDto dto, CancellationToken cancellationToken = default)
+        public async Task<Result<PlayerDto>> Create(CreatePlayerDto dto, CancellationToken cancellationToken = default)
         {
-            var newPlayer = mapper.Map<Player>(dto);
-            var createdPlayer = await playerRepo.Add(newPlayer, cancellationToken);
-            return Result.Ok(mapper.Map<PlayerDto?>(createdPlayer));
+            Player newPlayer = mapper.Map<Player>(dto);
+            Player createdPlayer = await playerRepo.Add(newPlayer, cancellationToken);
+            return Result.Ok(mapper.Map<PlayerDto>(createdPlayer));
         }
 
         public async Task<Result<bool>> Delete(Guid id, CancellationToken cancellationToken = default)
@@ -24,7 +24,7 @@ namespace Service.Services.Implementations.PlayerServices
             var userId = await playerRepo.GetProfileUserId(id, cancellationToken);
             if (userId != userContext.UserId)
             {
-                return Result.Fail(new UnauthorizedError());
+                return Result.Fail<bool>(new UnauthorizedError()).WithValue(false);
             }
 
             var result = await playerRepo.Delete(id, cancellationToken);
@@ -46,10 +46,9 @@ namespace Service.Services.Implementations.PlayerServices
                 return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
             }
 
-            var userId = await playerRepo.GetProfileUserId(id, cancellationToken);
-            if (!player.Displayed.HasValue || (!player.Displayed.Value && userId != userContext.UserId))
+            if (!player.Displayed.HasValue || (!player.Displayed.Value && player.UserId != userContext.UserId))
             {
-                return Result.Fail(new UnauthorizedError());
+                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(null);
             }
 
             return Result.Ok(mapper.Map<PlayerDto?>(player));
@@ -59,6 +58,8 @@ namespace Service.Services.Implementations.PlayerServices
         {
             var players = await playerRepo.GetAll(cancellationToken);
 
+            players = players.Where(p => p.UserId == userContext.UserId || (p.Displayed.HasValue && p.Displayed.Value)).ToList();
+
             if (players.Count == 0)
             {
                 return Result.Fail<ICollection<PlayerDto>>(new EntityListNotFoundError("No players have been found")).WithValue([]);
@@ -67,9 +68,14 @@ namespace Service.Services.Implementations.PlayerServices
             return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));
         }
 
-        public async Task<Result<ICollection<PlayerDto>>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        public async Task<Result<ICollection<PlayerDto>>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken = default)
         {
-            var players = await playerRepo.GetProfilesByUserId(userId, userId != userContext.UserId, cancellationToken);
+            var players = await playerRepo.GetProfilesByUserId(userId, cancellationToken);
+
+            if (userId != userContext.UserId)
+            {
+                players = players.Where(p => p.Displayed.HasValue && p.Displayed.Value).ToList();
+            }
 
             if (players.Count == 0)
             {
@@ -113,7 +119,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (!userId.HasValue || userId.Value != userContext.UserId)
             {
-                return Result.Fail(new UnauthorizedError());
+                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(null);
             }
 
             var updatedPlayer = await playerRepo.Update(player, dto.HeroIds, cancellationToken);

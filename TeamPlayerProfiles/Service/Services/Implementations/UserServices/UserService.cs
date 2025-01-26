@@ -2,20 +2,26 @@
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
 using FluentResults;
+using Library.Results.Errors.Authorization;
 using Library.Results.Errors.EntityRequest;
+using Library.Services.Interfaces.UserContextInterfaces;
 using Service.Contracts.User;
 using Service.Services.Interfaces;
 
 namespace Service.Services.Implementations
 {
-    public class UserService(IMapper mapper, IUserRepository userRepo) : IUserService
+    public class UserService(IMapper mapper, IUserRepository userRepo, IUserHttpContext userContext) : IUserService
     {
         public async Task<Result<UserDto?>> Create(CreateUserDto dto, CancellationToken cancellationToken = default)
         {
+            if (dto.Id != userContext.UserId)
+            {
+                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(null);
+            }
             var userExists = await userRepo.Get(dto.Id, cancellationToken) != null;
             if (userExists)
             {
-                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID already exists")).WithValue(null);
+                return Result.Fail<UserDto?>(new EntityAlreadyExistsError("User profile with the given ID already exists")).WithValue(null);
             }
             var newUser = mapper.Map<User>(dto);
             var createdUser = await userRepo.Add(newUser, cancellationToken);
@@ -24,6 +30,10 @@ namespace Service.Services.Implementations
 
         public async Task<Result<bool>> Delete(Guid id, CancellationToken cancellationToken = default)
         {
+            if (id != userContext.UserId)
+            {
+                return Result.Fail<bool>(new UnauthorizedError()).WithValue(false);
+            }
             var result = await userRepo.Delete(id, cancellationToken);
             if (result)
             {
@@ -70,6 +80,10 @@ namespace Service.Services.Implementations
 
         public async Task<Result<UserDto?>> Update(UpdateUserDto dto, CancellationToken cancellationToken = default)
         {
+            if (dto.Id != userContext.UserId)
+            {
+                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(null);
+            }
             var user = mapper.Map<User>(dto);
             var updatedUser = await userRepo.Update(user, cancellationToken);
 
