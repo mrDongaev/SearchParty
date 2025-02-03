@@ -77,7 +77,7 @@ namespace Service.Services.Implementations.TeamServices
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
                 await sender.Publish(message, cancellationToken);
-                validationResult.WithSuccess(new MessageSentSuccess(message.MessageType));
+                validationResult.WithSuccess(new ApplicationSentSuccess());
             }
             return validationResult;
         }
@@ -88,7 +88,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Count == 0)
             {
-                return Result.Fail<ICollection<TeamDto>>(new EntityFilteredRangeNotFoundError("Teams matching given filtering query have not been found")).WithValue([]);
+                return Result.Fail<ICollection<TeamDto>>(new EntitiesForQueryNotFoundError("Teams matching given filtering query have not been found")).WithValue([]);
             }
 
             return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
@@ -101,7 +101,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Total == 0)
             {
-                return Result.Fail<PaginatedResult<TeamDto>>(new EntityFilteredRangeNotFoundError("Teams matching given filtering query have not been found")).WithValue(result);
+                return Result.Fail<PaginatedResult<TeamDto>>(new EntitiesForQueryNotFoundError("Teams matching given filtering query have not been found")).WithValue(result);
             }
 
             return Result.Ok(result);

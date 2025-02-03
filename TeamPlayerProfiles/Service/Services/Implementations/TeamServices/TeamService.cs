@@ -88,7 +88,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Count == 0)
             {
-                return Result.Fail<ICollection<TeamDto>>(new EntityListNotFoundError("No teams have been found")).WithValue([]);
+                return Result.Fail<ICollection<TeamDto>>(new EntitiesNotFoundError("No teams have been found")).WithValue([]);
             }
 
             return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
@@ -172,7 +172,7 @@ namespace Service.Services.Implementations.TeamServices
 
                 if (message == null || message.Status != MessageStatus.Pending)
                 {
-                    return Result.Fail<TeamDto?>(new NoPendingMessageError(messageType.Value)).WithValue(null);
+                    return Result.Fail<TeamDto?>(messageType.Value is MessageType.PlayerInvitation ? new NoPendingInvitationError() : new NoPendingApplicationError()).WithValue(null);
                 }
             }
 

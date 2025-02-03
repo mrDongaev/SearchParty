@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
+using Library.Controllers;
 using Library.Models.HttpResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;

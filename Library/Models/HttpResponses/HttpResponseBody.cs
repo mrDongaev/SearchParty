@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Library.Results.Utils;
 
 namespace Library.Models.HttpResponses
 {
@@ -6,110 +7,134 @@ namespace Library.Models.HttpResponses
     {
         public bool IsSuccess { get; set; } = true;
 
-        public List<string> Errors { get; set; } = [];
+        public IDictionary<string, string[]> Errors { get; set; } = new Dictionary<string, string[]>();
 
-        public List<string> Messages { get; set; } = [];
-    }
+        public IDictionary<string, string[]> Messages { get; set; } = new Dictionary<string, string[]>();
 
-    public class HttpResponseBody<T> : HttpResponseBody
-    {
-        public T? Data { get; set; }
-    }
-
-    public static class HttpResponseBodyMapper
-    {
-        public static HttpResponseBody MapToHttpResponseBody(this Result result)
-        {
-            List<string> messages = [];
-            List<string> errors = [];
-            if (result.IsSuccess)
-            {
-                messages.AddRange(result.Successes.Select(s => s.Message));
-            }
-            else if (result.IsFailed)
-            {
-                errors.AddRange(result.Errors.Select(s => s.Message));
-            }
-            return new HttpResponseBody
-            {
-                Errors = errors,
-                Messages = messages,
-                IsSuccess = result.IsSuccess,
-            };
-        }
-
-        public static HttpResponseBody MapToHttpResponseBody<TSource>(this Result<TSource> result)
-        {
-            List<string> messages = [];
-            List<string> errors = [];
-            if (result.IsSuccess)
-            {
-                messages.AddRange(result.Successes.Select(s => s.Message));
-            }
-            else if (result.IsFailed)
-            {
-                errors.AddRange(result.Errors.Select(s => s.Message));
-            }
-            return new HttpResponseBody
-            {
-                Errors = errors,
-                Messages = messages,
-                IsSuccess = result.IsSuccess,
-            };
-        }
-
-        public static HttpResponseBody<TDestination> MapToHttpResponseBody<TSource, TDestination>(this Result<TSource> result, Func<Result<TSource>, TDestination> valueResolver)
-        {
-            List<string> messages = new List<string>();
-            if (result.IsSuccess)
-            {
-                messages.AddRange(result.Successes.Select(s => s.Message));
-            }
-            else if (result.IsFailed)
-            {
-                messages.AddRange(result.Errors.Select(s => s.Message));
-            }
-            return new HttpResponseBody<TDestination>
-            {
-                Errors = messages,
-                IsSuccess = result.IsSuccess,
-                Data = valueResolver(result),
-            };
-        }
-
-        public static Result MapToResult(this HttpResponseBody response)
+        public Result MapToResult()
         {
             List<Success> messages = [];
             List<Error> errors = [];
-            if (response.IsSuccess)
+            if (IsSuccess)
             {
-                messages.AddRange(response.Messages.Select(m => new Success(m)).ToList());
+                foreach (var message in Messages)
+                {
+                    foreach (var text in message.Value)
+                    {
+                        messages.Add(ResultUtils.GetSuccessByKey(message.Key, text));
+                    }
+                }
             }
             else
             {
-                errors.AddRange(response.Errors.Select(e => new Error(e)).ToList());
+                foreach (var message in Errors)
+                {
+                    foreach (var text in message.Value)
+                    {
+                        errors.Add(ResultUtils.GetErrorByKey(message.Key, text));
+                    }
+                }
             }
             return new Result()
                 .WithErrors(errors)
                 .WithSuccesses(messages);
         }
+    }
 
-        public static Result<TData?> MapToResult<TData>(this HttpResponseBody<TData?> response)
+    public class HttpResponseBody<T> : HttpResponseBody
+    {
+        public T? Data { get; set; }
+
+        public Result<T?> MapToResult()
         {
             List<Success> messages = [];
             List<Error> errors = [];
-            if (response.IsSuccess)
+            if (IsSuccess)
             {
-                messages.AddRange(response.Messages.Select(m => new Success(m)).ToList());
+                foreach (var message in Messages)
+                {
+                    foreach (var text in message.Value)
+                    {
+                        messages.Add(ResultUtils.GetSuccessByKey(message.Key, text));
+                    }
+                }
             }
             else
             {
-                errors.AddRange(response.Errors.Select(e => new Error(e)).ToList());
+                foreach (var message in Errors)
+                {
+                    foreach (var text in message.Value)
+                    {
+                        errors.Add(ResultUtils.GetErrorByKey(message.Key, text));
+                    }
+                }
             }
-            return new Result<TData?>()
+            return new Result<T?>()
                 .WithErrors(errors)
                 .WithSuccesses(messages)
-                .WithValue(response.Data);
+                .WithValue(Data);
+        }
+    }
+
+    public static class HttpResponseBodyMapper
+    {
+        private static IDictionary<string, string[]> MapReasonsToMessages(IEnumerable<IReason> reasons, string defaultKey)
+        {
+            Dictionary<string, List<string>> messages = [];
+            foreach (var reason in reasons)
+            {
+                if (!reason.Metadata.TryGetValue("key", out object? reasonName))
+                {
+                    reasonName = defaultKey;
+                }
+                if (!messages.TryGetValue((string)reasonName, out var strings))
+                {
+                    strings = [];
+                    messages.Add((string)reasonName, strings);
+                }
+                strings.Add(reason.Message);
+            }
+            return messages.Select(d => KeyValuePair.Create(d.Key, d.Value.ToArray())).ToDictionary();
+        }
+
+        public static HttpResponseBody MapToHttpResponseBody(this Result result)
+        {
+            var body = new HttpResponseBody()
+            {
+                IsSuccess = result.IsSuccess,
+            };
+            if (result.IsSuccess)
+            {
+                body.Messages = MapReasonsToMessages(result.Successes, "Success");
+            }
+            else if (result.IsFailed)
+            {
+                body.Errors = MapReasonsToMessages(result.Errors, "Error");
+            }
+            return body;
+        }
+
+        public static HttpResponseBody MapToHttpResponseBody<TSource>(this Result<TSource> result)
+        {
+            return MapToHttpResponseBody(result);
+        }
+
+        public static HttpResponseBody<TDestination> MapToHttpResponseBody<TSource, TDestination>(this Result<TSource> result, Func<Result<TSource>, TDestination> valueResolver)
+        {
+            var body = new HttpResponseBody<TDestination>()
+            {
+                IsSuccess = result.IsSuccess,
+                Data = valueResolver(result),
+            };
+            if (result.IsSuccess)
+            {
+                body.Messages = MapReasonsToMessages(result.Successes, "Success");
+            }
+            else if (result.IsFailed)
+            {
+                body.Errors = MapReasonsToMessages(result.Errors, "Error");
+            }
+            return body;
         }
     }
 

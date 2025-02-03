@@ -2,6 +2,13 @@
 {
     public class TeamContainsPlayerError : ValidationError
     {
-        public TeamContainsPlayerError() : base("Team already contains the applying player profile") { }
+        public TeamContainsPlayerError() : this("Team already contains the applying player profile")
+        {
+        }
+
+        public TeamContainsPlayerError(string message) : base(message)
+        {
+            WithMetadata("key", nameof(TeamContainsPlayerError));
+        }
     }
 }

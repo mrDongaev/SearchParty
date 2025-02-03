@@ -27,7 +27,7 @@ namespace Service.Services.Implementations.HeroServices
 
             if (heroes.Count == 0)
             {
-                return Result.Fail<ICollection<HeroDto>>(new EntityListNotFoundError("No heroes have been found")).WithValue([]);
+                return Result.Fail<ICollection<HeroDto>>(new EntitiesNotFoundError("No heroes have been found")).WithValue([]);
             }
 
             return Result.Ok(mapper.Map<ICollection<HeroDto>>(heroes));

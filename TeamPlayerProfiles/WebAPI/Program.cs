@@ -1,8 +1,10 @@
 using DataAccess.Context;
 using Library.Configurations;
 using Library.Middleware;
+using Library.Models.HttpResponses;
 using Library.Utils;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using WebAPI.Configurations;
@@ -25,7 +27,33 @@ try
         .AddSwagger()
         .AddAuthenticationConfiguration()
         .AddRabbitMQ()
-        .AddControllers();
+        .AddControllers()
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var problemDetails = new ValidationProblemDetails(context.ModelState)
+                {
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                    Title = "One or more validation errors occurred.",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = "Please refer to the errors property for additional details.",
+                    Instance = context.HttpContext.Request.Path
+                };
+
+                // Customize the response body
+                var response = new HttpResponseBody
+                {
+                    IsSuccess = false,
+                    Errors = problemDetails.Errors,
+                };
+
+                return new BadRequestObjectResult(response)
+                {
+                    ContentTypes = { "application/json" }
+                };
+            };
+        });
 
     builder.Services.AddHealthChecks();
 

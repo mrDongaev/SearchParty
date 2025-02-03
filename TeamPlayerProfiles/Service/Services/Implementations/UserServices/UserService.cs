@@ -60,7 +60,7 @@ namespace Service.Services.Implementations
 
             if (users.Count == 0)
             {
-                return Result.Fail<ICollection<UserDto>>(new EntityListNotFoundError("No users have been found")).WithValue([]);
+                return Result.Fail<ICollection<UserDto>>(new EntitiesNotFoundError("No users have been found")).WithValue([]);
             }
 
             return Result.Ok(mapper.Map<ICollection<UserDto>>(users));

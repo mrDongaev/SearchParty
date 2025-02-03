@@ -2,6 +2,13 @@
 {
     public class TeamCountOverflowError : ValidationError
     {
-        public TeamCountOverflowError(int maxTeamCount) : base($"Team cannot have more than {maxTeamCount} members") { }
+        public TeamCountOverflowError(string message) : base(message)
+        {
+            WithMetadata("key", nameof(TeamCountOverflowError));
+        }
+
+        public TeamCountOverflowError(int maxTeamCount) : this($"Team cannot have more than {maxTeamCount} members")
+        {
+        }
     }
 }

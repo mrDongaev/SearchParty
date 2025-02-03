@@ -79,7 +79,7 @@ namespace Service.Services.Implementations.PlayerServices
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
                 await sender.Publish(message, cancellationToken);
-                validationResult.WithSuccess(new MessageSentSuccess(message.MessageType));
+                validationResult.WithSuccess(new InvitationSentSuccess());
             }
             return validationResult;
         }
@@ -92,7 +92,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (players.Count == 0)
             {
-                Result.Fail<ICollection<PlayerDto>>(new EntityFilteredRangeNotFoundError("Players matching given filtering query have not been been found")).WithValue([]);
+                Result.Fail<ICollection<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found")).WithValue([]);
             }
 
             return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));
@@ -108,7 +108,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (result.Total == 0)
             {
-                return Result.Fail<PaginatedResult<PlayerDto>>(new EntityFilteredRangeNotFoundError("Players matching given filtering query have not been been found")).WithValue(result);
+                return Result.Fail<PaginatedResult<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found")).WithValue(result);
             }
 
             return Result.Ok(result);

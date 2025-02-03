@@ -1,7 +1,9 @@
 ﻿using FluentResults;
 using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
+using Library.Models.HttpResponses;
 using Library.Results.Errors.EntityRequest;
+using Library.Results.Errors.Http;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Service.Services.Interfaces.MessageInterfaces;
 using System.Net.Http.Headers;
@@ -42,24 +44,24 @@ namespace Service.Services.Implementations.MessageServices
 
             if (response.IsSuccessStatusCode)
             {
-                var data = await response.Content.ReadFromJsonAsync<GetPlayerInvitation.Response>(cancellationToken);
-                return Result.Ok(data);
+                var body = await response.Content.ReadFromJsonAsync<HttpResponseBody<GetPlayerInvitation.Response?>>(cancellationToken);
+                if (body != null) return body.MapToResult();
             }
 
             return Result.Fail<GetPlayerInvitation.Response?>(new EntityNotFoundError("Failed to get messages of the user")).WithValue(null);
         }
 
-        public async Task<Result<ICollection<GetPlayerInvitation.Response>>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken = default)
+        public async Task<Result<ICollection<GetPlayerInvitation.Response>?>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.PostAsJsonAsync($"/api/PlayerInvitation/GetUserMessages", messageStatuses, cancellationToken);
-            var data = await response.Content.ReadFromJsonAsync<ICollection<GetPlayerInvitation.Response>>(cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
-                return Result.Ok(data ?? []);
+                var body = await response.Content.ReadFromJsonAsync<HttpResponseBody<ICollection<GetPlayerInvitation.Response>>>(cancellationToken);
+                if (body != null) return body.MapToResult();
             }
 
-            return Result.Fail<ICollection<GetPlayerInvitation.Response>>("Failed to get messages of the user").WithValue([]);
+            return Result.Fail<ICollection<GetPlayerInvitation.Response>?>(new HttpRequestFailedError("Failed to get messages of the user")).WithValue([]);
         }
     }
 }

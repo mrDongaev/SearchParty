@@ -11,9 +11,9 @@ namespace Service.Services.Utils
         public static Result ValidateInvitation(Guid userId, ICollection<GetPlayerInvitation.Response>? messages, ICollection<TeamPlayer>? teamPlayers, ProfileMessageSubmitted message)
         {
             return Result.Merge(
-                Result.FailIf(message.AcceptingUserId == userId, new SelfMessagingError(message.MessageType)),
+                Result.FailIf(message.AcceptingUserId == userId, new SelfInvitationError()),
                 Result.FailIf(messages?.SingleOrDefault(m => m.AcceptingPlayerId == message.AcceptorId && m.InvitingTeamId == message.SenderId) != null,
-                    new PendingMessageExistsError(message.MessageType)),
+                    new PendingInvitationExistsError()),
                 ValidateTeamPosition(teamPlayers, (int)message.PositionName),
                 ValidatePlayerUniqueness(teamPlayers, message.AcceptorId)
                 );
@@ -22,9 +22,9 @@ namespace Service.Services.Utils
         public static Result ValidateApplication(Guid userId, ICollection<GetTeamApplication.Response>? messages, ICollection<TeamPlayer>? teamPlayers, ProfileMessageSubmitted message)
         {
             return Result.Merge(
-                Result.FailIf(message.AcceptingUserId == userId, new SelfMessagingError(message.MessageType)),
+                Result.FailIf(message.AcceptingUserId == userId, new SelfApplicationError()),
                 Result.FailIf(messages?.SingleOrDefault(m => m.AcceptingTeamId == message.AcceptorId && m.ApplyingPlayerId == message.SenderId) != null,
-                    new PendingMessageExistsError(message.MessageType)),
+                    new PendingApplicationExistsError()),
                 ValidateTeamPosition(teamPlayers, (int)message.PositionName),
                 ValidatePlayerUniqueness(teamPlayers, message.AcceptorId)
                 );

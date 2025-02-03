@@ -62,7 +62,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (players.Count == 0)
             {
-                return Result.Fail<ICollection<PlayerDto>>(new EntityListNotFoundError("No players have been found")).WithValue([]);
+                return Result.Fail<ICollection<PlayerDto>>(new EntitiesNotFoundError("No players have been found")).WithValue([]);
             }
 
             return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));

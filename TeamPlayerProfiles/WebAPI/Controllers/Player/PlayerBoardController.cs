@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Common.Models;
+using Library.Controllers;
 using Library.Models;
 using Library.Models.HttpResponses;
 using Library.Results.Errors.Authorization;

@@ -12,6 +12,6 @@ namespace Service.Services.Interfaces.MessageInterfaces
 
         Task<Result<TGetMessageResponse?>> Get(Guid id, CancellationToken cancellationToken);
 
-        Task<Result<ICollection<TGetMessageResponse>>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken);
+        Task<Result<ICollection<TGetMessageResponse>?>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken);
     }
 }

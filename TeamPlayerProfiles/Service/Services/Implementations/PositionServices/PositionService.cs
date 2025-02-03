@@ -27,7 +27,7 @@ namespace Service.Services.Implementations.PositionServices
 
             if (positions.Count == 0)
             {
-                return Result.Fail<ICollection<PositionDto>>(new EntityListNotFoundError("No positions have been found")).WithValue([]);
+                return Result.Fail<ICollection<PositionDto>>(new EntitiesNotFoundError("No positions have been found")).WithValue([]);
             }
 
             return Result.Ok(mapper.Map<ICollection<PositionDto>>(positions));

@@ -1,7 +1,7 @@
 ﻿using Library.Models.HttpResponses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebAPI.Controllers
+namespace Library.Controllers
 {
     [ApiController]
     [ProducesResponseType<HttpResponseBody>(StatusCodes.Status400BadRequest)]
