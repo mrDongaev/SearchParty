@@ -5,6 +5,7 @@ using Library.Models.HttpResponses;
 using Library.Results.Errors.EntityRequest;
 using Library.Results.Errors.Http;
 using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Utils;
 using Service.Services.Interfaces.MessageInterfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -42,26 +43,14 @@ namespace Service.Services.Implementations.MessageServices
         {
             using var response = await _httpClient.GetAsync($"/api/TeamApplication/Get/{id}", cancellationToken);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadFromJsonAsync<HttpResponseBody<GetTeamApplication.Response?>>(cancellationToken);
-                if (body != null) return body.MapToResult();
-            }
-
-            return Result.Fail<GetTeamApplication.Response?>(new HttpRequestFailedError("Failed to get messages of the user")).WithValue(null);
+            return await response.ReadResultFromJsonResponse<GetTeamApplication.Response?>("HTTP request to get team application failed", cancellationToken);
         }
 
         public async Task<Result<ICollection<GetTeamApplication.Response>?>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.PostAsJsonAsync($"/api/TeamApplication/GetUserMessages", messageStatuses, cancellationToken);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadFromJsonAsync<HttpResponseBody<ICollection<GetTeamApplication.Response>?>>(cancellationToken);
-                if (body != null) return body.MapToResult();
-            }
-
-            return Result.Fail<ICollection<GetTeamApplication.Response>?>(new HttpRequestFailedError("Failed to get messages of the user")).WithValue([]);
+            return await response.ReadResultFromJsonResponse<ICollection<GetTeamApplication.Response>?>("HTTP request to get team applications of the user failed", cancellationToken);
         }
     }
 }

@@ -17,7 +17,6 @@ namespace DataAccess.Utils
             var finalLambda = builder
                 .ApplyStringFiltering(queryConfig.NameFilter, "Name")
                 .ApplyStringFiltering(queryConfig.DescriptionFilter, "Description")
-                .ApplySingleValueFiltering(queryConfig.DisplayedFilter, "Displayed")
                 .ApplyDateTimeFiltering(queryConfig.UpdatedAtFilter, "UpdatedAt")
                 .ApplyDateTimeFiltering(queryConfig.UpdatedAtAddFilter, "UpdatedAt")
                 .ApplyValueListFiltering(queryConfig.PositionFilter, "PositionId")

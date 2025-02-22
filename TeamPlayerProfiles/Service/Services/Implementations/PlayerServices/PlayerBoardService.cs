@@ -27,13 +27,13 @@ namespace Service.Services.Implementations.PlayerServices
             var userId = await playerRepo.GetProfileUserId(id, cancellationToken);
             if (userId == null || userId != userContext.UserId)
             {
-                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(default);
             }
             var player = new Player() { Id = id, Displayed = displayed };
             var updatedPlayer = await playerRepo.Update(player, null, cancellationToken);
             if (updatedPlayer == null)
             {
-                return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(null);
+                return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(default);
             }
 
             return Result.Ok(mapper.Map<PlayerDto?>(updatedPlayer));
@@ -86,9 +86,7 @@ namespace Service.Services.Implementations.PlayerServices
 
         public async Task<Result<ICollection<PlayerDto>>> GetFiltered(ConditionalPlayerQuery query, CancellationToken cancellationToken = default)
         {
-            var players = await playerRepo.GetConditionalPlayerRange(query, cancellationToken);
-
-            players = players.Where(p => p.UserId == userContext.UserId || (p.Displayed.HasValue && p.Displayed.Value)).ToList();
+            var players = await playerRepo.GetConditionalPlayerRange(query, userContext.UserId, cancellationToken);
 
             if (players.Count == 0)
             {
@@ -100,9 +98,7 @@ namespace Service.Services.Implementations.PlayerServices
 
         public async Task<Result<PaginatedResult<PlayerDto>>> GetPaginated(ConditionalPlayerQuery query, uint page, uint pageSize, CancellationToken cancellationToken = default)
         {
-            var players = await playerRepo.GetPaginatedPlayerRange(query, page, pageSize, cancellationToken);
-
-            players.List = players.List.Where(p => p.UserId == userContext.UserId || (p.Displayed.HasValue && p.Displayed.Value)).ToList();
+            var players = await playerRepo.GetPaginatedPlayerRange(query, userContext.UserId, page, pageSize, cancellationToken);
 
             var result = mapper.Map<PaginatedResult<PlayerDto>>(players);
 

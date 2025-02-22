@@ -15,7 +15,7 @@ namespace Service.Services.Implementations.HeroServices
 
             if (hero == null)
             {
-                return Result.Fail<HeroDto?>(new EntityNotFoundError($"Hero with the given ID has not been found")).WithValue(null);
+                return Result.Fail<HeroDto?>(new EntityNotFoundError($"Hero with the given ID has not been found")).WithValue(default);
             }
 
             return Result.Ok(mapper.Map<HeroDto?>(hero));

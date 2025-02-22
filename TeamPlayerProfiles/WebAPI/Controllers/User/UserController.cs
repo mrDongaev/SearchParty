@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
             return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetUser.Response>));
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
@@ -106,10 +106,9 @@ namespace WebAPI.Controllers
             Ok<HttpResponseBody<GetUser.Response>>,
             NotFound<HttpResponseBody<GetUser.Response>>,
             UnauthorizedHttpResult>>
-            Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken)
+            Update(UpdateUser.Request request, CancellationToken cancellationToken)
         {
             var user = mapper.Map<UpdateUserDto>(request);
-            user.Id = id;
             var result = await userService.Update(user, cancellationToken);
 
             if (result.IsFailed)

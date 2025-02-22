@@ -45,7 +45,7 @@ namespace Library.Models.HttpResponses
     {
         public T? Data { get; set; }
 
-        public Result<T?> MapToResult()
+        public new Result<T?> MapToResult()
         {
             List<Success> messages = [];
             List<Error> errors = [];

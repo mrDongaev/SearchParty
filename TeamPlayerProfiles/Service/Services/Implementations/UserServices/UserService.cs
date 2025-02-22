@@ -16,12 +16,12 @@ namespace Service.Services.Implementations
         {
             if (dto.Id != userContext.UserId)
             {
-                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(default);
             }
             var userExists = await userRepo.Get(dto.Id, cancellationToken) != null;
             if (userExists)
             {
-                return Result.Fail<UserDto?>(new EntityAlreadyExistsError("User profile with the given ID already exists")).WithValue(null);
+                return Result.Fail<UserDto?>(new EntityAlreadyExistsError("User profile with the given ID already exists")).WithValue(default);
             }
             var newUser = mapper.Map<User>(dto);
             var createdUser = await userRepo.Add(newUser, cancellationToken);
@@ -48,7 +48,7 @@ namespace Service.Services.Implementations
 
             if (user == null)
             {
-                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(null);
+                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(default);
             }
 
             return Result.Ok(mapper.Map<UserDto?>(user));
@@ -82,14 +82,14 @@ namespace Service.Services.Implementations
         {
             if (dto.Id != userContext.UserId)
             {
-                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(default);
             }
             var user = mapper.Map<User>(dto);
             var updatedUser = await userRepo.Update(user, cancellationToken);
 
             if (updatedUser == null)
             {
-                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(null);
+                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(default);
             }
 
             return Result.Ok(mapper.Map<UserDto?>(updatedUser));

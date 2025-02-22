@@ -129,23 +129,24 @@ namespace DataAccess.Repositories.Implementations
             }
         }
 
-        public async Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery config, CancellationToken cancellationToken)
+        public async Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery config, Guid userId, CancellationToken cancellationToken)
         {
             return await _players
                 .GetEntities(true)
                 .FilterWith(config)
+                .Where(p => p.UserId == userId || (p.Displayed.HasValue && p.Displayed.Value))
                 .SortWith(config.SortConditions)
                 .ToListAsync(cancellationToken);
-
         }
 
-        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, Guid userId, uint page, uint pageSize, CancellationToken cancellationToken)
         {
             int intPage = (int)page;
             int intSize = (int)pageSize;
 
             var query = _players.GetEntities(true)
-                .FilterWith(config);
+                .FilterWith(config)
+                .Where(p => p.UserId == userId || (p.Displayed.HasValue && p.Displayed.Value));
 
             int count = query.Count();
 

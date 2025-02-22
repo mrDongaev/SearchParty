@@ -1,6 +1,8 @@
-﻿namespace Library.Models.API.UserProfiles.User
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Library.Models.API.TeamPlayerProfiles.User
 {
-    public static class UpdateUser
+    public static class CreateUser
     {
         public sealed class Request
         {

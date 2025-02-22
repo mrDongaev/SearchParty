@@ -1,4 +1,6 @@
-﻿namespace Library.Models.API.UserProfiles.User
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Library.Models.API.TeamPlayerProfiles.User
 {
     public static class UpdateUser
     {
@@ -6,7 +8,7 @@
         {
             public Guid Id { get; set; }
 
-            public uint Mmr { get; set; }
+            public uint? Mmr { get; set; }
         }
     }
 }

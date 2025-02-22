@@ -20,7 +20,6 @@ namespace WebAPI.Mapping
                                 });
 
             CreateMap<UpdatePlayer.Request, UpdatePlayerDto>()
-                .ForMember(d => d.Id, m => m.Ignore())
                                 .ForAllMembers(opts =>
                                 {
                                     opts.AllowNull();

@@ -29,7 +29,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (updatedTeam == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(null);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(default);
             }
 
             return Result.Ok(mapper.Map<TeamDto?>(updatedTeam));

@@ -15,7 +15,7 @@ namespace Service.Services.Implementations.PositionServices
 
             if (position == null)
             {
-                return Result.Fail<PositionDto?>(new EntityNotFoundError("Position with the given ID has not been found")).WithValue(null);
+                return Result.Fail<PositionDto?>(new EntityNotFoundError("Position with the given ID has not been found")).WithValue(default);
             }
 
             return Result.Ok(mapper.Map<PositionDto?>(position));

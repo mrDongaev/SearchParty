@@ -105,7 +105,7 @@ namespace WebAPI.Controllers.Player
             return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetPlayer.Response>));
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         [ProducesResponseType<HttpResponseBody<GetPlayer.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
@@ -113,10 +113,9 @@ namespace WebAPI.Controllers.Player
             Ok<HttpResponseBody<GetPlayer.Response>>,
             NotFound<HttpResponseBody<GetPlayer.Response?>>,
             UnauthorizedHttpResult>>
-            Update(Guid id, [FromBody] UpdatePlayer.Request request, CancellationToken cancellationToken)
+            Update([FromBody] UpdatePlayer.Request request, CancellationToken cancellationToken)
         {
             var tempPlayer = mapper.Map<UpdatePlayerDto>(request);
-            tempPlayer.Id = id;
             var result = await playerService.Update(tempPlayer, cancellationToken);
 
             if (result.IsFailed)

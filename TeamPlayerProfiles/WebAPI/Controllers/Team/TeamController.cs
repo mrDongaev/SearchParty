@@ -114,7 +114,7 @@ namespace WebAPI.Controllers.Team
             return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetTeam.Response>));
         }
 
-        [HttpPost("{id}")]
+        [HttpPost]
         [ProducesResponseType<HttpResponseBody<GetTeam.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -124,10 +124,9 @@ namespace WebAPI.Controllers.Team
             NotFound<HttpResponseBody<GetTeam.Response?>>,
             BadRequest<HttpResponseBody<GetTeam.Response?>>,
             UnauthorizedHttpResult>>
-            Update(Guid id, [FromBody] UpdateTeam.Request request, CancellationToken cancellationToken)
+            Update([FromBody] UpdateTeam.Request request, CancellationToken cancellationToken)
         {
             var tempTeam = mapper.Map<UpdateTeamDto>(request);
-            tempTeam.Id = id;
             var result = await teamService.Update(tempTeam, cancellationToken);
 
             if (result.IsFailed)
@@ -158,7 +157,8 @@ namespace WebAPI.Controllers.Team
             Ok<HttpResponseBody<GetTeam.Response>>,
             NotFound<HttpResponseBody<GetTeam.Response?>>,
             BadRequest<HttpResponseBody<GetTeam.Response?>>,
-            UnauthorizedHttpResult>>
+            UnauthorizedHttpResult,
+            InternalServerError<HttpResponseBody<GetTeam.Response?>>>>
             PushPlayerToTeam(PushPlayer.Request request, CancellationToken cancellationToken)
         {
             var result = await teamService.PushPlayerToTeam(request.TeamId, request.PlayerId, request.Position, request.MessageId, request.MessageType, cancellationToken);

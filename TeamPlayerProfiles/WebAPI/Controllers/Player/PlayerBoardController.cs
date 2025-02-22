@@ -54,7 +54,8 @@ namespace WebAPI.Controllers.Player
             Ok<HttpResponseBody>,
             BadRequest<HttpResponseBody>,
             NotFound<HttpResponseBody>,
-            UnauthorizedHttpResult>>
+            UnauthorizedHttpResult,
+            InternalServerError<HttpResponseBody>>>
             InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
         {
             var result = await boardService.InvitePlayerToTeam(playerId, teamId, position, cancellationToken);

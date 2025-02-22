@@ -15,7 +15,6 @@ namespace DataAccess.Utils
             var finalLambda = new QueryFilteringExpressionBuilder<Team>("team")
                 .ApplyStringFiltering(queryConfig.NameFilter, "Name")
                 .ApplyStringFiltering(queryConfig.DescriptionFilter, "Description")
-                .ApplySingleValueFiltering(queryConfig.DisplayedFilter, "Displayed")
                 .ApplyDateTimeFiltering(queryConfig.UpdatedAtFilter, "UpdatedAt")
                 .ApplyDateTimeFiltering(queryConfig.UpdatedAtAddFilter, "UpdatedAt")
                 .ApplyNumericFiltering(queryConfig.PlayerCountStart, "PlayerCount")

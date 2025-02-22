@@ -47,7 +47,7 @@ namespace WebAPI.Middleware
             {
                 IsSuccess = false,
                 Errors = errors,
-                Messages = [],
+                Messages = errors,
             });
 
             _logger.Error(ex, "An error has occurred with code {codeNum}: {@statusCode}", codeNum, statusCode);
@@ -55,9 +55,9 @@ namespace WebAPI.Middleware
             await context.Response.WriteAsync(result);
         }
 
-        private List<string> GetExceptionInfo(Exception exception, out HttpStatusCode statusCode)
+        private Dictionary<string, string[]> GetExceptionInfo(Exception exception, out HttpStatusCode statusCode)
         {
-            List<string> errors = new();
+            Dictionary<string, string[]> errors = [];
 
             if (exception is AggregateException aggEx)
             {
@@ -66,19 +66,19 @@ namespace WebAPI.Middleware
             else
             {
                 var error = ParseException(exception, out statusCode);
-                errors.Add(error);
+                errors.Add(error.Key, [error.Value]);
             }
             return errors;
         }
 
-        private List<string> ParseAggregateException(AggregateException aggregateException, out HttpStatusCode statusCode)
+        private Dictionary<string, string[]> ParseAggregateException(AggregateException aggregateException, out HttpStatusCode statusCode)
         {
-            List<string> errors = [];
+            Dictionary<string, List<string>> errors = [];
             HttpStatusCode firstStatusCode = HttpStatusCode.InternalServerError;
             for (var i = 0; i < aggregateException.InnerExceptions.Count; i++)
             {
                 var ex = aggregateException.InnerExceptions[i];
-                string error;
+                KeyValuePair<string, string> error;
                 if (i == 0)
                 {
                     error = ParseException(ex, out firstStatusCode);
@@ -87,13 +87,20 @@ namespace WebAPI.Middleware
                 {
                     error = ParseException(ex, out _);
                 }
-                errors.Add(error);
+                if (errors.TryGetValue(error.Key, out var list))
+                {
+                    list.Add(error.Value);
+                }
+                else
+                {
+                    errors.Add(error.Key, new List<string> { error.Value });
+                }
             }
             statusCode = firstStatusCode;
-            return errors;
+            return errors.Select(d => KeyValuePair.Create(d.Key, d.Value.ToArray())).ToDictionary();
         }
 
-        private static string ParseException(Exception exception, out HttpStatusCode statusCode)
+        private static KeyValuePair<string, string> ParseException(Exception exception, out HttpStatusCode statusCode)
         {
             statusCode = HttpStatusCode.InternalServerError;
             statusCode = exception switch
@@ -103,7 +110,8 @@ namespace WebAPI.Middleware
                 _ => HttpStatusCode.InternalServerError,
 
             };
-            return string.IsNullOrEmpty(exception.Message) ? "An unforeseen error has occurred" : exception.Message;
+            var message = string.IsNullOrEmpty(exception.Message) ? "An unforeseen error has occurred" : exception.Message;
+            return KeyValuePair.Create(nameof(exception), message);
         }
 
 

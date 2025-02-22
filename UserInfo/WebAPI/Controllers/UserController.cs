@@ -1,4 +1,9 @@
 ﻿using AutoMapper;
+using FluentResults;
+using Library.Controllers;
+using Library.Models.HttpResponses;
+using Library.Results.Errors.Authorization;
+using Library.Results.Errors.EntityRequest;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,73 +16,146 @@ namespace WebAPI.Controllers
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class UserController(IUserService userService, IUserHttpContext userContext, IMapper mapper) : WebApiController
+    public class UserController(IUserService userService, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
-        [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetUser.Response>, NotFound>> Get(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetUser.Response>>,
+            NotFound<HttpResponseBody<GetUser.Response?>>,
+            InternalServerError<HttpResponseBody<GetUser.Response?>>>>
+            Get(Guid id, CancellationToken cancellationToken)
         {
-            var user = await userService.Get(id, cancellationToken);
-            return user == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetUser.Response>(user));
+            var result = await userService.Get(id, cancellationToken);
+
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody<UserDto?, GetUser.Response?>(result => null));
+            }
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetUser.Response>));
         }
 
         [HttpPost]
-        [ProducesResponseType<IEnumerable<GetUser.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<IEnumerable<GetUser.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<IEnumerable<GetUser.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>,
+            InternalServerError<HttpResponseBody<IEnumerable<GetUser.Response>>>>>
+            GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
-            var users = await userService.GetRange(ids, cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(users));
+            var result = await userService.GetRange(ids, cancellationToken);
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<UserDto>, IEnumerable<GetUser.Response>>(result => []));
+
+            }
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetUser.Response>>));
         }
 
         [HttpGet]
-        [ProducesResponseType<IEnumerable<GetUser.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetAll(CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<IEnumerable<GetUser.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<IEnumerable<GetUser.Response>>>,
+            NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>,
+            InternalServerError<HttpResponseBody<IEnumerable<GetUser.Response>>>>>
+            GetAll(CancellationToken cancellationToken)
         {
-            var users = await userService.GetAll(cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(users));
+            var result = await userService.GetAll(cancellationToken);
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<UserDto>, IEnumerable<GetUser.Response>>(result => []));
+            }
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetUser.Response>>));
         }
 
         [HttpPost]
-        [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType<GetUser.Response>(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType<GetUser.Response>(StatusCodes.Status400BadRequest)]
-        public async Task<Results<Ok<GetUser.Response>, BadRequest, UnauthorizedHttpResult>> Create(CreateUser.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetUser.Response>>,
+            BadRequest<HttpResponseBody<GetUser.Response?>>,
+            InternalServerError<HttpResponseBody<GetUser.Response?>>,
+            UnauthorizedHttpResult>>
+            Create(CreateUser.Request request, CancellationToken cancellationToken)
         {
-            if (request.Id != userContext.UserId)
+            var result = await userService.Create(mapper.Map<CreateUserDto>(request), cancellationToken);
+
+            if (result.IsFailed)
             {
-                return TypedResults.Unauthorized();
+                if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
+                else if (result.HasError<EntityAlreadyExistsError>())
+                {
+                    return TypedResults.BadRequest(result.MapToHttpResponseBody<UserDto?, GetUser.Response?>(res => null));
+                }
             }
-            var createdUser = await userService.Create(mapper.Map<CreateUserDto>(request), cancellationToken);
-            return createdUser == null ? TypedResults.BadRequest() : TypedResults.Ok(mapper.Map<GetUser.Response>(createdUser));
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetUser.Response>));
         }
 
-        [HttpPost("{id}")]
-        [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType<GetUser.Response>(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetUser.Response>, NotFound, UnauthorizedHttpResult>> Update(Guid id, UpdateUser.Request request, CancellationToken cancellationToken)
+        [HttpPost]
+        [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetUser.Response>>,
+            NotFound<HttpResponseBody<GetUser.Response?>>,
+            InternalServerError<HttpResponseBody<GetUser.Response?>>,
+            UnauthorizedHttpResult>>
+            Update(UpdateUser.Request request, CancellationToken cancellationToken)
         {
-            if (userContext.UserId != id)
-            {
-                return TypedResults.Unauthorized();
-            }
             var user = mapper.Map<UpdateUserDto>(request);
-            user.Id = id;
-            var updatedUser = await userService.Update(user, cancellationToken);
-            return updatedUser == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetUser.Response>(updatedUser));
+            var result = await userService.Update(user, cancellationToken);
+
+            if (result.IsFailed)
+            {
+                if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
+                else if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody<UserDto?, GetUser.Response?>(res => null));
+                }
+            }
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetUser.Response>));
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody<bool>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<bool>, UnauthorizedHttpResult>> Delete(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<bool>>,
+            NotFound<HttpResponseBody<bool>>,
+            InternalServerError<HttpResponseBody<bool>>,
+            UnauthorizedHttpResult>>
+            Delete(Guid id, CancellationToken cancellationToken)
         {
-            if (userContext.UserId != id)
+            var result = await userService.Delete(id, cancellationToken);
+
+            if (result.IsFailed)
             {
-                return TypedResults.Unauthorized();
+                if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
+                else if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => res.Value));
+                }
             }
-            return TypedResults.Ok(await userService.Delete(id, cancellationToken));
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(res => res.Value));
         }
     }
 }

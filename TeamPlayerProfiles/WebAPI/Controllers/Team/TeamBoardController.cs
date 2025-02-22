@@ -55,7 +55,8 @@ namespace WebAPI.Controllers.Team
             Ok<HttpResponseBody>,
             BadRequest<HttpResponseBody>,
             NotFound<HttpResponseBody>,
-            UnauthorizedHttpResult>>
+            UnauthorizedHttpResult,
+            InternalServerError<HttpResponseBody>>>
             SendTeamApplicationRequest(Guid teamId, Guid playerId, int position, CancellationToken cancellationToken)
         {
             var result = await boardService.SendTeamApplicationRequest(playerId, teamId, position, cancellationToken);
