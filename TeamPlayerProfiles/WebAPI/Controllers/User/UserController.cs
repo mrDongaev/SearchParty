@@ -18,10 +18,10 @@ namespace WebAPI.Controllers
     public class UserController(IUserService userService, IUserHttpContext userContext, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
-        [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetUser.Response>>,
+            Ok<GetUser.Response>,
             NotFound<HttpResponseBody<GetUser.Response?>>>>
             Get(Guid id, CancellationToken cancellationToken)
         {
@@ -32,14 +32,14 @@ namespace WebAPI.Controllers
                 return TypedResults.NotFound(result.MapToHttpResponseBody<UserDto?, GetUser.Response?>(res => null));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetUser.Response>));
+            return TypedResults.Ok(mapper.Map<GetUser.Response>(result.Value));
         }
 
         [HttpPost]
-        [ProducesResponseType<HttpResponseBody<IEnumerable<GetUser.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<GetUser.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetUser.Response>>>,
+            Ok<IEnumerable<GetUser.Response>>,
             NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>>>
             GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
@@ -50,14 +50,14 @@ namespace WebAPI.Controllers
                 return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<UserDto>, IEnumerable<GetUser.Response>>(res => []));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetUser.Response>>));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(result.Value));
         }
 
         [HttpGet]
-        [ProducesResponseType<HttpResponseBody<IEnumerable<GetUser.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<GetUser.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetUser.Response>>>,
+            Ok<IEnumerable<GetUser.Response>>,
             NotFound<HttpResponseBody<IEnumerable<GetUser.Response>>>>>
             GetAll(CancellationToken cancellationToken)
         {
@@ -68,15 +68,15 @@ namespace WebAPI.Controllers
                 return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<UserDto>, IEnumerable<GetUser.Response>>(res => []));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetUser.Response>>));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetUser.Response>>(result.Value));
         }
 
         [HttpPost]
-        [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetUser.Response>>,
+            Ok<GetUser.Response>,
             BadRequest<HttpResponseBody<GetUser.Response>>,
             UnauthorizedHttpResult>>
             Create(CreateUser.Request request, CancellationToken cancellationToken)
@@ -95,15 +95,15 @@ namespace WebAPI.Controllers
                 }
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetUser.Response>));
+            return TypedResults.Ok(mapper.Map<GetUser.Response>(result.Value));
         }
 
         [HttpPost]
-        [ProducesResponseType<HttpResponseBody<GetUser.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetUser.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetUser.Response>>,
+            Ok<GetUser.Response>,
             NotFound<HttpResponseBody<GetUser.Response>>,
             UnauthorizedHttpResult>>
             Update(UpdateUser.Request request, CancellationToken cancellationToken)
@@ -123,7 +123,7 @@ namespace WebAPI.Controllers
                 }
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetUser.Response>));
+            return TypedResults.Ok(mapper.Map<GetUser.Response>(result.Value));
         }
 
         [HttpDelete("{id}")]
@@ -131,7 +131,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<bool>>,
+            Ok<bool>,
             NotFound<HttpResponseBody<bool>>,
             UnauthorizedHttpResult>>
             Delete(Guid id, CancellationToken cancellationToken)
@@ -149,7 +149,7 @@ namespace WebAPI.Controllers
                 }
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(res => res.Value));
+            return TypedResults.Ok(result.Value);
         }
     }
 }

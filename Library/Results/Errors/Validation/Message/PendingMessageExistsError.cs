@@ -1,7 +1,4 @@
-﻿using Library.Models.Enums;
-using System.Diagnostics.Contracts;
-
-namespace Library.Results.Errors.Validation.Message
+﻿namespace Library.Results.Errors.Validation.Message
 {
     public class PendingMessageExistsError : ValidationError
     {

@@ -18,7 +18,7 @@ namespace WebAPI.Controllers.Position
         [ProducesResponseType<GetPosition.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetPosition.Response>>,
+            Ok<GetPosition.Response>,
             NotFound<HttpResponseBody<GetPosition.Response?>>>> Get(int id, CancellationToken cancellationToken)
         {
             var result = await positionService.Get(id, cancellationToken);
@@ -28,14 +28,14 @@ namespace WebAPI.Controllers.Position
                 return TypedResults.NotFound(result.MapToHttpResponseBody<PositionDto?, GetPosition.Response?>(res => null));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetPosition.Response>));
+            return TypedResults.Ok(mapper.Map<GetPosition.Response>(result.Value));
         }
 
         [HttpGet]
-        [ProducesResponseType<HttpResponseBody<IEnumerable<GetPosition.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<GetPosition.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetPosition.Response>>>,
+            Ok<IEnumerable<GetPosition.Response>>,
             NotFound<HttpResponseBody<IEnumerable<GetPosition.Response>>>>>
             GetAll(CancellationToken cancellationToken)
         {
@@ -46,14 +46,14 @@ namespace WebAPI.Controllers.Position
                 return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<PositionDto>, IEnumerable<GetPosition.Response>>(res => []));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetPosition.Response>>));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPosition.Response>>(result.Value));
         }
 
         [HttpGet]
-        [ProducesResponseType<HttpResponseBody<IEnumerable<GetPosition.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<GetPosition.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetPosition.Response>>>,
+            Ok<IEnumerable<GetPosition.Response>>,
             NotFound<HttpResponseBody<IEnumerable<GetPosition.Response>>>>>
             GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {
@@ -64,7 +64,7 @@ namespace WebAPI.Controllers.Position
                 return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<PositionDto>, IEnumerable<GetPosition.Response>>(res => []));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetPosition.Response>>));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPosition.Response>>(result.Value));
         }
     }
 }

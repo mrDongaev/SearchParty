@@ -1,6 +1,4 @@
-﻿using Library.Models.Enums;
-
-namespace Library.Results.Errors.Validation.Message
+﻿namespace Library.Results.Errors.Validation.Message
 {
     public class NoPendingMessageError : ValidationError
     {
@@ -20,7 +18,7 @@ namespace Library.Results.Errors.Validation.Message
         {
         }
 
-        public NoPendingInvitationError(string message) : base(message) 
+        public NoPendingInvitationError(string message) : base(message)
         {
             WithMetadata("key", nameof(NoPendingInvitationError));
         }

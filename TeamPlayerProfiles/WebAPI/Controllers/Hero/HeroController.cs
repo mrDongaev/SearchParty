@@ -16,10 +16,10 @@ namespace WebAPI.Controllers.Hero
     public class HeroController(IHeroService heroService, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
-        [ProducesResponseType<HttpResponseBody<GetHero.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetHero.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetHero.Response>>,
+            Ok<GetHero.Response>,
             NotFound<HttpResponseBody<GetHero.Response?>>>>
             Get(int id, CancellationToken cancellationToken)
         {
@@ -30,14 +30,14 @@ namespace WebAPI.Controllers.Hero
                 return TypedResults.NotFound(result.MapToHttpResponseBody<HeroDto?, GetHero.Response?>(res => null));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetHero.Response>));
+            return TypedResults.Ok(mapper.Map<GetHero.Response>(result.Value));
         }
 
         [HttpPost]
-        [ProducesResponseType<HttpResponseBody<IEnumerable<GetHero.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>,
+            Ok<IEnumerable<GetHero.Response>>,
             NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>>
             GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {
@@ -48,14 +48,14 @@ namespace WebAPI.Controllers.Hero
                 return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<HeroDto>, IEnumerable<GetHero.Response>>(res => []));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetHero.Response>>));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetHero.Response>>(result.Value));
         }
 
         [HttpGet]
-        [ProducesResponseType<HttpResponseBody<IEnumerable<GetHero.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetHero.Response>>>,
+            Ok<IEnumerable<GetHero.Response>>,
             NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>>
             GetAll(CancellationToken cancellationToken)
         {
@@ -66,7 +66,7 @@ namespace WebAPI.Controllers.Hero
                 return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<HeroDto>, IEnumerable<GetHero.Response>>(res => []));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetHero.Response>>));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetHero.Response>>(result.Value));
         }
     }
 }

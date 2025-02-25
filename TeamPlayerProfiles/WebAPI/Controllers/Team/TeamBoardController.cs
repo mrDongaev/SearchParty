@@ -20,11 +20,11 @@ namespace WebAPI.Controllers.Team
     public class TeamBoardController(IMapper mapper, ITeamBoardService boardService) : WebApiController
     {
         [HttpGet("{teamId}/{displayed}")]
-        [ProducesResponseType<HttpResponseBody<GetTeam.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<GetTeam.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<GetTeam.Response>>,
+            Ok<GetTeam.Response>,
             NotFound<HttpResponseBody<GetTeam.Response?>>,
             UnauthorizedHttpResult>>
             SetDisplayed(Guid teamId, bool displayed, CancellationToken cancellationToken)
@@ -43,7 +43,7 @@ namespace WebAPI.Controllers.Team
                 }
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetTeam.Response>));
+            return TypedResults.Ok(mapper.Map<GetTeam.Response>(result.Value));
         }
 
         [HttpGet("{teamId}/{playerId}/{position}")]
@@ -79,10 +79,10 @@ namespace WebAPI.Controllers.Team
         }
 
         [HttpPost]
-        [ProducesResponseType<HttpResponseBody<IEnumerable<GetPlayer.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<IEnumerable<GetTeam.Response>>>,
+            Ok<IEnumerable<GetTeam.Response>>,
             NotFound<HttpResponseBody<IEnumerable<GetTeam.Response>>>>>
             GetFiltered(GetConditionalTeam.Request request, CancellationToken cancellationToken)
         {
@@ -93,26 +93,25 @@ namespace WebAPI.Controllers.Team
                 return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<TeamDto>, IEnumerable<GetTeam.Response>>(res => []));
             }
 
-            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<IEnumerable<GetTeam.Response>>));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetTeam.Response>>(result.Value));
         }
 
         [HttpPost("{pageSize}/{page}")]
-        [ProducesResponseType<HttpResponseBody<PaginatedResult<GetTeam.Response>>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<PaginatedResult<GetTeam.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
-            Ok<HttpResponseBody<PaginatedResult<GetTeam.Response>>>,
+            Ok<PaginatedResult<GetTeam.Response>>,
             NotFound<HttpResponseBody<PaginatedResult<GetTeam.Response>>>>>
             GetPaginated(uint page, uint pageSize, GetConditionalTeam.Request request, CancellationToken cancellationToken)
         {
             var result = await boardService.GetPaginated(mapper.Map<ConditionalTeamQuery>(request), page, pageSize, cancellationToken);
-            var response = result.MapToHttpResponseBody(mapper.Map<PaginatedResult<GetTeam.Response>>);
 
             if (result.IsFailed)
             {
-                return TypedResults.NotFound(response);
+                return TypedResults.NotFound(result.MapToHttpResponseBody(mapper.Map<PaginatedResult<GetTeam.Response>>));
             }
 
-            return TypedResults.Ok(response);
+            return TypedResults.Ok(mapper.Map<PaginatedResult<GetTeam.Response>>(result.Value));
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using FluentResults;
-using Library.Models.Enums;
-
-namespace Library.Results.Errors.Validation.Message
+﻿namespace Library.Results.Errors.Validation.Message
 {
     public class SelfMessagingError : ValidationError
     {

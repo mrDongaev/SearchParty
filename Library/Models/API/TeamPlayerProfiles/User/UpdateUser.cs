@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Library.Models.API.TeamPlayerProfiles.User
+﻿namespace Library.Models.API.TeamPlayerProfiles.User
 {
     public static class UpdateUser
     {
