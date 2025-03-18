@@ -1,8 +1,10 @@
-﻿using Library.Models.Enums;
+﻿using FluentResults;
+using Library.Models.Enums;
+using Library.Results.Errors.Messages;
+using Library.Results.Successes.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.Message;
 using Service.Domain.States.Interfaces;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Services.Interfaces.TeamInterfaces;
 
@@ -10,16 +12,16 @@ namespace Service.Domain.States.Implementations.PendingMessage
 {
     public class PendingPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {
-        public override async Task<ActionResponse<PlayerInvitationDto>> Accept()
+        public override async Task<Result<PlayerInvitationDto>> Accept()
         {
-            var actionResponse = new ActionResponse<PlayerInvitationDto>();
+            Result<PlayerInvitationDto> actionResponse = Result.Fail<PlayerInvitationDto>(new MessageAcceptFailedError("Could not accept the invitation to the team"));
+            PlayerInvitationDto? message = MessageDto;
             try
             {
                 if (DateTime.UtcNow >= ExpiresAt)
                 {
                     Message.ChangeState(MessageStatus.Expired);
-                    actionResponse.ActionMessage = "The invitation to the team has expired";
-                    actionResponse.Status = ActionResponseStatus.Failure;
+                    actionResponse = Result.Fail<PlayerInvitationDto>(new MessageExpiredError("The invitation has expired"));
                 }
                 else
                 {
@@ -27,117 +29,121 @@ namespace Service.Domain.States.Implementations.PendingMessage
                     var teamService = scope.ServiceProvider.GetRequiredService<ITeamService>();
                     teamService.UserContext = UserContext;
                     var response = await teamService.PushInvitedPlayerToTeam(InvitingTeamId, AcceptingPlayerId, PositionName, Id, CancellationToken);
-                    if (response)
+                    if (response != null)
                     {
                         Message.ChangeState(MessageStatus.Accepted);
-                        actionResponse.ActionMessage = "Invitation to the team has been accepted";
-                        actionResponse.Status = ActionResponseStatus.Success;
-                    }
-                    else
-                    {
-                        actionResponse.ActionMessage = "Could not accept the invitation to the team";
-                        actionResponse.Status = ActionResponseStatus.Failure;
                     }
                 }
-                PlayerInvitationDto? message = null;
+
                 if (Status == MessageStatus.Accepted || Status == MessageStatus.Expired)
                 {
                     message = await Message.SaveToDatabase();
                     if (message == null)
                     {
                         Message.ChangeState(MessageStatus.Pending);
-                        actionResponse.ActionMessage = "Could not accept the invitation to the team";
-                        actionResponse.Status = ActionResponseStatus.Failure;
-                        actionResponse.Message = MessageDto;
+                        message = MessageDto;
+                        actionResponse = Result.Fail<PlayerInvitationDto>(new MessageAcceptFailedError("Could not accept the invitation to the team"));
+                    }
+                    else
+                    {
+                        actionResponse = Result.Ok(message).WithSuccess(new MessageAcceptedSuccess("Invitation to the team has been accepted"));
                     }
                 }
-                actionResponse.Message = message ?? MessageDto;
             }
             catch
             {
-                actionResponse.ActionMessage = "Could not accept the invitation to the team";
-                actionResponse.Status = ActionResponseStatus.Failure;
-                actionResponse.Message = MessageDto;
+                Message.ChangeState(MessageStatus.Pending);
+                actionResponse = Result.Fail<PlayerInvitationDto>(new MessageAcceptFailedError("Could not accept the invitation to the team"));
+            }
+            if (actionResponse.IsFailed)
+            {
+                actionResponse.WithValue(message);
             }
             return actionResponse;
         }
 
-        public async override Task<ActionResponse<PlayerInvitationDto>> Reject()
+        public async override Task<Result<PlayerInvitationDto>> Reject()
         {
-            var actionResponse = new ActionResponse<PlayerInvitationDto>();
-            if (DateTime.UtcNow >= ExpiresAt)
-            {
-                Message.ChangeState(MessageStatus.Expired);
-                actionResponse.ActionMessage = "The invitation to the team has expired";
-                actionResponse.Status = ActionResponseStatus.Failure;
-            }
-            else
-            {
-                Message.ChangeState(MessageStatus.Rejected);
-                actionResponse.ActionMessage = "Invitation to the team has been rejected";
-                actionResponse.Status = ActionResponseStatus.Success;
-            }
+            Result<PlayerInvitationDto> actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRejectFailedError("Could not reject the invitation to the team"));
+            PlayerInvitationDto? message = MessageDto;
             try
             {
-                PlayerInvitationDto? message = null;
+                if (DateTime.UtcNow >= ExpiresAt)
+                {
+                    Message.ChangeState(MessageStatus.Expired);
+                    actionResponse = Result.Fail<PlayerInvitationDto>(new MessageExpiredError("The invitation has expired"));
+                }
+                else
+                {
+                    Message.ChangeState(MessageStatus.Rejected);
+                }
+
                 if (Status == MessageStatus.Rejected || Status == MessageStatus.Expired)
                 {
                     message = await Message.SaveToDatabase();
                     if (message == null)
                     {
                         Message.ChangeState(MessageStatus.Pending);
-                        actionResponse.ActionMessage = "Could not accept the invitation to the team";
-                        actionResponse.Status = ActionResponseStatus.Failure;
+                        message = MessageDto;
+                        actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRejectFailedError("Could not reject the invitation to the team"));
+                    }
+                    else
+                    {
+                        actionResponse = Result.Ok(message).WithSuccess(new MessageRejectedSuccess("Invitation to the team has been rejected"));
                     }
                 }
-                actionResponse.Message = message ?? MessageDto;
             }
             catch
             {
                 Message.ChangeState(MessageStatus.Pending);
-                actionResponse.ActionMessage = "Could not accept the invitation to the team";
-                actionResponse.Status = ActionResponseStatus.Failure;
-                actionResponse.Message = MessageDto;
+                actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRejectFailedError("Could not reject the invitation to the team"));
+            }
+            if (actionResponse.IsFailed)
+            {
+                actionResponse.WithValue(message);
             }
             return actionResponse;
         }
 
-        public async override Task<ActionResponse<PlayerInvitationDto>> Rescind()
+        public async override Task<Result<PlayerInvitationDto>> Rescind()
         {
-            var actionResponse = new ActionResponse<PlayerInvitationDto>();
-            if (DateTime.UtcNow >= ExpiresAt)
-            {
-                Message.ChangeState(MessageStatus.Expired);
-                actionResponse.ActionMessage = "The invitation to the team has expired";
-                actionResponse.Status = ActionResponseStatus.Failure;
-            }
-            else
-            {
-                Message.ChangeState(MessageStatus.Rescinded);
-                actionResponse.ActionMessage = "Invitation to the team has been rescinded";
-                actionResponse.Status = ActionResponseStatus.Success;
-            }
+            Result<PlayerInvitationDto> actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRescindFailedError("Could not rescind the invitation to the team"));
+            PlayerInvitationDto? message = MessageDto;
             try
             {
-                PlayerInvitationDto? message = null;
+                if (DateTime.UtcNow >= ExpiresAt)
+                {
+                    Message.ChangeState(MessageStatus.Expired);
+                    actionResponse = Result.Fail<PlayerInvitationDto>(new MessageExpiredError("The invitation has expired"));
+                }
+                else
+                {
+                    Message.ChangeState(MessageStatus.Rescinded);
+                }
+
                 if (Status == MessageStatus.Rescinded || Status == MessageStatus.Expired)
                 {
                     message = await Message.SaveToDatabase();
                     if (message == null)
                     {
                         Message.ChangeState(MessageStatus.Pending);
-                        actionResponse.ActionMessage = "Could not rescind the invitation to the team";
-                        actionResponse.Status = ActionResponseStatus.Failure;
+                        message = MessageDto;
+                        actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRescindFailedError("Could not rescind the invitation to the team"));
+                    }
+                    else
+                    {
+                        actionResponse = Result.Ok(message).WithSuccess(new MessageRescindedSuccess("Invitation to the team has been rescinded"));
                     }
                 }
-                actionResponse.Message = message ?? MessageDto;
             }
             catch
             {
                 Message.ChangeState(MessageStatus.Pending);
-                actionResponse.ActionMessage = "Could not rescind the invitation to the team";
-                actionResponse.Status = ActionResponseStatus.Failure;
-                actionResponse.Message = MessageDto;
+                actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRescindFailedError("Could not rescind the invitation to the team"));
+            }
+            if (actionResponse.IsFailed)
+            {
+                actionResponse.WithValue(message);
             }
             return actionResponse;
         }

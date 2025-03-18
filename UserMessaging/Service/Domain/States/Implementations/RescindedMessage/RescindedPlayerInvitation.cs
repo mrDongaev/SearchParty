@@ -1,35 +1,31 @@
-﻿using Library.Models.Enums;
+﻿using FluentResults;
+using Library.Results.Errors.Messages;
 using Service.Domain.Message;
 using Service.Domain.States.Interfaces;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 
 namespace Service.Domain.States.Implementations.RescindedMessage
 {
     public class RescindedPlayerInvitation(PlayerInvitation message) : AbstractPlayerInvitationState(message)
     {
-        public async override Task<ActionResponse<PlayerInvitationDto>> Accept()
+        public async override Task<Result<PlayerInvitationDto>> Accept()
         {
             return _giveFailureResponse();
         }
 
-        public async override Task<ActionResponse<PlayerInvitationDto>> Reject()
+        public async override Task<Result<PlayerInvitationDto>> Reject()
         {
             return _giveFailureResponse();
         }
 
-        public async override Task<ActionResponse<PlayerInvitationDto>> Rescind()
+        public async override Task<Result<PlayerInvitationDto>> Rescind()
         {
             return _giveFailureResponse();
         }
 
-        private ActionResponse<PlayerInvitationDto> _giveFailureResponse()
+        private Result<PlayerInvitationDto> _giveFailureResponse()
         {
-            var actionResponse = new ActionResponse<PlayerInvitationDto>();
-            actionResponse.ActionMessage = "The invitation has already been rescinded";
-            actionResponse.Status = ActionResponseStatus.Failure;
-            actionResponse.Message = MessageDto;
-            return actionResponse;
+            return Result.Fail<PlayerInvitationDto>(new MessageAcceptedError("The invitation has already been rescinded")).WithValue(MessageDto);
         }
     }
 }

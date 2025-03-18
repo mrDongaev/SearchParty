@@ -1,6 +1,9 @@
-﻿using Library.Models.Enums;
+﻿using FluentResults;
+using Library.Exceptions;
+using Library.Models.Enums;
+using Library.Results.Errors.Authorization;
+using Library.Results.Errors.EntityRequest;
 using Library.Services.Interfaces.UserContextInterfaces;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Repositories.Interfaces;
 using Service.Services.Implementations.MessageManagement;
@@ -10,65 +13,107 @@ namespace Service.Services.Implementations.MessageInteraction
 {
     public class PlayerInvitationInteractionService(IPlayerInvitationRepository playerInvitationRepo, IUserHttpContext userContext, PlayerInvitationManager manager) : IPlayerInvitationInteractionService
     {
-        public async Task<PlayerInvitationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<PlayerInvitationDto?>> GetMessage(Guid id, CancellationToken cancellationToken)
         {
-            return await playerInvitationRepo.GetMessage(id, cancellationToken);
-        }
-
-        public async Task<ICollection<PlayerInvitationDto>> GetUserMessages(Guid userId, ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
-        {
-            return await playerInvitationRepo.GetUserMessages(userId, messageStatuses, cancellationToken);
-        }
-
-        public async Task<ActionResponse<PlayerInvitationDto>> Accept(Guid id, CancellationToken cancellationToken)
-        {
-            ActionResponse<PlayerInvitationDto> response;
-            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
-            if (message != null)
+            var message = await playerInvitationRepo.GetMessage(id, cancellationToken);
+            if (message == null)
             {
-                return await message.Accept();
+                return Result.Fail<PlayerInvitationDto?>(new EntityNotFoundError("Player invitation with the given ID has not been found")).WithValue(null);
+            }
+            if (message.AcceptingUserId != userContext.UserId && message.SendingUserId != userContext.UserId)
+            {
+                return Result.Fail<PlayerInvitationDto?>(new UnauthorizedError()).WithValue(null);
+            }
+            return Result.Ok(message);
+        }
+
+        public async Task<Result<ICollection<PlayerInvitationDto>>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        {
+            foreach (var status in messageStatuses)
+            {
+                if (!Enum.IsDefined(status))
+                {
+                    throw new InvalidEnumMemberException(status.ToString(), typeof(PositionName).Name);
+                }
+            }
+
+            if (Guid.Empty == userContext.UserId)
+            {
+                return Result.Fail<ICollection<PlayerInvitationDto>>(new UnauthorizedError()).WithValue([]);
+            }
+
+            var messages = await playerInvitationRepo.GetUserMessages(userContext.UserId, messageStatuses, cancellationToken);
+            if (messages == null || messages.Count == 0)
+            {
+                return Result.Fail<ICollection<PlayerInvitationDto>>(new EntitiesNotFoundError("Player invitations of the given user have not been found")).WithValue([]);
+            }
+            return Result.Ok(messages);
+        }
+
+        public async Task<Result<PlayerInvitationDto?>> Accept(Guid id, CancellationToken cancellationToken)
+        {
+            var messageDtoResult = await GetMessage(id, cancellationToken);
+            if (messageDtoResult.IsFailed)
+            {
+                return messageDtoResult;
+            }
+            if (messageDtoResult.Value?.AcceptingUserId != userContext.UserId)
+            {
+                return Result.Fail<PlayerInvitationDto?>(new UnauthorizedError()).WithValue(null);
+            }
+            var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
+            if (messageDomainObj != null)
+            {
+                return await messageDomainObj.Accept();
             }
             else
             {
-                response = new ActionResponse<PlayerInvitationDto>();
-                response.ActionMessage = "The player invitation could not be accepted - message not found";
-                response.Status = ActionResponseStatus.Failure;
+                return Result.Fail<PlayerInvitationDto?>(new EntityNotFoundError("Player invitation with the given ID has not been found")).WithValue(null);
             }
-            return response;
         }
 
-        public async Task<ActionResponse<PlayerInvitationDto>> Reject(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<PlayerInvitationDto?>> Reject(Guid id, CancellationToken cancellationToken)
         {
-            ActionResponse<PlayerInvitationDto> response;
-            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
-            if (message != null)
+            var messageDtoResult = await GetMessage(id, cancellationToken);
+            if (messageDtoResult.IsFailed)
             {
-                return await message.Reject();
+                return messageDtoResult;
+            }
+            if (messageDtoResult.Value?.AcceptingUserId != userContext.UserId)
+            {
+                return Result.Fail<PlayerInvitationDto?>(new UnauthorizedError()).WithValue(null);
+            }
+            var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
+            if (messageDomainObj != null)
+            {
+                return await messageDomainObj.Reject();
             }
             else
             {
-                response = new ActionResponse<PlayerInvitationDto>();
-                response.ActionMessage = "The player invitation could not be rejected - message not found";
-                response.Status = ActionResponseStatus.Failure;
+                return Result.Fail<PlayerInvitationDto?>(new EntityNotFoundError("Player invitation with the given ID has not been found")).WithValue(null);
             }
-            return response;
         }
 
-        public async Task<ActionResponse<PlayerInvitationDto>> Rescind(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<PlayerInvitationDto?>> Rescind(Guid id, CancellationToken cancellationToken)
         {
-            ActionResponse<PlayerInvitationDto> response;
-            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
-            if (message != null)
+            var messageDtoResult = await GetMessage(id, cancellationToken);
+            if (messageDtoResult.IsFailed)
             {
-                return await message.Rescind();
+                return messageDtoResult;
+            }
+            if (messageDtoResult.Value?.SendingUserId != userContext.UserId)
+            {
+                return Result.Fail<PlayerInvitationDto?>(new UnauthorizedError()).WithValue(null);
+            }
+            var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
+            if (messageDomainObj != null)
+            {
+                return await messageDomainObj.Rescind();
             }
             else
             {
-                response = new ActionResponse<PlayerInvitationDto>();
-                response.ActionMessage = "The player invitation could not be rescinded - message not found";
-                response.Status = ActionResponseStatus.Failure;
+                return Result.Fail<PlayerInvitationDto?>(new EntityNotFoundError("Player invitation with the given ID has not been found")).WithValue(null);
             }
-            return response;
         }
     }
 }

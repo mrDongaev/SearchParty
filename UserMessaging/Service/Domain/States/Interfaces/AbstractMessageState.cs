@@ -1,8 +1,8 @@
-﻿using Library.Models.Enums;
+﻿using FluentResults;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.Message;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 
 namespace Service.Domain.States.Interfaces
@@ -80,10 +80,10 @@ namespace Service.Domain.States.Interfaces
             Message = message;
         }
 
-        public abstract Task<ActionResponse<TMessageDto>> Accept();
+        public abstract Task<Result<TMessageDto>> Accept();
 
-        public abstract Task<ActionResponse<TMessageDto>> Reject();
+        public abstract Task<Result<TMessageDto>> Reject();
 
-        public abstract Task<ActionResponse<TMessageDto>> Rescind();
+        public abstract Task<Result<TMessageDto>> Rescind();
     }
 }

@@ -9,7 +9,7 @@ using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
 using Library.Results.Errors.Authorization;
 using Library.Results.Errors.EntityRequest;
-using Library.Results.Successes.Message;
+using Library.Results.Successes.Messages;
 using Library.Services.Interfaces.UserContextInterfaces;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,7 +77,7 @@ namespace Service.Services.Implementations.TeamServices
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
                 await sender.Publish(message, cancellationToken);
-                validationResult.WithSuccess(new ApplicationSentSuccess());
+                validationResult.WithSuccess(new MessageSentSuccess("Team application has been sent successfully"));
             }
             return validationResult;
         }

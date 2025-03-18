@@ -11,28 +11,4 @@
             WithMetadata("key", nameof(SelfMessagingError));
         }
     }
-
-    public class SelfInvitationError : SelfMessagingError
-    {
-        public SelfInvitationError() : this("User cannot send an invitation to their own player profile")
-        {
-        }
-
-        public SelfInvitationError(string message) : base(message)
-        {
-            WithMetadata("key", nameof(SelfInvitationError));
-        }
-    }
-
-    public class SelfApplicationError : SelfMessagingError
-    {
-        public SelfApplicationError() : this("User cannot send an application to their own team profile")
-        {
-        }
-
-        public SelfApplicationError(string message) : base(message)
-        {
-            WithMetadata("key", nameof(SelfApplicationError));
-        }
-    }
 }

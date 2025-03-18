@@ -172,7 +172,8 @@ namespace Service.Services.Implementations.TeamServices
 
                 if (message == null || message.Status != MessageStatus.Pending)
                 {
-                    return Result.Fail<TeamDto?>(messageType.Value is MessageType.PlayerInvitation ? new NoPendingInvitationError() : new NoPendingApplicationError()).WithValue(default);
+                    string messageText = messageType.Value is MessageType.PlayerInvitation ? "There is no pending player invitation for this team" : "There is no pending team application for this team";
+                    return Result.Fail<TeamDto?>(new NoPendingMessageError(messageText)).WithValue(default);
                 }
             }
 
