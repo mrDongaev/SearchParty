@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
+using Microsoft.OpenApi.Models;
 
 Log.Logger = new Serilog.LoggerConfiguration()
     .WriteTo.Console()
@@ -26,7 +27,12 @@ try
         .AddServices()
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
-        .AddSwagger()
+        .AddSwagger("v1", new OpenApiInfo
+        {
+            Description = "SearchParty TeamPlayerProfiles API v1",
+            Title = "Team and Player Profiles",
+            Version = "1.0.0"
+        })
         .AddAuthenticationConfiguration()
         .AddRabbitMQ()
         .AddJsonConfiguration()

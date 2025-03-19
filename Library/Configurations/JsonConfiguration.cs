@@ -17,6 +17,12 @@ namespace Library.Configurations
                 options.SerializerOptions.PropertyNameCaseInsensitive = false;
             });
 
+            services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
+            });
+
             return services;
         }
     }
