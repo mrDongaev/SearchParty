@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Library.Models.HttpResponses;
+using System.Text.Json;
 
 namespace Library.Utils
 {
@@ -12,15 +13,31 @@ namespace Library.Utils
                 throw new HttpRequestException(exceptionMessage);
             }
 
-            var body = await response.Content.ReadFromJsonAsync<HttpResponseBody<T>>(cancellationToken);
-            if (body != null)
+            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            if (json != null)
             {
-                return body.MapToResult();
+                JsonElement jsonObject = JsonDocument.Parse(json).RootElement;
+                if (jsonObject.TryGetProperty("Type", out var type) && type.ValueEquals("HttpResponseBody"))
+                {
+                    HttpResponseBody<T?>? body = JsonSerializer.Deserialize<HttpResponseBody<T?>>(jsonObject);
+
+                    if (body == null)
+                    {
+                        throw new HttpRequestException(exceptionMessage);
+                    }
+
+                    return body.MapToResult();
+                }
+                else
+                {
+                    var data = JsonSerializer.Deserialize<T>(jsonObject);
+                    return Result.Ok(data);
+                }
+
+                throw new InvalidOperationException("Unknown JSON structure");
             }
-            else
-            {
-                throw new HttpRequestException(exceptionMessage);
-            }
+
+            throw new HttpRequestException(exceptionMessage);
         }
     }
 }

@@ -5,6 +5,8 @@ namespace Library.Models.HttpResponses
 {
     public class HttpResponseBody
     {
+        public readonly string Type = "HttpResponseBody";
+
         public bool IsSuccess { get; set; } = true;
 
         public IDictionary<string, string[]> Errors { get; set; } = new Dictionary<string, string[]>();
