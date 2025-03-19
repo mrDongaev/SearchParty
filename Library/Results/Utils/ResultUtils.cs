@@ -35,7 +35,9 @@ namespace Library.Results.Utils
                 "MessageAcceptFailedError" => new MessageAcceptFailedError(message),
                 "MessageExpiredError" => new MessageExpiredError(message),
                 "MessageRejectedError" => new MessageRejectedError(message),
+                "MessageRejectFailedError" => new MessageRejectFailedError(message),
                 "MessageRescindedError" => new MessageRescindedError(message),
+                "MessageRescindFailedError" => new MessageRescindFailedError(message),
                 "Error" => new Error(message),
                 _ => new Error(message),
             };

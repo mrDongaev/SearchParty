@@ -2,12 +2,12 @@
 {
     public class TeamOwnerNotPresentError : ValidationError
     {
-        public TeamOwnerNotPresentError(string message) : base(message)
+        public TeamOwnerNotPresentError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(TeamOwnerNotPresentError));
         }
 
-        public TeamOwnerNotPresentError() : this("Team must contain a player profile, created by its owner")
+        public TeamOwnerNotPresentError(object? data = null) : this("Team must contain a player profile, created by its owner", data)
         {
         }
     }

@@ -2,11 +2,11 @@
 
 namespace Library.Results.Errors.EntityRequest
 {
-    public class EntityAlreadyExistsError : Error
+    public class EntityAlreadyExistsError : ErrorWithData
     {
-        public EntityAlreadyExistsError() : this("Entity with the given ID already exists") { }
+        public EntityAlreadyExistsError(object? data = null) : this("Entity with the given ID already exists", data) { }
 
-        public EntityAlreadyExistsError(string message) : base(message)
+        public EntityAlreadyExistsError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(EntityAlreadyExistsError));
         }

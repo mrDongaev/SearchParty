@@ -2,11 +2,11 @@
 
 namespace Library.Results.Errors.Authorization
 {
-    public class UnauthorizedError : Error
+    public class UnauthorizedError : ErrorWithData
     {
-        public UnauthorizedError() : this("User is not authorized to perform this action") { }
+        public UnauthorizedError(object? data = null) : this("User is not authorized to perform this action", data) { }
 
-        public UnauthorizedError(string customMessage) : base(customMessage)
+        public UnauthorizedError(string customMessage, object? data = null) : base(customMessage, data)
         {
             WithMetadata("key", nameof(UnauthorizedError));
         }

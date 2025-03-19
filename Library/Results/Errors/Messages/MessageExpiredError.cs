@@ -2,11 +2,11 @@
 
 namespace Library.Results.Errors.Messages
 {
-    public class MessageExpiredError : Error
+    public class MessageExpiredError : ErrorWithData
     {
-        public MessageExpiredError() : this("Message has expired") { }
+        public MessageExpiredError(object? data = null) : this("Message has expired", data) { }
 
-        public MessageExpiredError(string message) : base(message)
+        public MessageExpiredError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(MessageExpiredError));
         }

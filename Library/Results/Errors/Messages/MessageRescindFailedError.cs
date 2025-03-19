@@ -2,11 +2,11 @@
 
 namespace Library.Results.Errors.Messages
 {
-    public class MessageRescindFailedError : Error
+    public class MessageRescindFailedError : ErrorWithData
     {
-        public MessageRescindFailedError() : this("Message could not be rescinded") { }
+        public MessageRescindFailedError(object? data = null) : this("Message could not be rescinded", data) { }
 
-        public MessageRescindFailedError(string message) : base(message)
+        public MessageRescindFailedError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(MessageRescindFailedError));
         }

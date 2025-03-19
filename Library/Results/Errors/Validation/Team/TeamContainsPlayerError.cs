@@ -2,11 +2,11 @@
 {
     public class TeamContainsPlayerError : ValidationError
     {
-        public TeamContainsPlayerError() : this("Team already contains the applying player profile")
+        public TeamContainsPlayerError(object? data = null) : this("Team already contains the applying player profile", data)
         {
         }
 
-        public TeamContainsPlayerError(string message) : base(message)
+        public TeamContainsPlayerError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(TeamContainsPlayerError));
         }

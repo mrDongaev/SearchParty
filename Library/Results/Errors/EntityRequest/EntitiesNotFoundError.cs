@@ -2,9 +2,9 @@
 {
     public class EntitiesNotFoundError : EntityNotFoundError
     {
-        public EntitiesNotFoundError() : this("No entities have been found") { }
+        public EntitiesNotFoundError(object? data = null) : this("No entities have been found", data) { }
 
-        public EntitiesNotFoundError(string customMessage) : base(customMessage)
+        public EntitiesNotFoundError(string customMessage, object? data = null) : base(customMessage, data)
         {
             WithMetadata("key", nameof(EntitiesNotFoundError));
         }

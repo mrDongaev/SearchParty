@@ -2,12 +2,12 @@
 {
     public class TeamCountOverflowError : ValidationError
     {
-        public TeamCountOverflowError(string message) : base(message)
+        public TeamCountOverflowError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(TeamCountOverflowError));
         }
 
-        public TeamCountOverflowError(int maxTeamCount) : this($"Team cannot have more than {maxTeamCount} members")
+        public TeamCountOverflowError(int maxTeamCount, object? data = null) : this($"Team cannot have more than {maxTeamCount} members", data)
         {
         }
     }

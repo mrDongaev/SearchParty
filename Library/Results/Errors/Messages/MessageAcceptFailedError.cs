@@ -2,11 +2,11 @@
 
 namespace Library.Results.Errors.Messages
 {
-    public class MessageAcceptFailedError : Error
+    public class MessageAcceptFailedError : ErrorWithData
     {
-        public MessageAcceptFailedError() : this("Message could not be accepted") { }
+        public MessageAcceptFailedError(object? data = null) : this("Message could not be accepted", data) { }
 
-        public MessageAcceptFailedError(string message) : base(message)
+        public MessageAcceptFailedError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(MessageAcceptFailedError));
         }

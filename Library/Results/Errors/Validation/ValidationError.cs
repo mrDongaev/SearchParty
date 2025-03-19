@@ -2,11 +2,11 @@
 
 namespace Library.Results.Errors.Validation
 {
-    public class ValidationError : Error
+    public class ValidationError : ErrorWithData
     {
-        public ValidationError() : this("A validation error has occured") { }
+        public ValidationError(object? data = null) : this("A validation error has occured", data) { }
 
-        public ValidationError(string message) : base(message)
+        public ValidationError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(ValidationError));
         }

@@ -71,10 +71,16 @@ namespace Library.Models.HttpResponses
                     }
                 }
             }
-            return new Result<T?>()
+            var result = new Result<T?>()
                 .WithErrors(errors)
-                .WithSuccesses(messages)
-                .WithValue(Data);
+                .WithSuccesses(messages);
+
+            if (IsSuccess)
+            {
+                result.WithValue(Data);
+            }
+
+            return result;
         }
     }
 
@@ -123,10 +129,17 @@ namespace Library.Models.HttpResponses
 
         public static HttpResponseBody<TDestination> MapToHttpResponseBody<TSource, TDestination>(this Result<TSource> result, Func<Result<TSource>, TDestination> valueResolver)
         {
+            TDestination? data = default;
+            try
+            {
+                data = valueResolver(result);
+            }
+            catch { }
+
             var body = new HttpResponseBody<TDestination>()
             {
                 IsSuccess = result.IsSuccess,
-                Data = valueResolver(result),
+                Data = data,
             };
             if (result.IsSuccess)
             {

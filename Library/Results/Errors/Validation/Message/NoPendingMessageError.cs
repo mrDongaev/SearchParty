@@ -2,11 +2,11 @@
 {
     public class NoPendingMessageError : ValidationError
     {
-        public NoPendingMessageError() : this("There is no pending message for this team")
+        public NoPendingMessageError(object? data = null) : this("There is no pending message for this team", data)
         {
         }
 
-        public NoPendingMessageError(string message) : base(message)
+        public NoPendingMessageError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(NoPendingMessageError));
         }

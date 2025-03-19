@@ -2,20 +2,20 @@
 {
     public class TeamPositionOverlapError : ValidationError
     {
-        public TeamPositionOverlapError(string message) : base(message)
+        public TeamPositionOverlapError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(TeamPositionOverlapError));
         }
 
-        public TeamPositionOverlapError() : this("Team cannot have multiple player profiles in a repeating position")
+        public TeamPositionOverlapError(object? data = null) : this("Team cannot have multiple player profiles in a repeating position", data)
         {
         }
 
-        public TeamPositionOverlapError(int position) : this($"Team cannot have multiple player profiles in a repeating position: {position}")
+        public TeamPositionOverlapError(int position, object? data = null) : this($"Team cannot have multiple player profiles in a repeating position: {position}", data)
         {
         }
 
-        public TeamPositionOverlapError(IEnumerable<int> positions) : this($"Team cannot have multiple player profiles in repeating positions: {string.Join(", ", positions)}")
+        public TeamPositionOverlapError(IEnumerable<int> positions, object? data = null) : this($"Team cannot have multiple player profiles in repeating positions: {string.Join(", ", positions)}", data)
         {
         }
     }

@@ -2,11 +2,11 @@
 
 namespace Library.Results.Errors.Http
 {
-    public class HttpRequestFailedError : Error
+    public class HttpRequestFailedError : ErrorWithData
     {
-        public HttpRequestFailedError() : this("Http request has failed") { }
+        public HttpRequestFailedError(object? data = null) : this("Http request has failed", data) { }
 
-        public HttpRequestFailedError(string message) : base(message)
+        public HttpRequestFailedError(string message, object? data = null) : base(message, data)
         {
             WithMetadata("key", nameof(HttpRequestFailedError));
         }
