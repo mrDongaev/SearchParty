@@ -4,6 +4,7 @@ using Domain;
 using EFData;
 using Infrastructure.Clients;
 using Infrastructure.Security;
+using Library.Configurations;
 using Library.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -139,7 +140,13 @@ namespace APIAuth
 
             AddSwagger(services);
             // Add controllers
-            services.AddControllers();
+            services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
+                    })
+                    .AddValidationResponseConfiguration();
 
             // Add API Explorer for API documentation generation
             services.AddEndpointsApiExplorer();

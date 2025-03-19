@@ -25,7 +25,7 @@ namespace Service.Services.Implementations.TeamServices
             var validationResult = TeamValidation.Validate(players, dto.PlayersInTeam, team.UserId, SearchPartyConstants.MaxCount);
             if (validationResult.IsFailed)
             {
-                return validationResult.ToResult<TeamDto?>();
+                return validationResult;
             }
             var createdTeam = await teamRepo.Add(team, cancellationToken);
             return Result.Ok(mapper.Map<TeamDto?>(createdTeam));
@@ -246,7 +246,7 @@ namespace Service.Services.Implementations.TeamServices
                 var validationResult = TeamValidation.Validate(players, dto.PlayersInTeam, existingTeam.UserId, 5);
                 if (validationResult.IsFailed)
                 {
-                    return validationResult.ToResult<TeamDto?>();
+                    return validationResult;
                 }
 
                 teamPlayers = mapper.Map<ISet<TeamPlayer>>(dto.PlayersInTeam);

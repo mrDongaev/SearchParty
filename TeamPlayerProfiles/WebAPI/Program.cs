@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
 
@@ -26,34 +28,10 @@ try
         .AddEndpointsApiExplorer()
         .AddSwagger()
         .AddAuthenticationConfiguration()
-        //.AddRabbitMQ()
+        .AddRabbitMQ()
+        .AddJsonConfiguration()
         .AddControllers()
-        .ConfigureApiBehaviorOptions(options =>
-        {
-            options.InvalidModelStateResponseFactory = context =>
-            {
-                var problemDetails = new ValidationProblemDetails(context.ModelState)
-                {
-                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-                    Title = "One or more validation errors occurred.",
-                    Status = StatusCodes.Status400BadRequest,
-                    Detail = "Please refer to the errors property for additional details.",
-                    Instance = context.HttpContext.Request.Path
-                };
-
-                // Customize the response body
-                var response = new HttpResponseBody
-                {
-                    IsSuccess = false,
-                    Errors = problemDetails.Errors,
-                };
-
-                return new BadRequestObjectResult(response)
-                {
-                    ContentTypes = { "application/json" }
-                };
-            };
-        });
+        .AddValidationResponseConfiguration();
 
     builder.Services.AddHealthChecks();
 

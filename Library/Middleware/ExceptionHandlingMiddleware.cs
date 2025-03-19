@@ -47,7 +47,6 @@ namespace WebAPI.Middleware
             {
                 IsSuccess = false,
                 Errors = errors,
-                Messages = errors,
             });
 
             _logger.Error(ex, "An error has occurred with code {codeNum}: {@statusCode}", codeNum, statusCode);
@@ -111,7 +110,7 @@ namespace WebAPI.Middleware
 
             };
             var message = string.IsNullOrEmpty(exception.Message) ? "An unforeseen error has occurred" : exception.Message;
-            return KeyValuePair.Create(nameof(exception), message);
+            return KeyValuePair.Create(exception.GetType().Name, message);
         }
 
 

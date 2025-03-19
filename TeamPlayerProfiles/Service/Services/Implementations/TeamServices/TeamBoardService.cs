@@ -14,6 +14,7 @@ using Library.Services.Interfaces.UserContextInterfaces;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Contracts.Team;
+using Service.Services.Implementations.MessageServices;
 using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
 using Service.Services.Utils;
@@ -70,9 +71,9 @@ namespace Service.Services.Implementations.TeamServices
                 MessageType = MessageType.TeamApplication,
             };
             var messageResult = await teamApplicationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
-            if (messageResult.IsFailed) return messageResult.ToResult();
+            ICollection<GetTeamApplication.Response>? existingMessages = messageResult.ValueOrDefault;
             var teamPlayers = await teamRepo.GetTeamPlayers(teamId, cancellationToken);
-            var validationResult = MessageValidation.ValidateApplication(teamUserId.Value, messageResult.Value, teamPlayers, message);
+            var validationResult = MessageValidation.ValidateApplication(teamUserId.Value, existingMessages, teamPlayers, message);
             if (validationResult.IsSuccess)
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();

@@ -1,9 +1,11 @@
 using DataAccess.Context;
 using Library.Configurations;
 using Library.Middleware;
+using Library.Services.Interfaces;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
+using System.Text.Json.Serialization;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
 
@@ -24,7 +26,9 @@ try
         .AddSwagger()
         .AddAuthenticationConfiguration()
         .AddRabbitMQ()
-        .AddControllers();
+        .AddJsonConfiguration()
+        .AddControllers()
+        .AddValidationResponseConfiguration();
 
     builder.Services.AddHealthChecks();
 

@@ -5,6 +5,7 @@ using Library.Utils;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
+using System.Text.Json.Serialization;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
 
@@ -24,7 +25,9 @@ try
         .AddEndpointsApiExplorer()
         .AddSwagger()
         .AddAuthenticationConfiguration()
-        .AddControllers();
+        .AddJsonConfiguration()
+        .AddControllers()
+        .AddValidationResponseConfiguration();
 
     builder.Services.AddHealthChecks();
 

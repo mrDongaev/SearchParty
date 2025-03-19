@@ -5,7 +5,7 @@ namespace Library.Models.HttpResponses
 {
     public class HttpResponseBody
     {
-        public readonly string Type = "HttpResponseBody";
+        public string Type { get; set; } = "HttpResponseBody";
 
         public bool IsSuccess { get; set; } = true;
 

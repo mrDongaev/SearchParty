@@ -72,9 +72,9 @@ namespace Service.Services.Implementations.PlayerServices
                 MessageType = MessageType.PlayerInvitation,
             };
             var messageResult = await playerInvitationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
-            if (messageResult.IsFailed) return messageResult.ToResult();
+            ICollection<GetPlayerInvitation.Response>? existingMessages = messageResult.ValueOrDefault;
             var teamPlayers = await teamRepo.GetTeamPlayers(teamId, cancellationToken);
-            var validationResult = MessageValidation.ValidateInvitation(teamUserId.Value, messageResult.Value, teamPlayers, message);
+            var validationResult = MessageValidation.ValidateInvitation(teamUserId.Value, existingMessages, teamPlayers, message);
             if (validationResult.IsSuccess)
             {
                 var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
