@@ -12,8 +12,7 @@ namespace WebAPI.Mapping
 
             CreateMap<CreateUser.Request, CreateUserDto>();
 
-            CreateMap<UpdateUser.Request, UpdateUserDto>()
-                .ForMember(d => d.Id, m => m.Ignore());
+            CreateMap<UpdateUser.Request, UpdateUserDto>();
         }
     }
 }

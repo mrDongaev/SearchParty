@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
+using Library.Controllers;
 using Library.Models.Enums;
-using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Models.HttpResponses;
+using Library.Results.Errors.Authorization;
+using Library.Results.Errors.EntityRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Service.Dtos.Message;
 using Service.Services.Interfaces.MessageInteraction;
 using WebAPI.Models;
 
@@ -11,99 +15,133 @@ namespace WebAPI.Controllers
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class PlayerInvitationController(IPlayerInvitationInteractionService playerInvitationService, IUserHttpContext userContext, IMapper mapper) : WebApiController
+    public class PlayerInvitationController(IPlayerInvitationInteractionService playerInvitationService, IMapper mapper) : WebApiController
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetPlayerInvitation.Response>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetPlayerInvitation.Response>, UnauthorizedHttpResult, NotFound>> Get(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<GetPlayerInvitation.Response>,
+            UnauthorizedHttpResult,
+            NotFound<HttpResponseBody<GetPlayerInvitation.Response?>>>>
+            Get(Guid id, CancellationToken cancellationToken)
         {
-            var message = await playerInvitationService.GetMessage(id, cancellationToken);
-            if (message == null)
+            var result = await playerInvitationService.GetMessage(id, cancellationToken);
+            if (result.IsFailed)
             {
-                return TypedResults.NotFound();
+                if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody<PlayerInvitationDto?, GetPlayerInvitation.Response?>(res => null));
+                }
+                else if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
             }
-            if (message.AcceptingUserId != userContext.UserId && message.SendingUserId != userContext.UserId)
-            {
-                return TypedResults.Unauthorized();
-            }
-            return TypedResults.Ok(mapper.Map<GetPlayerInvitation.Response>(message));
+            return TypedResults.Ok(mapper.Map<GetPlayerInvitation.Response>(result.Value));
         }
 
         [HttpPost]
         [ProducesResponseType<IEnumerable<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<IEnumerable<GetPlayerInvitation.Response>>, BadRequest, UnauthorizedHttpResult>> GetUserMessages([FromBody] ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<IEnumerable<GetPlayerInvitation.Response>>,
+            UnauthorizedHttpResult,
+            NotFound<HttpResponseBody<IEnumerable<GetPlayerInvitation.Response>>>>>
+            GetUserMessages([FromBody] ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
         {
-            foreach (var status in messageStatuses)
+            var result = await playerInvitationService.GetUserMessages(messageStatuses, cancellationToken);
+            if (result.IsFailed)
             {
-                if (!Enum.IsDefined(status))
+                if (result.HasError<EntityNotFoundError>())
                 {
-                    return TypedResults.BadRequest();
+                    return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<PlayerInvitationDto>, IEnumerable<GetPlayerInvitation.Response>>(res => []));
+                }
+                else if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
                 }
             }
-            var messages = await playerInvitationService.GetUserMessages(userContext.UserId, messageStatuses, cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayerInvitation.Response>>(messages));
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayerInvitation.Response>>(result.Value));
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<GetActionResponse.Response<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetActionResponse.Response<GetPlayerInvitation.Response>>, UnauthorizedHttpResult, NotFound>> Accept(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetPlayerInvitation.Response>>,
+            UnauthorizedHttpResult,
+            NotFound<HttpResponseBody<GetPlayerInvitation.Response?>>>>
+            Accept(Guid id, CancellationToken cancellationToken)
         {
-            var message = await playerInvitationService.GetMessage(id, cancellationToken);
-            if (message == null)
+            var result = await playerInvitationService.Accept(id, cancellationToken);
+            if (result.IsFailed)
             {
-                return TypedResults.NotFound();
+                if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody<PlayerInvitationDto?, GetPlayerInvitation.Response?>(res => null));
+                }
+                else if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
             }
-            if (message.AcceptingUserId != userContext.UserId)
-            {
-                return TypedResults.Unauthorized();
-            }
-            var response = await playerInvitationService.Accept(id, cancellationToken);
-            return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetPlayerInvitation.Response>>(response));
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetPlayerInvitation.Response>));
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<GetActionResponse.Response<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetActionResponse.Response<GetPlayerInvitation.Response>>, UnauthorizedHttpResult, NotFound>> Reject(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetPlayerInvitation.Response>>,
+            UnauthorizedHttpResult,
+            NotFound<HttpResponseBody<GetPlayerInvitation.Response?>>>>
+            Reject(Guid id, CancellationToken cancellationToken)
         {
-            var message = await playerInvitationService.GetMessage(id, cancellationToken);
-            if (message == null)
+            var result = await playerInvitationService.Reject(id, cancellationToken);
+            if (result.IsFailed)
             {
-                return TypedResults.NotFound();
+                if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody<PlayerInvitationDto?, GetPlayerInvitation.Response?>(res => null));
+                }
+                else if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
             }
-            if (message.AcceptingUserId != userContext.UserId)
-            {
-                return TypedResults.Unauthorized();
-            }
-            var response = await playerInvitationService.Reject(id, cancellationToken);
-            return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetPlayerInvitation.Response>>(response));
+
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetPlayerInvitation.Response>));
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType<GetActionResponse.Response<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody<GetPlayerInvitation.Response>>(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetActionResponse.Response<GetPlayerInvitation.Response>>, UnauthorizedHttpResult, NotFound>> Rescind(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody<GetPlayerInvitation.Response>>,
+            UnauthorizedHttpResult,
+            NotFound<HttpResponseBody<GetPlayerInvitation.Response?>>>>
+            Rescind(Guid id, CancellationToken cancellationToken)
         {
-            var message = await playerInvitationService.GetMessage(id, cancellationToken);
-            if (message == null)
+            var result = await playerInvitationService.Rescind(id, cancellationToken);
+            if (result.IsFailed)
             {
-                return TypedResults.NotFound();
+                if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody<PlayerInvitationDto?, GetPlayerInvitation.Response?>(res => null));
+                }
+                else if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
             }
-            if (message.SendingUserId != userContext.UserId)
-            {
-                return TypedResults.Unauthorized();
-            }
-            var response = await playerInvitationService.Rescind(id, cancellationToken);
-            return TypedResults.Ok(mapper.Map<GetActionResponse.Response<GetPlayerInvitation.Response>>(response));
-        }
 
+            return TypedResults.Ok(result.MapToHttpResponseBody(mapper.Map<GetPlayerInvitation.Response>));
+        }
     }
 }

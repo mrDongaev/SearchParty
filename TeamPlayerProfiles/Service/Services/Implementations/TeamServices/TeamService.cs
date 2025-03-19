@@ -1,100 +1,182 @@
 ﻿using AutoMapper;
-using Common.Exceptions;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using FluentResults;
+using Library.Constants;
 using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
+using Library.Results.Errors.Authorization;
+using Library.Results.Errors.EntityRequest;
+using Library.Results.Errors.Validation.Message;
+using Library.Services.Interfaces.UserContextInterfaces;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.TeamInterfaces;
+using Service.Services.Utils;
 
 namespace Service.Services.Implementations.TeamServices
 {
-    public class TeamService(IMapper mapper, ITeamRepository teamRepo, IPlayerRepository playerRepo, IPlayerInvitationService playerInvitationService, ITeamApplicationService teamApplicationService) : ITeamService
+    public class TeamService(IMapper mapper, ITeamRepository teamRepo, IPlayerRepository playerRepo, IPlayerInvitationService playerInvitationService, ITeamApplicationService teamApplicationService, IUserHttpContext userContext) : ITeamService
     {
-        public async Task<TeamDto> Create(CreateTeamDto dto, CancellationToken cancellationToken = default)
+        public async Task<Result<TeamDto?>> Create(CreateTeamDto dto, CancellationToken cancellationToken = default)
         {
             var team = mapper.Map<Team>(dto);
             var players = await playerRepo.GetRange(dto.PlayersInTeam.Select(pt => pt.PlayerId).ToList(), cancellationToken);
-            TeamServiceUtils.CheckTeamValidity(players, dto.PlayersInTeam, team.UserId, 5);
+            var validationResult = TeamValidation.Validate(players, dto.PlayersInTeam, team.UserId, SearchPartyConstants.MaxCount);
+            if (validationResult.IsFailed)
+            {
+                return validationResult;
+            }
             var createdTeam = await teamRepo.Add(team, cancellationToken);
-            return mapper.Map<TeamDto>(createdTeam);
+            return Result.Ok(mapper.Map<TeamDto?>(createdTeam));
         }
 
-        public async Task<bool> Delete(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result<bool>> Delete(Guid id, CancellationToken cancellationToken = default)
         {
-            return await teamRepo.Delete(id, cancellationToken);
+            var userId = await teamRepo.GetProfileUserId(id, cancellationToken);
+            if (userId != userContext.UserId)
+            {
+                return Result.Fail(new UnauthorizedError());
+            }
+
+            var result = await teamRepo.Delete(id, cancellationToken);
+
+            if (result)
+            {
+                return Result.Ok(true);
+            }
+
+            return Result.Fail<bool>(new EntityNotFoundError("Team with the given ID has not been found"));
         }
 
-        public async Task<TeamDto?> Get(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result<TeamDto?>> Get(Guid id, CancellationToken cancellationToken = default)
         {
             var team = await teamRepo.Get(id, cancellationToken);
-            return team == null ? null : mapper.Map<TeamDto>(team);
+
+            if (team == null)
+            {
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
+            }
+
+            if (!team.Displayed.HasValue || (!team.Displayed.Value && team.UserId != userContext.UserId))
+            {
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
+            }
+
+            return Result.Ok(mapper.Map<TeamDto?>(team));
         }
 
-        public async Task<ICollection<TeamDto>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken = default)
+        public async Task<Result<ICollection<TeamDto>>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken = default)
         {
             var teams = await teamRepo.GetRange(ids, cancellationToken);
-            return mapper.Map<ICollection<TeamDto>>(teams);
+
+            teams = teams.Where(t => t.UserId == userContext.UserId || (t.Displayed.HasValue && t.Displayed.Value)).ToList();
+
+            if (teams.Count == 0)
+            {
+                return Result.Fail<ICollection<TeamDto>>(new EntityRangeNotFoundError("Teams with the given IDs have not been found"));
+            }
+
+            return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
         }
 
-        public async Task<ICollection<TeamDto>> GetAll(CancellationToken cancellationToken = default)
+        public async Task<Result<ICollection<TeamDto>>> GetAll(CancellationToken cancellationToken = default)
         {
             var teams = await teamRepo.GetAll(cancellationToken);
-            return mapper.Map<ICollection<TeamDto>>(teams);
+
+            teams = teams.Where(t => t.UserId == userContext.UserId || (t.Displayed.HasValue && t.Displayed.Value)).ToList();
+
+            if (teams.Count == 0)
+            {
+                return Result.Fail<ICollection<TeamDto>>(new EntitiesNotFoundError("No teams have been found"));
+            }
+
+            return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
         }
 
-        public async Task<ICollection<TeamDto>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
+        public async Task<Result<ICollection<TeamDto>>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
         {
             var teams = await teamRepo.GetProfilesByUserId(userId, cancellationToken);
-            return mapper.Map<ICollection<TeamDto>>(teams);
-        }
 
-        public async Task<TeamDto?> Update(UpdateTeamDto dto, CancellationToken cancellationToken = default)
-        {
-            var team = mapper.Map<Team>(dto);
-            ISet<TeamPlayer>? teamPlayers = null;
-            if (dto.PlayersInTeam != null)
+            if (userId != userContext.UserId)
             {
-                var players = await playerRepo.GetRange(dto.PlayersInTeam.Select(pt => pt.PlayerId).ToList(), cancellationToken);
-                var existingTeam = await teamRepo.Get(dto.Id, cancellationToken);
-                if (existingTeam == null) return null;
-                TeamServiceUtils.CheckTeamValidity(players, dto.PlayersInTeam, existingTeam.UserId, 5);
-                teamPlayers = mapper.Map<ISet<TeamPlayer>>(dto.PlayersInTeam);
+                teams = teams.Where(t => t.Displayed.HasValue && t.Displayed.Value).ToList();
             }
-            var updatedTeam = await teamRepo.Update(team, teamPlayers, cancellationToken);
-            return updatedTeam == null ? null : mapper.Map<TeamDto>(updatedTeam);
+
+            if (teams.Count == 0)
+            {
+                return Result.Fail<ICollection<TeamDto>>(new EntityRangeNotFoundError("No teams of user with the given ID have been found"));
+            }
+
+            return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
         }
 
-        public async Task<Guid?> GetProfileUserId(Guid profileId, CancellationToken cancellationToken = default)
+        public async Task<Result<TeamDto?>> Update(UpdateTeamDto dto, CancellationToken cancellationToken = default)
         {
-            return await teamRepo.GetProfileUserId(profileId, cancellationToken);
+            Guid? userId = await teamRepo.GetProfileUserId(dto.Id, cancellationToken);
+
+            if (!userId.HasValue || userId.Value != userContext.UserId)
+            {
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
+            }
+
+            return await UpdateTeam(dto, cancellationToken);
         }
 
-        public async Task PushPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid? messageId, MessageType? messageType, CancellationToken cancellationToken)
+        public async Task<Result<Guid?>> GetProfileUserId(Guid profileId, CancellationToken cancellationToken = default)
         {
-            Team currentTeam = await teamRepo.Get(teamId, cancellationToken);
-            Player pushedPlayer = await playerRepo.Get(playerId, cancellationToken);
+            var userId = await teamRepo.GetProfileUserId(profileId, cancellationToken);
+
+            if (userId.HasValue)
+            {
+                return Result.Ok(userId);
+            }
+
+            return Result.Fail<Guid?>(new EntityNotFoundError("No users corresponding to the given team ID have been found"));
+        }
+
+        public async Task<Result<TeamDto?>> PushPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid? messageId, MessageType? messageType, CancellationToken cancellationToken)
+        {
+            Team? currentTeam = await teamRepo.Get(teamId, cancellationToken);
+            if (currentTeam == null)
+            {
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
+            }
+
+            Player? pushedPlayer = await playerRepo.Get(playerId, cancellationToken);
+            if (pushedPlayer == null)
+            {
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
+            }
+
+            if (currentTeam.UserId != userContext.UserId && pushedPlayer.UserId != userContext.UserId)
+            {
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
+            }
+
             if (messageId != null && messageType != null)
             {
                 GetMessage.Response? message;
                 if (messageType == MessageType.PlayerInvitation)
                 {
-                    message = await playerInvitationService.Get(messageId.Value, cancellationToken);
+                    var messageResult = await playerInvitationService.Get(messageId.Value, cancellationToken);
+                    if (messageResult.IsFailed) return messageResult.ToResult();
+                    message = messageResult.Value;
                 }
                 else
                 {
-                    message = await teamApplicationService.Get(messageId.Value, cancellationToken);
+                    var messageResult = await teamApplicationService.Get(messageId.Value, cancellationToken);
+                    if (messageResult.IsFailed) return messageResult.ToResult();
+                    message = messageResult.Value;
                 }
+
                 if (message == null || message.Status != MessageStatus.Pending)
                 {
-                    throw new NoPendingMessageException(messageType.Value);
+                    string messageText = messageType.Value is MessageType.PlayerInvitation ? "There is no pending player invitation for this team" : "There is no pending team application for this team";
+                    return Result.Fail<TeamDto?>(new NoPendingMessageError(messageText));
                 }
             }
-            else if (currentTeam.UserId != pushedPlayer.UserId)
-            {
-                throw new TeamOwnerNotPresentException();
-            }
+
             UpdateTeamDto updatedTeam = new UpdateTeamDto
             {
                 Id = teamId,
@@ -109,13 +191,28 @@ namespace Service.Services.Implementations.TeamServices
                 PlayerId = playerId,
                 Position = position,
             });
-            await Update(updatedTeam, cancellationToken);
+
+            return await UpdateTeam(updatedTeam, cancellationToken);
         }
 
-        public async Task PullPlayerFromTeam(Guid teamId, Guid playerId, CancellationToken cancellationToken)
+        public async Task<Result<TeamDto?>> PullPlayerFromTeam(Guid teamId, Guid playerId, CancellationToken cancellationToken)
         {
-            Team currentTeam = await teamRepo.Get(teamId, cancellationToken);
-            Player pushedPlayer = await playerRepo.Get(playerId, cancellationToken);
+            Team? currentTeam = await teamRepo.Get(teamId, cancellationToken);
+            if (currentTeam == null)
+            {
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
+            }
+            Player? pulledPlayer = await playerRepo.Get(playerId, cancellationToken);
+            if (pulledPlayer == null)
+            {
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
+            }
+
+            if (currentTeam.UserId != userContext.UserId && pulledPlayer.UserId != userContext.UserId)
+            {
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
+            }
+
             UpdateTeamDto updatedTeam = new UpdateTeamDto
             {
                 Id = teamId,
@@ -131,7 +228,37 @@ namespace Service.Services.Implementations.TeamServices
                 PlayerId = playerId,
                 Position = (PositionName)playerToRemove.PositionId,
             });
-            await Update(updatedTeam, cancellationToken);
+
+            return await UpdateTeam(updatedTeam, cancellationToken);
+        }
+
+        private async Task<Result<TeamDto?>> UpdateTeam(UpdateTeamDto dto, CancellationToken cancellationToken = default)
+        {
+            var team = mapper.Map<Team>(dto);
+
+            ISet<TeamPlayer>? teamPlayers = null;
+            if (dto.PlayersInTeam != null)
+            {
+                var players = await playerRepo.GetRange(dto.PlayersInTeam.Select(pt => pt.PlayerId).ToList(), cancellationToken);
+                var existingTeam = await teamRepo.Get(dto.Id, cancellationToken);
+                if (existingTeam == null) return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
+
+                var validationResult = TeamValidation.Validate(players, dto.PlayersInTeam, existingTeam.UserId, 5);
+                if (validationResult.IsFailed)
+                {
+                    return validationResult;
+                }
+
+                teamPlayers = mapper.Map<ISet<TeamPlayer>>(dto.PlayersInTeam);
+            }
+            var updatedTeam = await teamRepo.Update(team, teamPlayers, cancellationToken);
+
+            if (updatedTeam == null)
+            {
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
+            }
+
+            return Result.Ok(mapper.Map<TeamDto?>(updatedTeam));
         }
     }
 }

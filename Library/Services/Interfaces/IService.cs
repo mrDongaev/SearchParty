@@ -1,4 +1,6 @@
-﻿namespace Library.Services.Interfaces
+﻿using FluentResults;
+
+namespace Library.Services.Interfaces
 {
     /// <summary>
     /// Базовый сервис
@@ -10,12 +12,12 @@
         /// </summary>
         /// <param name="id">Идентификатор</param>
         /// <returns>ДТО сущности</returns>
-        Task<TGetDto?> Get(TId id, CancellationToken cancellationToken);
+        Task<Result<TGetDto?>> Get(TId id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Получить все сущности
         /// </summary>
         /// <returns>Список ДТО сущностей</returns>
-        Task<ICollection<TGetDto>> GetAll(CancellationToken cancellationToken);
+        Task<Result<ICollection<TGetDto>>> GetAll(CancellationToken cancellationToken);
     }
 }

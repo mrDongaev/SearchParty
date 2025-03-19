@@ -8,8 +8,6 @@ namespace Common.Models
 
         public StringFilter? DescriptionFilter { get; set; }
 
-        public SingleValueFilter<bool?>? DisplayedFilter { get; set; }
-
         public DateTimeFilter? UpdatedAtFilter { get; set; }
 
         public DateTimeFilter? UpdatedAtAddFilter { get; set; }

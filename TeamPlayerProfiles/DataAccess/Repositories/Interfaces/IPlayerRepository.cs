@@ -8,8 +8,8 @@ namespace DataAccess.Repositories.Interfaces
     {
         Task<Player?> Update(Player player, ISet<int>? heroIds, CancellationToken cancellationToken);
 
-        Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery query, CancellationToken cancellationToken);
+        Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery query, Guid userId, CancellationToken cancellationToken);
 
-        Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, uint page, uint pageSize, CancellationToken cancellationToken);
+        Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, Guid userId, uint page, uint pageSize, CancellationToken cancellationToken);
     }
 }

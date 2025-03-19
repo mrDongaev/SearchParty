@@ -49,7 +49,7 @@ namespace DataAccess.Repositories.Implementations
             return player?.UserId;
         }
 
-        public async Task<ICollection<Player>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
+        public override async Task<ICollection<Player>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
         {
             return await _players.GetEntities(true)
                 .Where(p => ids.Contains(p.Id))
@@ -73,7 +73,7 @@ namespace DataAccess.Repositories.Implementations
                 position = await _positions.SingleOrDefaultAsync(p => p.Id == (int)PositionName.Carry, cancellationToken);
             }
             player.Position = position;
-            var newPlayer = await base.Add(player, cancellationToken);
+            Player newPlayer = await base.Add(player, cancellationToken);
             return newPlayer;
         }
 
@@ -129,38 +129,36 @@ namespace DataAccess.Repositories.Implementations
             }
         }
 
-        public async Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery config, CancellationToken cancellationToken)
+        public async Task<ICollection<Player>> GetConditionalPlayerRange(ConditionalPlayerQuery config, Guid userId, CancellationToken cancellationToken)
         {
             return await _players
                 .GetEntities(true)
                 .FilterWith(config)
+                .Where(p => p.UserId == userId || (p.Displayed.HasValue && p.Displayed.Value))
                 .SortWith(config.SortConditions)
                 .ToListAsync(cancellationToken);
-
         }
 
-        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<Player>> GetPaginatedPlayerRange(ConditionalPlayerQuery config, Guid userId, uint page, uint pageSize, CancellationToken cancellationToken)
         {
-            int intPage = (int)page;
-            int intSize = (int)pageSize;
-
             var query = _players.GetEntities(true)
-                .FilterWith(config);
+                .FilterWith(config)
+                .Where(p => p.UserId == userId || (p.Displayed.HasValue && p.Displayed.Value));
 
-            int count = query.Count();
+            uint count = (uint)query.Count();
 
             var list = await query
                 .SortWith(config.SortConditions)
-                .Skip((intPage - 1) * intSize)
-                .Take(intSize)
+                .Skip((int)((page - 1) * pageSize))
+                .Take((int)pageSize)
                 .ToListAsync(cancellationToken);
 
             return new PaginatedResult<Player>
             {
-                Page = intPage,
-                PageSize = intSize,
+                Page = page,
+                PageSize = pageSize,
                 Total = count,
-                PageCount = (int)Math.Ceiling(((double)count) / pageSize),
+                PageCount = (uint)Math.Ceiling(((double)count) / pageSize),
                 List = list,
             };
         }

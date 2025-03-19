@@ -1,6 +1,9 @@
-﻿using Library.Models.Enums;
+﻿using FluentResults;
+using Library.Exceptions;
+using Library.Models.Enums;
+using Library.Results.Errors.Authorization;
+using Library.Results.Errors.EntityRequest;
 using Library.Services.Interfaces.UserContextInterfaces;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using Service.Repositories.Interfaces;
 using Service.Services.Implementations.MessageManagement;
@@ -8,67 +11,109 @@ using Service.Services.Interfaces.MessageInteraction;
 
 namespace Service.Services.Implementations.MessageInteraction
 {
-    public class TeamApplicationInteractionService(ITeamApplicationRepository teamApplicationRepo, IServiceProvider serviceProvider, IUserHttpContext userContext, TeamApplicationManager manager) : ITeamApplicationInteractionService
+    public class TeamApplicationInteractionService(ITeamApplicationRepository teamApplicationRepo, IUserHttpContext userContext, TeamApplicationManager manager) : ITeamApplicationInteractionService
     {
-        public async Task<TeamApplicationDto?> GetMessage(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<TeamApplicationDto?>> GetMessage(Guid id, CancellationToken cancellationToken)
         {
-            return await teamApplicationRepo.GetMessage(id, cancellationToken);
-        }
-
-        public async Task<ICollection<TeamApplicationDto>> GetUserMessages(Guid userId, ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
-        {
-            return await teamApplicationRepo.GetUserMessages(userId, messageStatuses, cancellationToken);
-        }
-
-        public async Task<ActionResponse<TeamApplicationDto>> Accept(Guid id, CancellationToken cancellationToken)
-        {
-            ActionResponse<TeamApplicationDto> response;
-            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
-            if (message != null)
+            var message = await teamApplicationRepo.GetMessage(id, cancellationToken);
+            if (message == null)
             {
-                return await message.Accept();
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
+            }
+            if (message.AcceptingUserId != userContext.UserId && message.SendingUserId != userContext.UserId)
+            {
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
+            }
+            return Result.Ok(message);
+        }
+
+        public async Task<Result<ICollection<TeamApplicationDto>>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        {
+            foreach (var status in messageStatuses)
+            {
+                if (!Enum.IsDefined(status))
+                {
+                    throw new InvalidEnumMemberException(status.ToString(), typeof(PositionName).Name);
+                }
+            }
+
+            if (Guid.Empty == userContext.UserId)
+            {
+                return Result.Fail<ICollection<TeamApplicationDto>>(new UnauthorizedError());
+            }
+
+            var messages = await teamApplicationRepo.GetUserMessages(userContext.UserId, messageStatuses, cancellationToken);
+            if (messages == null || messages.Count == 0)
+            {
+                return Result.Fail<ICollection<TeamApplicationDto>>(new EntitiesNotFoundError("Team applications of the given user have not been found"));
+            }
+            return Result.Ok(messages);
+        }
+
+        public async Task<Result<TeamApplicationDto?>> Accept(Guid id, CancellationToken cancellationToken)
+        {
+            var messageDtoResult = await GetMessage(id, cancellationToken);
+            if (messageDtoResult.IsFailed)
+            {
+                return messageDtoResult;
+            }
+            if (messageDtoResult.Value?.AcceptingUserId != userContext.UserId)
+            {
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
+            }
+            var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
+            if (messageDomainObj != null)
+            {
+                return await messageDomainObj.Accept();
             }
             else
             {
-                response = new ActionResponse<TeamApplicationDto>();
-                response.ActionMessage = "The team application could not be accepted";
-                response.Status = ActionResponseStatus.Failure;
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
             }
-            return response;
         }
 
-        public async Task<ActionResponse<TeamApplicationDto>> Reject(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<TeamApplicationDto?>> Reject(Guid id, CancellationToken cancellationToken)
         {
-            ActionResponse<TeamApplicationDto> response;
-            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
-            if (message != null)
+            var messageDtoResult = await GetMessage(id, cancellationToken);
+            if (messageDtoResult.IsFailed)
             {
-                return await message.Reject();
+                return messageDtoResult;
+            }
+            if (messageDtoResult.Value?.AcceptingUserId != userContext.UserId)
+            {
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
+            }
+            var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
+            if (messageDomainObj != null)
+            {
+                return await messageDomainObj.Reject();
             }
             else
             {
-                response = new ActionResponse<TeamApplicationDto>();
-                response.ActionMessage = "The team application could not be rejected";
-                response.Status = ActionResponseStatus.Failure;
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
             }
-            return response;
         }
 
-        public async Task<ActionResponse<TeamApplicationDto>> Rescind(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<TeamApplicationDto?>> Rescind(Guid id, CancellationToken cancellationToken)
         {
-            ActionResponse<TeamApplicationDto> response;
-            var message = await manager.GetOrCreateMessage(id, userContext, cancellationToken);
-            if (message != null)
+            var messageDtoResult = await GetMessage(id, cancellationToken);
+            if (messageDtoResult.IsFailed)
             {
-                return await message.Rescind();
+                return messageDtoResult;
+            }
+            if (messageDtoResult.Value?.SendingUserId != userContext.UserId)
+            {
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
+            }
+            var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
+            if (messageDomainObj != null)
+            {
+                return await messageDomainObj.Rescind();
             }
             else
             {
-                response = new ActionResponse<TeamApplicationDto>();
-                response.ActionMessage = "The team application could not be rescinded";
-                response.Status = ActionResponseStatus.Failure;
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
             }
-            return response;
         }
     }
 }

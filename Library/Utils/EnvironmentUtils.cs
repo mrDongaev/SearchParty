@@ -7,7 +7,7 @@
             var variable = Environment.GetEnvironmentVariable(key);
             if (variable == null)
             {
-                throw new ApplicationException($"Value of environment variable \"{key}\" not found");
+                throw new ApplicationException($"Value of environment variable \"{key}\" has not been found");
             }
             return variable;
         }

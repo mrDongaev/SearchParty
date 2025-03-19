@@ -1,29 +1,22 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using WebSearchPartyApi;
+using Application.Interfaces;
+using Application.User.Login;
 using Domain;
 using EFData;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Hosting;
-using Application.User.Login;
-using MediatR;
-using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Application.Interfaces;
+using Infrastructure.Clients;
 using Infrastructure.Security;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Library.Configurations;
+using Library.Models.HttpResponses;
 using Library.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using Infrastructure.Clients;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json;
+using WebSearchPartyApi;
 
 namespace APIAuth
 {
@@ -146,9 +139,21 @@ namespace APIAuth
 
             services.AddTransient<IRefreshGenerator, RefreshGenerator>();
 
-            AddSwagger(services);
+            services.AddSwagger("v1", new OpenApiInfo
+            {
+                Description = "SearchParty Authentication and authorization API v1",
+                Title = "Authentication and Authorization",
+                Version = "1.0.0"
+            });
+
             // Add controllers
-            services.AddControllers();
+            services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                        options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
+                    })
+                    .AddValidationResponseConfiguration();
 
             // Add API Explorer for API documentation generation
             services.AddEndpointsApiExplorer();
@@ -229,63 +234,6 @@ namespace APIAuth
             });
         }
 
-        public static IServiceCollection AddSwagger(IServiceCollection services)
-        {
-            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            Dictionary<string, int> counter = new Dictionary<string, int>();
-
-            services.AddSwaggerGen(options =>
-            {
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please enter token",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    BearerFormat = "JWT",
-                    Scheme = "bearer"
-                });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type=ReferenceType.SecurityScheme,
-                                Id="Bearer"
-                            }
-                        },
-                        new string[]{}
-                    }
-                });
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Description = "SearchParty Authentication and authorization API v1",
-                    Title = "Swagger",
-                    Version = "1.0.0"
-                });
-                options.CustomSchemaIds(type =>
-                {
-                    var name = type.Name;
-                    var declaringName = type.DeclaringType?.Name ?? string.Empty;
-                    if (declaringName != string.Empty) declaringName += ".";
-                    var final = declaringName + name;
-                    if (counter.ContainsKey(final))
-                    {
-                        counter[final] += 1;
-                        final += $"({counter[final]})";
-                    }
-                    else
-                    {
-                        counter.Add(final, 0);
-                    }
-                    return final;
-                });
-            });
-            return services;
-        }
-
         public static void MigrationProcessing(WebApplication app)
         {
             // Create a scope for running database migrations
@@ -300,7 +248,7 @@ namespace APIAuth
                     var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
 
                     context.Database.EnsureDeleted();
-                    context.Database.EnsureCreated();    
+                    context.Database.EnsureCreated();
                 }
                 catch (Exception ex)
                 {

@@ -31,6 +31,13 @@ namespace DataAccess.Repositories.Implementations
                 .SingleOrDefaultAsync(t => t.Id == id, cancellationToken);
         }
 
+        public override async Task<ICollection<Team>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken)
+        {
+            return await _teams.GetEntities(true)
+                .Where(t => ids.Contains(t.Id))
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<ICollection<Team>> GetProfilesByUserId(Guid userId, CancellationToken cancellationToken)
         {
             return await _teams.GetEntities(true)
@@ -141,26 +148,24 @@ namespace DataAccess.Repositories.Implementations
 
         public async Task<PaginatedResult<Team>> GetPaginatedTeamRange(ConditionalTeamQuery config, uint page, uint pageSize, CancellationToken cancellationToken)
         {
-            int intPage = (int)page;
-            int intSize = (int)pageSize;
             var query = _teams.GetEntities(true)
                 .AsNoTracking()
                 .FilterWith(config);
 
-            int count = query.Count();
+            uint count = (uint)query.Count();
 
             var list = await query
                 .SortWith(config.SortConditions)
-                .Skip((intPage - 1) * intSize)
-                .Take(intSize)
+                .Skip((int)((page - 1) * pageSize))
+                .Take((int)pageSize)
                 .ToListAsync(cancellationToken);
 
             return new PaginatedResult<Team>
             {
-                Page = intPage,
-                PageSize = intSize,
+                Page = page,
+                PageSize = pageSize,
                 Total = count,
-                PageCount = (int)Math.Ceiling((double)count / pageSize),
+                PageCount = (uint)Math.Ceiling((double)count / pageSize),
                 List = list
             };
         }

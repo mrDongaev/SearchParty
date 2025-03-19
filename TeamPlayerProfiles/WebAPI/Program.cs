@@ -1,12 +1,17 @@
 using DataAccess.Context;
 using Library.Configurations;
 using Library.Middleware;
+using Library.Models.HttpResponses;
 using Library.Utils;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
+using Microsoft.OpenApi.Models;
 
 Log.Logger = new Serilog.LoggerConfiguration()
     .WriteTo.Console()
@@ -22,10 +27,17 @@ try
         .AddServices()
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
-        .AddSwagger()
+        .AddSwagger("v1", new OpenApiInfo
+        {
+            Description = "SearchParty TeamPlayerProfiles API v1",
+            Title = "Team and Player Profiles",
+            Version = "1.0.0"
+        })
         .AddAuthenticationConfiguration()
         .AddRabbitMQ()
-        .AddControllers();
+        .AddJsonConfiguration()
+        .AddControllers()
+        .AddValidationResponseConfiguration();
 
     builder.Services.AddHealthChecks();
 

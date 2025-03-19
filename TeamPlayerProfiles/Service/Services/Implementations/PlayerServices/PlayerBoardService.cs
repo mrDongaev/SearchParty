@@ -1,64 +1,113 @@
 ﻿using AutoMapper;
-using Common.Exceptions;
 using Common.Models;
 using DataAccess.Entities;
 using DataAccess.Repositories.Interfaces;
+using FluentResults;
+using Library.Exceptions;
 using Library.Models;
 using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
+using Library.Results.Errors.Authorization;
+using Library.Results.Errors.EntityRequest;
+using Library.Results.Successes.Messages;
+using Library.Services.Interfaces.UserContextInterfaces;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Contracts.Player;
 using Service.Services.Interfaces.MessageInterfaces;
 using Service.Services.Interfaces.PlayerInterfaces;
+using Service.Services.Utils;
 
 namespace Service.Services.Implementations.PlayerServices
 {
-    public class PlayerBoardService(IMapper mapper, IPlayerRepository playerRepo, IPlayerInvitationService playerInvitationService, IServiceProvider provider) : IPlayerBoardService
+    public class PlayerBoardService(IMapper mapper, IPlayerRepository playerRepo, IUserHttpContext userContext, IServiceProvider provider) : IPlayerBoardService
     {
-        public async Task<PlayerDto?> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
+        public async Task<Result<PlayerDto?>> SetDisplayed(Guid id, bool displayed, CancellationToken cancellationToken = default)
         {
+            var userId = await playerRepo.GetProfileUserId(id, cancellationToken);
+            if (userId == null || userId != userContext.UserId)
+            {
+                return Result.Fail<PlayerDto?>(new UnauthorizedError());
+            }
             var player = new Player() { Id = id, Displayed = displayed };
             var updatedPlayer = await playerRepo.Update(player, null, cancellationToken);
-            return updatedPlayer == null ? null : mapper.Map<PlayerDto>(updatedPlayer);
+            if (updatedPlayer == null)
+            {
+                return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
+            }
+
+            return Result.Ok(mapper.Map<PlayerDto?>(updatedPlayer));
         }
 
-        public async Task InvitePlayerToTeam(ProfileMessageSubmitted message, CancellationToken cancellationToken = default)
+        public async Task<Result> InvitePlayerToTeam(Guid playerId, Guid teamId, int positionId, CancellationToken cancellationToken = default)
         {
+            if (!Enum.IsDefined(typeof(PositionName), positionId))
+            {
+                throw new InvalidEnumMemberException(positionId.ToString(), typeof(PositionName).Name);
+            }
             using var scope = provider.CreateScope();
-            var messages = await playerInvitationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
-            if (messages != null)
-            {
-                var existingMessage = messages.SingleOrDefault(m => m.AcceptingPlayerId == message.AcceptorId && m.InvitingTeamId == message.SenderId);
-                if (existingMessage != null)
-                {
-                    throw new PendingMessageExistsException(message.MessageType);
-                }
-            }
-            var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+            var playerInvitationService = scope.ServiceProvider.GetRequiredService<IPlayerInvitationService>();
+            playerInvitationService.AccessToken = userContext.AccessToken;
+            playerInvitationService.RefreshToken = userContext.RefreshToken;
             var teamRepo = scope.ServiceProvider.GetRequiredService<ITeamRepository>();
-            var teamPlayers = await teamRepo.GetTeamPlayers(message.SenderId, cancellationToken);
-            if (teamPlayers.SingleOrDefault(tp => tp.PositionId == (int)message.PositionName) != null)
+
+            var teamUserId = await teamRepo.GetProfileUserId(teamId, cancellationToken);
+            if (teamUserId == null || teamUserId != userContext.UserId)
             {
-                throw new TeamPositionOverlapException();
+                return Result.Fail(new UnauthorizedError());
             }
-            else if (teamPlayers.SingleOrDefault(tp => tp.PlayerId == message.AcceptorId) != null)
+            var playerUserId = await playerRepo.GetProfileUserId(playerId, cancellationToken);
+            if (playerUserId == null)
             {
-                throw new TeamContainsPlayerException();
+                return Result.Fail(new EntityNotFoundError("User associated with the given player profile has not been found"));
             }
-            await sender.Publish(message, cancellationToken);
+
+            var message = new ProfileMessageSubmitted()
+            {
+                SenderId = teamId,
+                SendingUserId = userContext.UserId,
+                AcceptorId = playerId,
+                AcceptingUserId = (Guid)playerUserId,
+                PositionName = (PositionName)positionId,
+                MessageType = MessageType.PlayerInvitation,
+            };
+            var messageResult = await playerInvitationService.GetUserMessages(new HashSet<MessageStatus> { MessageStatus.Pending }, cancellationToken);
+            ICollection<GetPlayerInvitation.Response>? existingMessages = messageResult.ValueOrDefault;
+            var teamPlayers = await teamRepo.GetTeamPlayers(teamId, cancellationToken);
+            var validationResult = MessageValidation.ValidateInvitation(teamUserId.Value, existingMessages, teamPlayers, message);
+            if (validationResult.IsSuccess)
+            {
+                var sender = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+                await sender.Publish(message, cancellationToken);
+                validationResult.WithSuccess(new MessageSentSuccess("Invitation has been sent successfully"));
+            }
+            return validationResult;
         }
 
-        public async Task<ICollection<PlayerDto>> GetFiltered(ConditionalPlayerQuery query, CancellationToken cancellationToken = default)
+        public async Task<Result<ICollection<PlayerDto>>> GetFiltered(ConditionalPlayerQuery query, CancellationToken cancellationToken = default)
         {
-            var players = await playerRepo.GetConditionalPlayerRange(query, cancellationToken);
-            return mapper.Map<ICollection<PlayerDto>>(players);
+            var players = await playerRepo.GetConditionalPlayerRange(query, userContext.UserId, cancellationToken);
+
+            if (players.Count == 0)
+            {
+                Result.Fail<ICollection<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found"));
+            }
+
+            return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));
         }
 
-        public async Task<PaginatedResult<PlayerDto>> GetPaginated(ConditionalPlayerQuery query, uint page, uint pageSize, CancellationToken cancellationToken = default)
+        public async Task<Result<PaginatedResult<PlayerDto>>> GetPaginated(ConditionalPlayerQuery query, uint page, uint pageSize, CancellationToken cancellationToken = default)
         {
-            var players = await playerRepo.GetPaginatedPlayerRange(query, page, pageSize, cancellationToken);
-            return mapper.Map<PaginatedResult<PlayerDto>>(players);
+            var players = await playerRepo.GetPaginatedPlayerRange(query, userContext.UserId, page, pageSize, cancellationToken);
+
+            var result = mapper.Map<PaginatedResult<PlayerDto>>(players);
+
+            if (result.Total == 0)
+            {
+                return Result.Fail<PaginatedResult<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found"));
+            }
+
+            return Result.Ok(result);
         }
     }
 }

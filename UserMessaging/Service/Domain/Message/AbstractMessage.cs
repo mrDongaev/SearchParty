@@ -1,8 +1,8 @@
-﻿using Library.Models.Enums;
+﻿using FluentResults;
+using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Domain.States.Interfaces;
-using Service.Dtos.ActionResponse;
 using Service.Dtos.Message;
 using System.Collections.Concurrent;
 
@@ -155,17 +155,17 @@ namespace Service.Domain.Message
             return _processingStarted && !_isProcessingQueue && _taskQueue.IsEmpty && _activeThreads == 0;
         }
 
-        public Task<ActionResponse<TMessageDto>> Accept()
+        public Task<Result<TMessageDto>> Accept()
         {
             return Execute(() => State.Accept());
         }
 
-        public Task<ActionResponse<TMessageDto>> Reject()
+        public Task<Result<TMessageDto>> Reject()
         {
             return Execute(() => State.Reject());
         }
 
-        public Task<ActionResponse<TMessageDto>> Rescind()
+        public Task<Result<TMessageDto>> Rescind()
         {
             return Execute(() => State.Rescind());
         }

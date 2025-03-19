@@ -1,14 +1,11 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.User.Refresh
 {
     public class RefreshQuery : IRequest<UserData>
     {
-        public string? RefreshToken { get; set; }
+        [Required]
+        public string RefreshToken { get; set; }
     }
 }

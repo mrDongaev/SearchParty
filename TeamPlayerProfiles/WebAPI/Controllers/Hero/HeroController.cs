@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using FluentResults;
+using Library.Controllers;
+using Library.Models.HttpResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Service.Contracts.Hero;
 using Service.Services.Interfaces.HeroInterfaces;
 using WebAPI.Models.Hero;
 
@@ -13,27 +17,56 @@ namespace WebAPI.Controllers.Hero
     {
         [HttpGet("{id}")]
         [ProducesResponseType<GetHero.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok<GetHero.Response>, NotFound>> Get(int id, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<GetHero.Response>,
+            NotFound<HttpResponseBody<GetHero.Response?>>>>
+            Get(int id, CancellationToken cancellationToken)
         {
-            var hero = await heroService.Get(id, cancellationToken);
-            return hero == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetHero.Response>(hero));
+            Result<HeroDto?> result = await heroService.Get(id, cancellationToken);
+
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody<HeroDto?, GetHero.Response?>(res => null));
+            }
+
+            return TypedResults.Ok(mapper.Map<GetHero.Response>(result.Value));
         }
 
         [HttpPost]
         [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetRange(ICollection<int> ids, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<IEnumerable<GetHero.Response>>,
+            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>>
+            GetRange(ICollection<int> ids, CancellationToken cancellationToken)
         {
-            var heroes = await heroService.GetRange(ids, cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetHero.Response>>(heroes));
+            var result = await heroService.GetRange(ids, cancellationToken);
+
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<HeroDto>, IEnumerable<GetHero.Response>>(res => []));
+            }
+
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetHero.Response>>(result.Value));
         }
 
         [HttpGet]
         [ProducesResponseType<IEnumerable<GetHero.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetAll(CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<IEnumerable<GetHero.Response>>,
+            NotFound<HttpResponseBody<IEnumerable<GetHero.Response>>>>>
+            GetAll(CancellationToken cancellationToken)
         {
-            var heroes = await heroService.GetAll(cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetHero.Response>>(heroes));
+            var result = await heroService.GetAll(cancellationToken);
+
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<HeroDto>, IEnumerable<GetHero.Response>>(res => []));
+            }
+
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetHero.Response>>(result.Value));
         }
     }
 }

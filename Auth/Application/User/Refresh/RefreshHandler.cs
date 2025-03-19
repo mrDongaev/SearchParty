@@ -1,15 +1,8 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces;
-using Application.User.Login;
-using Application.User.Settings;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.User.Refresh
 {
@@ -36,7 +29,7 @@ namespace Application.User.Refresh
             {
                 throw new RestException(HttpStatusCode.Unauthorized);
             }
-            else 
+            else
             {
                 var userData = new UserData
                 {

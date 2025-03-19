@@ -29,7 +29,6 @@ namespace WebAPI.Mapping
                 });
 
             CreateMap<UpdateTeam.Request, UpdateTeamDto>()
-                .ForMember(d => d.Id, m => m.Ignore())
                 .ForAllMembers(opts =>
                 {
                     opts.AllowNull();

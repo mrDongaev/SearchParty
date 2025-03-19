@@ -2,15 +2,10 @@
 using Application.User;
 using Domain;
 using Library.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Security
 {
@@ -28,7 +23,7 @@ namespace Infrastructure.Security
         {
             // Создаем список утверждений (claims) для токена.
             // В данном случае мы добавляем только одно утверждение - имя пользователя.
-            var claims = new List<Claim> 
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id)
             };
@@ -127,14 +122,14 @@ namespace Infrastructure.Security
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.ReadJwtToken(refreshToken);
-            
+
             var result = token.Claims.FirstOrDefault(c => c.Type == parameter)?.Value;
 
             if (result == null)
             {
                 return string.Empty;
             }
-            else 
+            else
             {
                 return result;
             }

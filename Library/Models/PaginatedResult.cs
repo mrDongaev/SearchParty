@@ -2,13 +2,13 @@
 {
     public class PaginatedResult<T>
     {
-        public int Total { get; set; } = 0;
+        public uint Total { get; set; } = 0;
 
-        public int Page { get; set; } = 0;
+        public uint Page { get; set; } = 1;
 
-        public int PageSize { get; set; } = 10;
+        public uint PageSize { get; set; } = 10;
 
-        public int PageCount { get; set; } = 0;
+        public uint PageCount { get; set; } = 1;
 
         public ICollection<T> List { get; set; } = [];
     }

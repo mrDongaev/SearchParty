@@ -1,11 +1,9 @@
-﻿using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Application.Exceptions;
+﻿using Application.Exceptions;
 using Application.Interfaces;
 using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using System.Net;
 
 namespace Application.User.Login
 {

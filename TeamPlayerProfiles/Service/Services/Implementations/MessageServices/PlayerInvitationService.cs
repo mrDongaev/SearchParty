@@ -1,6 +1,8 @@
-﻿using Library.Models.API.UserMessaging;
+﻿using FluentResults;
+using Library.Models.API.UserMessaging;
 using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Utils;
 using Service.Services.Interfaces.MessageInterfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -11,6 +13,22 @@ namespace Service.Services.Implementations.MessageServices
     {
         private readonly HttpClient _httpClient;
 
+        public string AccessToken
+        {
+            set
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
+            }
+        }
+
+        public string RefreshToken
+        {
+            set
+            {
+                _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={value}");
+            }
+        }
+
         public PlayerInvitationService(HttpClient httpClient, IUserHttpContext userContext)
         {
             _httpClient = httpClient;
@@ -18,16 +36,18 @@ namespace Service.Services.Implementations.MessageServices
             _httpClient.DefaultRequestHeaders.Add("Cookie", $"RefreshToken={userContext.RefreshToken}");
         }
 
-        public async Task<GetPlayerInvitation.Response?> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<GetPlayerInvitation.Response?>> Get(Guid id, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.GetAsync($"/api/PlayerInvitation/Get/{id}", cancellationToken);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<GetPlayerInvitation.Response>() : null;
+
+            return await response.ReadResultFromJsonResponse<GetPlayerInvitation.Response?>("HTTP request to get player invitation failed", cancellationToken);
         }
 
-        public async Task<ICollection<GetPlayerInvitation.Response>?> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken)
+        public async Task<Result<ICollection<GetPlayerInvitation.Response>?>> GetUserMessages(ISet<MessageStatus> messageStatuses, CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.PostAsJsonAsync($"/api/PlayerInvitation/GetUserMessages", messageStatuses, cancellationToken);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<ICollection<GetPlayerInvitation.Response>>() : null;
+
+            return await response.ReadResultFromJsonResponse<ICollection<GetPlayerInvitation.Response>?>("HTTP request to get player invitations of the user failed", cancellationToken);
         }
     }
 }

@@ -23,7 +23,6 @@ namespace Library.Middleware
                     userContext.UserId = Guid.Parse(nameId);
                     userContext.AccessToken = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                     userContext.RefreshToken = context.Request.Cookies["RefreshToken"] ?? string.Empty;
-                    userContext.Claims = context.User.Claims.ToList();
                 }
                 else
                 {

@@ -4,6 +4,8 @@
     {
         public sealed class Request
         {
+            public Guid Id { get; set; }
+
             public uint Mmr { get; set; }
         }
     }

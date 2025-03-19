@@ -1,9 +1,12 @@
 using DataAccess.Context;
 using Library.Configurations;
 using Library.Middleware;
+using Library.Services.Interfaces;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Text.Json.Serialization;
 using WebAPI.Configurations;
 using WebAPI.Middleware;
 
@@ -21,10 +24,17 @@ try
         .AddServices()
         .AddAutoMapper()
         .AddEndpointsApiExplorer()
-        .AddSwagger()
+        .AddSwagger("v1", new OpenApiInfo
+        {
+            Description = "SearchParty User Messaging API v1",
+            Title = "User Messaging",
+            Version = "1.0.0"
+        })
         .AddAuthenticationConfiguration()
         .AddRabbitMQ()
-        .AddControllers();
+        .AddJsonConfiguration()
+        .AddControllers()
+        .AddValidationResponseConfiguration();
 
     builder.Services.AddHealthChecks();
 

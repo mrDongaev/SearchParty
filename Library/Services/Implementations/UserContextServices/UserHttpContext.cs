@@ -12,5 +12,10 @@ namespace Library.Services.Implementations.UserContextServices
         public string AccessToken { get; set; } = string.Empty;
 
         public string RefreshToken { get; set; } = string.Empty;
+
+        public IUserHttpContext GetPersistentData()
+        {
+            return new UserHttpContextStruct(UserId, AccessToken, RefreshToken);
+        }
     }
 }

@@ -1,6 +1,8 @@
-﻿using Library.Models.API.TeamPlayerProfiles.Team;
+﻿using FluentResults;
+using Library.Models.API.TeamPlayerProfiles.Team;
 using Library.Models.Enums;
 using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Utils;
 using Service.Services.Interfaces.TeamInterfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -30,17 +32,17 @@ namespace Service.Services.Implementations.TeamServices
             UserContext = userContext;
         }
 
-        public async Task<bool> PushApplyingPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid messageId, CancellationToken cancellationToken)
+        public async Task<Result<GetTeam.Response?>> PushApplyingPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid messageId, CancellationToken cancellationToken)
         {
             return await PushPlayerToTeam(teamId, playerId, position, messageId, MessageType.TeamApplication, cancellationToken);
         }
 
-        public async Task<bool> PushInvitedPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid messageId, CancellationToken cancellationToken)
+        public async Task<Result<GetTeam.Response?>> PushInvitedPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid messageId, CancellationToken cancellationToken)
         {
             return await PushPlayerToTeam(teamId, playerId, position, messageId, MessageType.PlayerInvitation, cancellationToken);
         }
 
-        public async Task<bool> PushPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid messageid, MessageType messageType, CancellationToken cancellationToken)
+        public async Task<Result<GetTeam.Response?>> PushPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid messageid, MessageType messageType, CancellationToken cancellationToken)
         {
             PushPlayer.Request request = new PushPlayer.Request()
             {
@@ -51,7 +53,7 @@ namespace Service.Services.Implementations.TeamServices
                 Position = position,
             };
             using var response = await _httpClient.PostAsJsonAsync("/api/Team/PushPlayerToTeam", request, cancellationToken);
-            return response.IsSuccessStatusCode;
+            return await response.ReadResultFromJsonResponse<GetTeam.Response?>("Could not push player to the team", cancellationToken);
         }
     }
 }

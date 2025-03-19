@@ -18,7 +18,6 @@ namespace WebAPI.Mapping
                                 });
 
             CreateMap<UpdateUser.Request, UpdateUserDto>()
-                .ForMember(d => d.Id, m => m.Ignore())
                                 .ForAllMembers(opts =>
                                 {
                                     opts.AllowNull();

@@ -1,86 +1,116 @@
 ﻿using AutoMapper;
 using Common.Models;
+using Library.Controllers;
 using Library.Models;
-using Library.Models.API.UserMessaging;
-using Library.Models.Enums;
-using Library.Services.Interfaces.UserContextInterfaces;
+using Library.Models.HttpResponses;
+using Library.Results.Errors.Authorization;
+using Library.Results.Errors.EntityRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Service.Contracts.Player;
 using Service.Services.Interfaces.PlayerInterfaces;
-using Service.Services.Interfaces.UserInterfaces;
 using WebAPI.Models.Player;
 
 namespace WebAPI.Controllers.Player
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
-    public class PlayerBoardController(IMapper mapper, IPlayerBoardService boardService, IUserIdentityService userIdentity, IUserHttpContext userContext) : WebApiController
+    public class PlayerBoardController(IMapper mapper, IPlayerBoardService boardService) : WebApiController
     {
-        [HttpPost("{playerId}/{displayed}")]
+        [HttpGet("{playerId}/{displayed}")]
         [ProducesResponseType<GetPlayer.Response>(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<Results<Ok<GetPlayer.Response>, NotFound, UnauthorizedHttpResult>> SetDisplayed(Guid playerId, bool displayed, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<GetPlayer.Response>,
+            NotFound<HttpResponseBody<GetPlayer.Response?>>,
+            UnauthorizedHttpResult>>
+            SetDisplayed(Guid playerId, bool displayed, CancellationToken cancellationToken)
         {
-            var userId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
-            if (!userId.HasValue) return TypedResults.NotFound();
-            if (userId != userContext.UserId)
+            var result = await boardService.SetDisplayed(playerId, displayed, cancellationToken);
+
+            if (result.IsFailed)
             {
-                return TypedResults.Unauthorized();
+                if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
+                else if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody<PlayerDto?, GetPlayer.Response?>(res => null));
+                }
             }
-            var updatedPlayer = await boardService.SetDisplayed(playerId, displayed, cancellationToken);
-            return updatedPlayer == null ? TypedResults.NotFound() : TypedResults.Ok(mapper.Map<GetPlayer.Response>(updatedPlayer));
+
+            return TypedResults.Ok(mapper.Map<GetPlayer.Response>(result.Value));
         }
 
-        [HttpPost("{playerId}/{teamId}/{position}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet("{playerId}/{teamId}/{position}")]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status200OK)]
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<Results<Ok, BadRequest, NotFound, UnauthorizedHttpResult>> InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<HttpResponseBody>,
+            BadRequest<HttpResponseBody>,
+            NotFound<HttpResponseBody>,
+            UnauthorizedHttpResult,
+            InternalServerError<HttpResponseBody>>>
+            InvitePlayerToTeam(Guid playerId, Guid teamId, int position, CancellationToken cancellationToken)
         {
-            var teamUserId = await userIdentity.GetTeamUserId(teamId, cancellationToken);
-            var playerUserId = await userIdentity.GetPlayerUserId(playerId, cancellationToken);
-            if (teamUserId == null || playerUserId == null)
+            var result = await boardService.InvitePlayerToTeam(playerId, teamId, position, cancellationToken);
+            if (result.IsFailed)
             {
-                return TypedResults.NotFound();
+                if (result.HasError<UnauthorizedError>())
+                {
+                    return TypedResults.Unauthorized();
+                }
+                else if (result.HasError<EntityNotFoundError>())
+                {
+                    return TypedResults.NotFound(result.MapToHttpResponseBody());
+                }
+                else
+                {
+                    return TypedResults.BadRequest(result.MapToHttpResponseBody());
+                }
             }
-            if (teamUserId != userContext.UserId)
-            {
-                return TypedResults.Unauthorized();
-            }
-            if (playerUserId == userContext.UserId || !Enum.IsDefined(typeof(PositionName), position))
-            {
-                return TypedResults.BadRequest();
-            }
-            var message = new ProfileMessageSubmitted()
-            {
-                SenderId = teamId,
-                SendingUserId = userContext.UserId,
-                AcceptorId = playerId,
-                AcceptingUserId = (Guid)playerUserId,
-                PositionName = (PositionName)position,
-                MessageType = MessageType.PlayerInvitation,
-            };
-            await boardService.InvitePlayerToTeam(message, cancellationToken);
-            return TypedResults.Ok();
+            return TypedResults.Ok(result.MapToHttpResponseBody());
         }
 
         [HttpPost]
         [ProducesResponseType<IEnumerable<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetFiltered(GetConditionalPlayer.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<IEnumerable<GetPlayer.Response>>,
+            NotFound<HttpResponseBody<IEnumerable<GetPlayer.Response>>>>>
+            GetFiltered(GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
-            var players = await boardService.GetFiltered(mapper.Map<ConditionalPlayerQuery>(request), cancellationToken);
-            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(players));
+            var result = await boardService.GetFiltered(mapper.Map<ConditionalPlayerQuery>(request), cancellationToken);
+
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody<ICollection<PlayerDto>, IEnumerable<GetPlayer.Response>>(res => []));
+            }
+
+            return TypedResults.Ok(mapper.Map<IEnumerable<GetPlayer.Response>>(result.Value));
         }
 
         [HttpPost("{pageSize}/{page}")]
         [ProducesResponseType<PaginatedResult<GetPlayer.Response>>(StatusCodes.Status200OK)]
-        public async Task<IResult> GetPaginated(uint page, uint pageSize, GetConditionalPlayer.Request request, CancellationToken cancellationToken)
+        [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
+        public async Task<Results<
+            Ok<PaginatedResult<GetPlayer.Response>>,
+            NotFound<HttpResponseBody<PaginatedResult<GetPlayer.Response>>>>>
+            GetPaginated(uint page, uint pageSize, GetConditionalPlayer.Request request, CancellationToken cancellationToken)
         {
-            var players = await boardService.GetPaginated(mapper.Map<ConditionalPlayerQuery>(request), page, pageSize, cancellationToken);
-            return TypedResults.Ok(mapper.Map<PaginatedResult<GetPlayer.Response>>(players));
+            var result = await boardService.GetPaginated(mapper.Map<ConditionalPlayerQuery>(request), page, pageSize, cancellationToken);
+
+            if (result.IsFailed)
+            {
+                return TypedResults.NotFound(result.MapToHttpResponseBody(res => new PaginatedResult<GetPlayer.Response>() { PageSize = pageSize }));
+            }
+
+            return TypedResults.Ok(mapper.Map<PaginatedResult<GetPlayer.Response>>(result.Value));
         }
     }
 }

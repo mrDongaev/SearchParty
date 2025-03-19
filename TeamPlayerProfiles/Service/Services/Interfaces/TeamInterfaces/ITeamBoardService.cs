@@ -1,5 +1,5 @@
 ﻿using Common.Models;
-using Library.Models.API.UserMessaging;
+using FluentResults;
 using Service.Contracts.Team;
 using Service.Services.Interfaces.Common;
 
@@ -7,6 +7,6 @@ namespace Service.Services.Interfaces.TeamInterfaces
 {
     public interface ITeamBoardService : IBoardService<TeamDto, ConditionalTeamQuery>
     {
-        Task SendTeamApplicationRequest(ProfileMessageSubmitted message, CancellationToken cancellationToken);
+        Task<Result> SendTeamApplicationRequest(Guid playerId, Guid teamId, int positionId, CancellationToken cancellationToken);
     }
 }
