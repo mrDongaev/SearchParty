@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using FluentResults;
 using Library.Controllers;
 using Library.Models.HttpResponses;
 using Library.Results.Errors.Authorization;
 using Library.Results.Errors.EntityRequest;
-using Library.Services.Interfaces.UserContextInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -151,7 +149,7 @@ namespace WebAPI.Controllers
                 }
                 else if (result.HasError<EntityNotFoundError>())
                 {
-                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => res.Value));
+                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => false));
                 }
             }
 

@@ -4,7 +4,7 @@
     {
         public TeamPositionOverlapError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(TeamPositionOverlapError));
+            Metadata["ReasonName"] = nameof(TeamPositionOverlapError);
         }
 
         public TeamPositionOverlapError(object? data = null) : this("Team cannot have multiple player profiles in a repeating position", data)

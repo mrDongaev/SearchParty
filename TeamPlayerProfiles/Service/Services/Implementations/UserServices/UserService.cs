@@ -16,12 +16,12 @@ namespace Service.Services.Implementations
         {
             if (dto.Id != userContext.UserId)
             {
-                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<UserDto?>(new UnauthorizedError());
             }
             var userExists = await userRepo.Get(dto.Id, cancellationToken) != null;
             if (userExists)
             {
-                return Result.Fail<UserDto?>(new EntityAlreadyExistsError("User profile with the given ID already exists")).WithValue(default);
+                return Result.Fail<UserDto?>(new EntityAlreadyExistsError("User profile with the given ID already exists"));
             }
             var newUser = mapper.Map<User>(dto);
             var createdUser = await userRepo.Add(newUser, cancellationToken);
@@ -32,14 +32,14 @@ namespace Service.Services.Implementations
         {
             if (id != userContext.UserId)
             {
-                return Result.Fail<bool>(new UnauthorizedError()).WithValue(false);
+                return Result.Fail<bool>(new UnauthorizedError());
             }
             var result = await userRepo.Delete(id, cancellationToken);
             if (result)
             {
                 return Result.Ok(true);
             }
-            return Result.Fail<bool>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(false);
+            return Result.Fail<bool>(new EntityNotFoundError("User profile with the given ID has not been found"));
         }
 
         public async Task<Result<UserDto?>> Get(Guid id, CancellationToken cancellationToken = default)
@@ -48,7 +48,7 @@ namespace Service.Services.Implementations
 
             if (user == null)
             {
-                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(default);
+                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<UserDto?>(user));
@@ -60,7 +60,7 @@ namespace Service.Services.Implementations
 
             if (users.Count == 0)
             {
-                return Result.Fail<ICollection<UserDto>>(new EntitiesNotFoundError("No users have been found")).WithValue([]);
+                return Result.Fail<ICollection<UserDto>>(new EntitiesNotFoundError("No users have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<UserDto>>(users));
@@ -72,7 +72,7 @@ namespace Service.Services.Implementations
 
             if (users.Count == 0)
             {
-                return Result.Fail<ICollection<UserDto>>(new EntityRangeNotFoundError("User profiles with the given IDs have not been found")).WithValue([]);
+                return Result.Fail<ICollection<UserDto>>(new EntityRangeNotFoundError("User profiles with the given IDs have not been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<UserDto>>(users));
@@ -82,14 +82,14 @@ namespace Service.Services.Implementations
         {
             if (dto.Id != userContext.UserId)
             {
-                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<UserDto?>(new UnauthorizedError());
             }
             var user = mapper.Map<User>(dto);
             var updatedUser = await userRepo.Update(user, cancellationToken);
 
             if (updatedUser == null)
             {
-                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(default);
+                return Result.Fail<UserDto?>(new EntityNotFoundError("User profile with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<UserDto?>(updatedUser));

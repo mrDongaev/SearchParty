@@ -9,4 +9,3 @@ namespace WebSearchPartyApi
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
     }
 }
- 

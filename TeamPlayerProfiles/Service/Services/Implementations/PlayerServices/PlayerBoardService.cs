@@ -27,13 +27,13 @@ namespace Service.Services.Implementations.PlayerServices
             var userId = await playerRepo.GetProfileUserId(id, cancellationToken);
             if (userId == null || userId != userContext.UserId)
             {
-                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<PlayerDto?>(new UnauthorizedError());
             }
             var player = new Player() { Id = id, Displayed = displayed };
             var updatedPlayer = await playerRepo.Update(player, null, cancellationToken);
             if (updatedPlayer == null)
             {
-                return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(default);
+                return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<PlayerDto?>(updatedPlayer));
@@ -90,7 +90,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (players.Count == 0)
             {
-                Result.Fail<ICollection<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found")).WithValue([]);
+                Result.Fail<ICollection<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));
@@ -104,7 +104,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (result.Total == 0)
             {
-                return Result.Fail<PaginatedResult<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found")).WithValue(result);
+                return Result.Fail<PaginatedResult<PlayerDto>>(new EntitiesForQueryNotFoundError("Players matching given filtering query have not been been found"));
             }
 
             return Result.Ok(result);

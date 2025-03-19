@@ -1,12 +1,9 @@
-﻿using Application.User.Login;
-using Application.User;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Application.User.Registration;
-using APIAuth.API.Controllers;
+﻿using APIAuth.API.Controllers;
 using Application.Exceptions;
+using Application.User;
+using Application.User.Login;
+using Application.User.Registration;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APIAuth.Controllers
 {
@@ -31,7 +28,7 @@ namespace APIAuth.Controllers
                 //Вернуть IActionResult
                 return Ok(res);
             }
-            catch(RestException ex) 
+            catch (RestException ex)
             {
                 return Unauthorized(ex.Message);
             }
@@ -42,7 +39,7 @@ namespace APIAuth.Controllers
 
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         [HttpPost("registration")]

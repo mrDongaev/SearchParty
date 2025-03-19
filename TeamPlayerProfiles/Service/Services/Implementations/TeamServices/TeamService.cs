@@ -25,7 +25,7 @@ namespace Service.Services.Implementations.TeamServices
             var validationResult = TeamValidation.Validate(players, dto.PlayersInTeam, team.UserId, SearchPartyConstants.MaxCount);
             if (validationResult.IsFailed)
             {
-                return validationResult.ToResult<TeamDto?>().WithValue(default);
+                return validationResult.ToResult<TeamDto?>();
             }
             var createdTeam = await teamRepo.Add(team, cancellationToken);
             return Result.Ok(mapper.Map<TeamDto?>(createdTeam));
@@ -46,7 +46,7 @@ namespace Service.Services.Implementations.TeamServices
                 return Result.Ok(true);
             }
 
-            return Result.Fail<bool>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(false);
+            return Result.Fail<bool>(new EntityNotFoundError("Team with the given ID has not been found"));
         }
 
         public async Task<Result<TeamDto?>> Get(Guid id, CancellationToken cancellationToken = default)
@@ -55,12 +55,12 @@ namespace Service.Services.Implementations.TeamServices
 
             if (team == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(default);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
             }
 
             if (!team.Displayed.HasValue || (!team.Displayed.Value && team.UserId != userContext.UserId))
             {
-                return Result.Fail<TeamDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
             }
 
             return Result.Ok(mapper.Map<TeamDto?>(team));
@@ -74,7 +74,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Count == 0)
             {
-                return Result.Fail<ICollection<TeamDto>>(new EntityRangeNotFoundError("Teams with the given IDs have not been found")).WithValue([]);
+                return Result.Fail<ICollection<TeamDto>>(new EntityRangeNotFoundError("Teams with the given IDs have not been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
@@ -88,7 +88,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Count == 0)
             {
-                return Result.Fail<ICollection<TeamDto>>(new EntitiesNotFoundError("No teams have been found")).WithValue([]);
+                return Result.Fail<ICollection<TeamDto>>(new EntitiesNotFoundError("No teams have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
@@ -105,7 +105,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Count == 0)
             {
-                return Result.Fail<ICollection<TeamDto>>(new EntityRangeNotFoundError("No teams of user with the given ID have been found")).WithValue([]);
+                return Result.Fail<ICollection<TeamDto>>(new EntityRangeNotFoundError("No teams of user with the given ID have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
@@ -117,7 +117,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (!userId.HasValue || userId.Value != userContext.UserId)
             {
-                return Result.Fail<TeamDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
             }
 
             return await UpdateTeam(dto, cancellationToken);
@@ -132,7 +132,7 @@ namespace Service.Services.Implementations.TeamServices
                 return Result.Ok(userId);
             }
 
-            return Result.Fail<Guid?>(new EntityNotFoundError("No users corresponding to the given team ID have been found")).WithValue(default);
+            return Result.Fail<Guid?>(new EntityNotFoundError("No users corresponding to the given team ID have been found"));
         }
 
         public async Task<Result<TeamDto?>> PushPlayerToTeam(Guid teamId, Guid playerId, PositionName position, Guid? messageId, MessageType? messageType, CancellationToken cancellationToken)
@@ -140,18 +140,18 @@ namespace Service.Services.Implementations.TeamServices
             Team? currentTeam = await teamRepo.Get(teamId, cancellationToken);
             if (currentTeam == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(default);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
             }
 
             Player? pushedPlayer = await playerRepo.Get(playerId, cancellationToken);
             if (pushedPlayer == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(default);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
             }
 
             if (currentTeam.UserId != userContext.UserId && pushedPlayer.UserId != userContext.UserId)
             {
-                return Result.Fail<TeamDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
             }
 
             if (messageId != null && messageType != null)
@@ -173,7 +173,7 @@ namespace Service.Services.Implementations.TeamServices
                 if (message == null || message.Status != MessageStatus.Pending)
                 {
                     string messageText = messageType.Value is MessageType.PlayerInvitation ? "There is no pending player invitation for this team" : "There is no pending team application for this team";
-                    return Result.Fail<TeamDto?>(new NoPendingMessageError(messageText)).WithValue(default);
+                    return Result.Fail<TeamDto?>(new NoPendingMessageError(messageText));
                 }
             }
 
@@ -200,17 +200,17 @@ namespace Service.Services.Implementations.TeamServices
             Team? currentTeam = await teamRepo.Get(teamId, cancellationToken);
             if (currentTeam == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(default);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
             }
             Player? pulledPlayer = await playerRepo.Get(playerId, cancellationToken);
             if (pulledPlayer == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(default);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
             }
 
             if (currentTeam.UserId != userContext.UserId && pulledPlayer.UserId != userContext.UserId)
             {
-                return Result.Fail<TeamDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<TeamDto?>(new UnauthorizedError());
             }
 
             UpdateTeamDto updatedTeam = new UpdateTeamDto
@@ -241,12 +241,12 @@ namespace Service.Services.Implementations.TeamServices
             {
                 var players = await playerRepo.GetRange(dto.PlayersInTeam.Select(pt => pt.PlayerId).ToList(), cancellationToken);
                 var existingTeam = await teamRepo.Get(dto.Id, cancellationToken);
-                if (existingTeam == null) return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(default);
+                if (existingTeam == null) return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
 
                 var validationResult = TeamValidation.Validate(players, dto.PlayersInTeam, existingTeam.UserId, 5);
                 if (validationResult.IsFailed)
                 {
-                    return validationResult.ToResult<TeamDto?>().WithValue(default);
+                    return validationResult.ToResult<TeamDto?>();
                 }
 
                 teamPlayers = mapper.Map<ISet<TeamPlayer>>(dto.PlayersInTeam);
@@ -255,7 +255,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (updatedTeam == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(default);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<TeamDto?>(updatedTeam));

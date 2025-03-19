@@ -8,7 +8,7 @@
 
         public PendingMessageExistsError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(PendingMessageExistsError));
+            Metadata["ReasonName"] = nameof(PendingMessageExistsError);
         }
     }
 }

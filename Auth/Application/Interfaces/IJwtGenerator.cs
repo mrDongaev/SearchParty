@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.User.Settings;
 using Domain;
-using Application.User.Settings;
-using Application.User;
 
 namespace Application.Interfaces
 {

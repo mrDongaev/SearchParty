@@ -6,7 +6,7 @@
 
         public EntitiesNotFoundError(string customMessage, object? data = null) : base(customMessage, data)
         {
-            WithMetadata("key", nameof(EntitiesNotFoundError));
+            Metadata["ReasonName"] = nameof(EntitiesNotFoundError);
         }
     }
 }

@@ -18,11 +18,11 @@ namespace Service.Services.Implementations.MessageInteraction
             var message = await teamApplicationRepo.GetMessage(id, cancellationToken);
             if (message == null)
             {
-                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found")).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
             }
             if (message.AcceptingUserId != userContext.UserId && message.SendingUserId != userContext.UserId)
             {
-                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
             }
             return Result.Ok(message);
         }
@@ -39,13 +39,13 @@ namespace Service.Services.Implementations.MessageInteraction
 
             if (Guid.Empty == userContext.UserId)
             {
-                return Result.Fail<ICollection<TeamApplicationDto>>(new UnauthorizedError()).WithValue([]);
+                return Result.Fail<ICollection<TeamApplicationDto>>(new UnauthorizedError());
             }
 
             var messages = await teamApplicationRepo.GetUserMessages(userContext.UserId, messageStatuses, cancellationToken);
             if (messages == null || messages.Count == 0)
             {
-                return Result.Fail<ICollection<TeamApplicationDto>>(new EntitiesNotFoundError("Team applications of the given user have not been found")).WithValue([]);
+                return Result.Fail<ICollection<TeamApplicationDto>>(new EntitiesNotFoundError("Team applications of the given user have not been found"));
             }
             return Result.Ok(messages);
         }
@@ -59,7 +59,7 @@ namespace Service.Services.Implementations.MessageInteraction
             }
             if (messageDtoResult.Value?.AcceptingUserId != userContext.UserId)
             {
-                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
             }
             var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
             if (messageDomainObj != null)
@@ -68,7 +68,7 @@ namespace Service.Services.Implementations.MessageInteraction
             }
             else
             {
-                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found")).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
             }
         }
 
@@ -81,7 +81,7 @@ namespace Service.Services.Implementations.MessageInteraction
             }
             if (messageDtoResult.Value?.AcceptingUserId != userContext.UserId)
             {
-                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
             }
             var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
             if (messageDomainObj != null)
@@ -90,7 +90,7 @@ namespace Service.Services.Implementations.MessageInteraction
             }
             else
             {
-                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found")).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
             }
         }
 
@@ -103,7 +103,7 @@ namespace Service.Services.Implementations.MessageInteraction
             }
             if (messageDtoResult.Value?.SendingUserId != userContext.UserId)
             {
-                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new UnauthorizedError());
             }
             var messageDomainObj = await manager.GetOrCreateMessage(id, userContext.GetPersistentData(), cancellationToken);
             if (messageDomainObj != null)
@@ -112,7 +112,7 @@ namespace Service.Services.Implementations.MessageInteraction
             }
             else
             {
-                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found")).WithValue(null);
+                return Result.Fail<TeamApplicationDto?>(new EntityNotFoundError("Team application with the given ID has not been found"));
             }
         }
     }

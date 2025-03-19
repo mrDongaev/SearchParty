@@ -108,7 +108,7 @@ namespace WebAPI.Controllers.Team
 
             if (result.IsFailed)
             {
-                return TypedResults.NotFound(result.MapToHttpResponseBody(mapper.Map<PaginatedResult<GetTeam.Response>>));
+                return TypedResults.NotFound(result.MapToHttpResponseBody(res => new PaginatedResult<GetTeam.Response>() { PageSize = pageSize }));
             }
 
             return TypedResults.Ok(mapper.Map<PaginatedResult<GetTeam.Response>>(result.Value));

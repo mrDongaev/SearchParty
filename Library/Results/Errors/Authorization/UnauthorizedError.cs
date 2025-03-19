@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.Authorization
+﻿namespace Library.Results.Errors.Authorization
 {
     public class UnauthorizedError : ErrorWithData
     {
@@ -8,7 +6,7 @@ namespace Library.Results.Errors.Authorization
 
         public UnauthorizedError(string customMessage, object? data = null) : base(customMessage, data)
         {
-            WithMetadata("key", nameof(UnauthorizedError));
+            Metadata["ReasonName"] = nameof(UnauthorizedError);
         }
     }
 }

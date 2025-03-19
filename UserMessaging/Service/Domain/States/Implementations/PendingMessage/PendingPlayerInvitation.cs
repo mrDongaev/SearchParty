@@ -21,7 +21,6 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 if (DateTime.UtcNow >= ExpiresAt)
                 {
                     Message.ChangeState(MessageStatus.Expired);
-                    actionResponse = Result.Fail<PlayerInvitationDto>(new MessageExpiredError("The invitation has expired"));
                 }
                 else
                 {
@@ -41,12 +40,18 @@ namespace Service.Domain.States.Implementations.PendingMessage
                     if (message == null)
                     {
                         Message.ChangeState(MessageStatus.Pending);
-                        message = MessageDto;
                         actionResponse = Result.Fail<PlayerInvitationDto>(new MessageAcceptFailedError("Could not accept the invitation to the team"));
                     }
                     else
                     {
-                        actionResponse = Result.Ok(message).WithSuccess(new MessageAcceptedSuccess("Invitation to the team has been accepted"));
+                        if (Status == MessageStatus.Expired)
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAlreadyExpiredSuccess("Invitation to the team has already expired"));
+                        }
+                        else
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAcceptedSuccess("Invitation to the team has been accepted"));
+                        }
                     }
                 }
             }
@@ -55,10 +60,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 Message.ChangeState(MessageStatus.Pending);
                 actionResponse = Result.Fail<PlayerInvitationDto>(new MessageAcceptFailedError("Could not accept the invitation to the team"));
             }
-            if (actionResponse.IsFailed)
-            {
-                actionResponse.WithValue(message);
-            }
+
             return actionResponse;
         }
 
@@ -71,7 +73,6 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 if (DateTime.UtcNow >= ExpiresAt)
                 {
                     Message.ChangeState(MessageStatus.Expired);
-                    actionResponse = Result.Fail<PlayerInvitationDto>(new MessageExpiredError("The invitation has expired"));
                 }
                 else
                 {
@@ -84,12 +85,18 @@ namespace Service.Domain.States.Implementations.PendingMessage
                     if (message == null)
                     {
                         Message.ChangeState(MessageStatus.Pending);
-                        message = MessageDto;
                         actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRejectFailedError("Could not reject the invitation to the team"));
                     }
                     else
                     {
-                        actionResponse = Result.Ok(message).WithSuccess(new MessageRejectedSuccess("Invitation to the team has been rejected"));
+                        if (Status == MessageStatus.Expired)
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAlreadyExpiredSuccess("Invitation to the team has already expired"));
+                        }
+                        else
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageRejectedSuccess("Invitation to the team has been rejected"));
+                        }
                     }
                 }
             }
@@ -98,10 +105,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 Message.ChangeState(MessageStatus.Pending);
                 actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRejectFailedError("Could not reject the invitation to the team"));
             }
-            if (actionResponse.IsFailed)
-            {
-                actionResponse.WithValue(message);
-            }
+
             return actionResponse;
         }
 
@@ -114,7 +118,6 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 if (DateTime.UtcNow >= ExpiresAt)
                 {
                     Message.ChangeState(MessageStatus.Expired);
-                    actionResponse = Result.Fail<PlayerInvitationDto>(new MessageExpiredError("The invitation has expired"));
                 }
                 else
                 {
@@ -127,12 +130,18 @@ namespace Service.Domain.States.Implementations.PendingMessage
                     if (message == null)
                     {
                         Message.ChangeState(MessageStatus.Pending);
-                        message = MessageDto;
                         actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRescindFailedError("Could not rescind the invitation to the team"));
                     }
                     else
                     {
-                        actionResponse = Result.Ok(message).WithSuccess(new MessageRescindedSuccess("Invitation to the team has been rescinded"));
+                        if (Status == MessageStatus.Expired)
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAlreadyExpiredSuccess("Invitation to the team has already expired"));
+                        }
+                        else
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageRescindedSuccess("Invitation to the team has been rescinded"));
+                        }
                     }
                 }
             }
@@ -141,10 +150,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 Message.ChangeState(MessageStatus.Pending);
                 actionResponse = Result.Fail<PlayerInvitationDto>(new MessageRescindFailedError("Could not rescind the invitation to the team"));
             }
-            if (actionResponse.IsFailed)
-            {
-                actionResponse.WithValue(message);
-            }
+
             return actionResponse;
         }
     }

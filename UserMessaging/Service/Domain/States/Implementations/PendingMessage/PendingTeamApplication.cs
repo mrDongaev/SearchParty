@@ -21,7 +21,6 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 if (DateTime.UtcNow >= ExpiresAt)
                 {
                     Message.ChangeState(MessageStatus.Expired);
-                    actionResponse = Result.Fail<TeamApplicationDto>(new MessageExpiredError("The application has expired"));
                 }
                 else
                 {
@@ -45,7 +44,14 @@ namespace Service.Domain.States.Implementations.PendingMessage
                     }
                     else
                     {
-                        actionResponse = Result.Ok(message).WithSuccess(new MessageAcceptedSuccess("Application to the team has been accepted"));
+                        if (Status == MessageStatus.Expired)
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAlreadyExpiredSuccess("The application has expired"));
+                        }
+                        else
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAcceptedSuccess("Application to the team has been accepted"));
+                        }
                     }
                 }
             }
@@ -54,10 +60,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 Message.ChangeState(MessageStatus.Pending);
                 actionResponse = Result.Fail<TeamApplicationDto>(new MessageAcceptFailedError("Could not accept the application to the team"));
             }
-            if (actionResponse.IsFailed)
-            {
-                actionResponse.WithValue(message);
-            }
+
             return actionResponse;
         }
 
@@ -70,7 +73,6 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 if (DateTime.UtcNow >= ExpiresAt)
                 {
                     Message.ChangeState(MessageStatus.Expired);
-                    actionResponse = Result.Fail<TeamApplicationDto>(new MessageExpiredError("The application has expired"));
                 }
                 else
                 {
@@ -87,7 +89,14 @@ namespace Service.Domain.States.Implementations.PendingMessage
                     }
                     else
                     {
-                        actionResponse = Result.Ok(message).WithSuccess(new MessageAcceptedSuccess("Application to the team has been rejected"));
+                        if (Status == MessageStatus.Expired)
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAlreadyExpiredSuccess("The application has expired"));
+                        }
+                        else
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageRejectedSuccess("Application to the team has been rejected"));
+                        }
                     }
                 }
             }
@@ -96,10 +105,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 Message.ChangeState(MessageStatus.Pending);
                 actionResponse = Result.Fail<TeamApplicationDto>(new MessageRejectFailedError("Could not reject the application to the team"));
             }
-            if (actionResponse.IsFailed)
-            {
-                actionResponse.WithValue(message);
-            }
+
             return actionResponse;
         }
 
@@ -112,7 +118,6 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 if (DateTime.UtcNow >= ExpiresAt)
                 {
                     Message.ChangeState(MessageStatus.Expired);
-                    actionResponse = Result.Fail<TeamApplicationDto>(new MessageExpiredError("The application has expired"));
                 }
                 else
                 {
@@ -129,7 +134,14 @@ namespace Service.Domain.States.Implementations.PendingMessage
                     }
                     else
                     {
-                        actionResponse = Result.Ok(message).WithSuccess(new MessageRescindedSuccess("Application to the team has been rescinded"));
+                        if (Status == MessageStatus.Expired)
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageAlreadyExpiredSuccess("The application has expired"));
+                        }
+                        else
+                        {
+                            actionResponse = Result.Ok(message).WithSuccess(new MessageRescindedSuccess("Application to the team has been rescinded"));
+                        }
                     }
                 }
             }
@@ -138,10 +150,7 @@ namespace Service.Domain.States.Implementations.PendingMessage
                 Message.ChangeState(MessageStatus.Pending);
                 actionResponse = Result.Fail<TeamApplicationDto>(new MessageRescindFailedError("Could not rescind the application to the team"));
             }
-            if (actionResponse.IsFailed)
-            {
-                actionResponse.WithValue(message);
-            }
+
             return actionResponse;
         }
     }

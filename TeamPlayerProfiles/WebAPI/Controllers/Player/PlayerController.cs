@@ -153,7 +153,7 @@ namespace WebAPI.Controllers.Player
                 }
                 else
                 {
-                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => res.Value));
+                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => false));
                 }
             }
 

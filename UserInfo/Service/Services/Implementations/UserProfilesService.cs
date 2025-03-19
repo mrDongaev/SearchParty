@@ -1,13 +1,10 @@
 ﻿using FluentResults;
 using Library.Models.API.UserProfiles.User;
-using Library.Models.HttpResponses;
-using Library.Results.Errors.Http;
 using Library.Services.Interfaces.UserContextInterfaces;
 using Library.Utils;
 using Service.Services.Interfaces.UserProfilesInterfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace Service.Services.Implementations.UserProfileServices
 {

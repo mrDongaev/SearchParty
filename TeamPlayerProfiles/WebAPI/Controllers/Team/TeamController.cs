@@ -234,7 +234,7 @@ namespace WebAPI.Controllers.Team
                 }
                 else
                 {
-                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => res.Value));
+                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => false));
                 }
             }
 

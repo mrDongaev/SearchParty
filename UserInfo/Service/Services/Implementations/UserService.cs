@@ -19,11 +19,11 @@ namespace Service.Services.Implementations
             var user = await userRepo.Get(dto.Id, cancellationToken);
             if (user == null)
             {
-                return Result.Fail<UserDto?>(new EntityAlreadyExistsError("User with the given ID already exists")).WithValue(null);
+                return Result.Fail<UserDto?>(new EntityAlreadyExistsError("User with the given ID already exists"));
             }
             if (dto.Id != userContext.UserId)
             {
-                return Result.Fail<UserDto?>(new UnauthorizedError()).WithValue(null);
+                return Result.Fail<UserDto?>(new UnauthorizedError());
             }
             var newUser = mapper.Map<User>(dto);
             var createdUser = await userRepo.Add(newUser, cancellationToken);
@@ -46,11 +46,11 @@ namespace Service.Services.Implementations
             var profile = await userRepo.Get(id, cancellationToken);
             if (profile == null)
             {
-                return Result.Fail<bool>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(false);
+                return Result.Fail<bool>(new EntityNotFoundError("User profile with the given ID has not been found"));
             }
             if (profile.Id != userContext.UserId)
             {
-                return Result.Fail<bool>(new UnauthorizedError()).WithValue(false);
+                return Result.Fail<bool>(new UnauthorizedError());
             }
             var result = await userProfileService.Delete(id, cancellationToken);
             if (result.IsSuccess)
@@ -62,7 +62,7 @@ namespace Service.Services.Implementations
                 }
                 else
                 {
-                    return Result.Fail<bool>(new EntityNotFoundError("User profile with the given ID has not been found")).WithValue(false);
+                    return Result.Fail<bool>(new EntityNotFoundError("User profile with the given ID has not been found"));
                 }
             }
             else
@@ -117,7 +117,7 @@ namespace Service.Services.Implementations
             }
             else
             {
-                return Result.Fail<ICollection<UserDto>>(new EntitiesNotFoundError("No user profiles have been found.")).WithValue([]);
+                return Result.Fail<ICollection<UserDto>>(new EntitiesNotFoundError("No user profiles have been found."));
             }
         }
 
@@ -142,7 +142,7 @@ namespace Service.Services.Implementations
             }
             else
             {
-                return Result.Fail<ICollection<UserDto>>(new EntitiesNotFoundError("No user profiles have been found.")).WithValue([]);
+                return Result.Fail<ICollection<UserDto>>(new EntitiesNotFoundError("No user profiles have been found."));
             }
         }
 

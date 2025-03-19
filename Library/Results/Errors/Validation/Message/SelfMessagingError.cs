@@ -8,7 +8,7 @@
 
         public SelfMessagingError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(SelfMessagingError));
+            Metadata["ReasonName"] = nameof(SelfMessagingError);
         }
     }
 }

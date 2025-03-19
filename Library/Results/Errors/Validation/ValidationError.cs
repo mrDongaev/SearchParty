@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.Validation
+﻿namespace Library.Results.Errors.Validation
 {
     public class ValidationError : ErrorWithData
     {
@@ -8,7 +6,7 @@ namespace Library.Results.Errors.Validation
 
         public ValidationError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(ValidationError));
+            Metadata["ReasonName"] = nameof(ValidationError);
         }
     }
 }

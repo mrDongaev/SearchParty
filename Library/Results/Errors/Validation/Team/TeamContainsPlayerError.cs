@@ -8,7 +8,7 @@
 
         public TeamContainsPlayerError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(TeamContainsPlayerError));
+            Metadata["ReasonName"] = nameof(TeamContainsPlayerError);
         }
     }
 }

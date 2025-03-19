@@ -9,7 +9,7 @@
 
         public EntityRangeNotFoundError(string customMessage, object? data = null) : base(customMessage, data)
         {
-            WithMetadata("key", nameof(EntityRangeNotFoundError));
+            Metadata["ReasonName"] = nameof(EntityRangeNotFoundError);
         }
     }
 }

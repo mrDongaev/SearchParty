@@ -107,7 +107,7 @@ namespace WebAPI.Controllers.Player
 
             if (result.IsFailed)
             {
-                return TypedResults.NotFound(result.MapToHttpResponseBody(mapper.Map<PaginatedResult<GetPlayer.Response>>));
+                return TypedResults.NotFound(result.MapToHttpResponseBody(res => new PaginatedResult<GetPlayer.Response>() { PageSize = pageSize }));
             }
 
             return TypedResults.Ok(mapper.Map<PaginatedResult<GetPlayer.Response>>(result.Value));

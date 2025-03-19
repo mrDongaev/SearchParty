@@ -15,7 +15,7 @@ namespace Service.Services.Implementations.PositionServices
 
             if (position == null)
             {
-                return Result.Fail<PositionDto?>(new EntityNotFoundError("Position with the given ID has not been found")).WithValue(default);
+                return Result.Fail<PositionDto?>(new EntityNotFoundError("Position with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<PositionDto?>(position));
@@ -27,7 +27,7 @@ namespace Service.Services.Implementations.PositionServices
 
             if (positions.Count == 0)
             {
-                return Result.Fail<ICollection<PositionDto>>(new EntitiesNotFoundError("No positions have been found")).WithValue([]);
+                return Result.Fail<ICollection<PositionDto>>(new EntitiesNotFoundError("No positions have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<PositionDto>>(positions));
@@ -39,7 +39,7 @@ namespace Service.Services.Implementations.PositionServices
 
             if (positions.Count == 0)
             {
-                return Result.Fail<ICollection<PositionDto>>(new EntityRangeNotFoundError("No positions with the given IDs have been found")).WithValue([]);
+                return Result.Fail<ICollection<PositionDto>>(new EntityRangeNotFoundError("No positions with the given IDs have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<PositionDto>>(positions));

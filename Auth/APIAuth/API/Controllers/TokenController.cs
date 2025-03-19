@@ -1,13 +1,7 @@
 ﻿using Application.Exceptions;
-using Application.Interfaces;
 using Application.User;
-using Application.User.Login;
 using Application.User.Refresh;
-using Azure.Core;
-using Domain;
 using Infrastructure.Security;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIAuth.API.Controllers
@@ -17,7 +11,7 @@ namespace APIAuth.API.Controllers
     {
         private readonly JwtGenerator? _tokenGenerator;
 
-        public TokenController() 
+        public TokenController()
         {
             _tokenGenerator = new JwtGenerator();
         }

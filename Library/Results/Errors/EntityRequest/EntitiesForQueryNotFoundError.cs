@@ -6,7 +6,7 @@
 
         public EntitiesForQueryNotFoundError(string customMessage, object? data = null) : base(customMessage, data)
         {
-            WithMetadata("key", nameof(EntitiesForQueryNotFoundError));
+            Metadata["ReasonName"] = nameof(EntitiesForQueryNotFoundError);
         }
     }
 }

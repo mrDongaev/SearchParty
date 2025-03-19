@@ -15,7 +15,7 @@ namespace Service.Services.Implementations.HeroServices
 
             if (hero == null)
             {
-                return Result.Fail<HeroDto?>(new EntityNotFoundError($"Hero with the given ID has not been found")).WithValue(default);
+                return Result.Fail<HeroDto?>(new EntityNotFoundError($"Hero with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<HeroDto?>(hero));
@@ -27,7 +27,7 @@ namespace Service.Services.Implementations.HeroServices
 
             if (heroes.Count == 0)
             {
-                return Result.Fail<ICollection<HeroDto>>(new EntitiesNotFoundError("No heroes have been found")).WithValue([]);
+                return Result.Fail<ICollection<HeroDto>>(new EntitiesNotFoundError("No heroes have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<HeroDto>>(heroes));
@@ -39,7 +39,7 @@ namespace Service.Services.Implementations.HeroServices
 
             if (heroes.Count == 0)
             {
-                return Result.Fail<ICollection<HeroDto>>(new EntityRangeNotFoundError("Heroes with the given IDs have not been found")).WithValue([]);
+                return Result.Fail<ICollection<HeroDto>>(new EntityRangeNotFoundError("Heroes with the given IDs have not been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<HeroDto>>(heroes));

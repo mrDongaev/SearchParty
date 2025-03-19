@@ -1,29 +1,20 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using WebSearchPartyApi;
+using Application.Interfaces;
+using Application.User.Login;
 using Domain;
 using EFData;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Hosting;
-using Application.User.Login;
-using MediatR;
-using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Application.Interfaces;
+using Infrastructure.Clients;
 using Infrastructure.Security;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Library.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using Infrastructure.Clients;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json;
+using WebSearchPartyApi;
 
 namespace APIAuth
 {
@@ -300,7 +291,7 @@ namespace APIAuth
                     var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the user manager
 
                     context.Database.EnsureDeleted();
-                    context.Database.EnsureCreated();    
+                    context.Database.EnsureCreated();
                 }
                 catch (Exception ex)
                 {

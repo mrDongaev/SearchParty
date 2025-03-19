@@ -10,7 +10,7 @@ namespace Library.Results.Successes.Messages
 
         public MessageSentSuccess(string message) : base(message)
         {
-            WithMetadata("key", nameof(MessageSentSuccess));
+            Metadata["ReasonName"] = nameof(MessageSentSuccess);
         }
     }
 }

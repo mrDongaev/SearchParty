@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.Messages
+﻿namespace Library.Results.Errors.Messages
 {
     public class MessageRejectFailedError : ErrorWithData
     {
@@ -8,7 +6,7 @@ namespace Library.Results.Errors.Messages
 
         public MessageRejectFailedError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(MessageRejectFailedError));
+            Metadata["ReasonName"] = nameof(MessageRejectFailedError);
         }
     }
 }

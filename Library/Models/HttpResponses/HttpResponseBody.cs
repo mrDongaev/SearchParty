@@ -75,7 +75,7 @@ namespace Library.Models.HttpResponses
                 .WithErrors(errors)
                 .WithSuccesses(messages);
 
-            if (IsSuccess)
+            if (result.IsSuccess)
             {
                 result.WithValue(Data);
             }
@@ -91,7 +91,7 @@ namespace Library.Models.HttpResponses
             Dictionary<string, List<string>> messages = [];
             foreach (var reason in reasons)
             {
-                if (!reason.Metadata.TryGetValue("key", out object? reasonName))
+                if (!reason.Metadata.TryGetValue("ReasonName", out object? reasonName))
                 {
                     reasonName = defaultKey;
                 }

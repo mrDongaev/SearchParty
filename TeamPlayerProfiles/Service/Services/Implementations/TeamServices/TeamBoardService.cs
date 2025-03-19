@@ -29,7 +29,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (updatedTeam == null)
             {
-                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found")).WithValue(default);
+                return Result.Fail<TeamDto?>(new EntityNotFoundError("Team with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<TeamDto?>(updatedTeam));
@@ -88,7 +88,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Count == 0)
             {
-                return Result.Fail<ICollection<TeamDto>>(new EntitiesForQueryNotFoundError("Teams matching given filtering query have not been found")).WithValue([]);
+                return Result.Fail<ICollection<TeamDto>>(new EntitiesForQueryNotFoundError("Teams matching given filtering query have not been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<TeamDto>>(teams));
@@ -101,7 +101,7 @@ namespace Service.Services.Implementations.TeamServices
 
             if (teams.Total == 0)
             {
-                return Result.Fail<PaginatedResult<TeamDto>>(new EntitiesForQueryNotFoundError("Teams matching given filtering query have not been found")).WithValue(result);
+                return Result.Fail<PaginatedResult<TeamDto>>(new EntitiesForQueryNotFoundError("Teams matching given filtering query have not been found"));
             }
 
             return Result.Ok(result);

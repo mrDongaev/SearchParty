@@ -8,7 +8,7 @@
 
         public NoPendingMessageError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(NoPendingMessageError));
+            Metadata["ReasonName"] = nameof(NoPendingMessageError);
         }
     }
 }

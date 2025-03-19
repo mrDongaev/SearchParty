@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.EntityRequest
+﻿namespace Library.Results.Errors.EntityRequest
 {
     public class EntityNotFoundError : ErrorWithData
     {
@@ -10,7 +8,7 @@ namespace Library.Results.Errors.EntityRequest
 
         public EntityNotFoundError(string customMessage, object? data = null) : base(customMessage, data)
         {
-            WithMetadata("key", nameof(EntityNotFoundError));
+            Metadata["ReasonName"] = nameof(EntityNotFoundError);
         }
     }
 }

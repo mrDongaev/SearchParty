@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.Http
+﻿namespace Library.Results.Errors.Http
 {
     public class HttpRequestFailedError : ErrorWithData
     {
@@ -8,7 +6,7 @@ namespace Library.Results.Errors.Http
 
         public HttpRequestFailedError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(HttpRequestFailedError));
+            Metadata["ReasonName"] = nameof(HttpRequestFailedError);
         }
     }
 }

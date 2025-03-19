@@ -8,7 +8,7 @@ namespace Library.Results.Successes.Messages
 
         public MessageRescindedSuccess(string message) : base(message)
         {
-            WithMetadata("key", nameof(MessageRescindedSuccess));
+            Metadata["ReasonName"] = nameof(MessageRescindedSuccess);
         }
     }
 }

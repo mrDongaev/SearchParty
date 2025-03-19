@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-using Library.Results.Errors.Messages;
+using Library.Results.Successes.Messages;
 using Service.Domain.Message;
 using Service.Domain.States.Interfaces;
 using Service.Dtos.Message;
@@ -25,7 +25,7 @@ namespace Service.Domain.States.Implementations.RescindedMessage
 
         private Result<TeamApplicationDto> _giveFailureResponse()
         {
-            return Result.Fail<TeamApplicationDto>(new MessageAcceptedError("The application has already been rescinded")).WithValue(MessageDto);
+            return Result.Ok(MessageDto).WithSuccess(new MessageAlreadyRescindedSuccess("The application has already been rescinded"));
         }
     }
 }

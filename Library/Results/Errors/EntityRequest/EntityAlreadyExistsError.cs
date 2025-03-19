@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.EntityRequest
+﻿namespace Library.Results.Errors.EntityRequest
 {
     public class EntityAlreadyExistsError : ErrorWithData
     {
@@ -8,7 +6,7 @@ namespace Library.Results.Errors.EntityRequest
 
         public EntityAlreadyExistsError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(EntityAlreadyExistsError));
+            Metadata["ReasonName"] = nameof(EntityAlreadyExistsError);
         }
     }
 }

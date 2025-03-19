@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-using Library.Results.Errors.Messages;
+using Library.Results.Successes.Messages;
 using Service.Domain.Message;
 using Service.Domain.States.Interfaces;
 using Service.Dtos.Message;
@@ -25,7 +25,7 @@ namespace Service.Domain.States.Implementations.ExpiredMessage
 
         private Result<PlayerInvitationDto> _giveFailureResponse()
         {
-            return Result.Fail<PlayerInvitationDto>(new MessageAcceptedError("The invitation has expired")).WithValue(MessageDto);
+            return Result.Ok(MessageDto).WithSuccess(new MessageAlreadyExpiredSuccess("The invitation has expired"));
         }
     }
 }

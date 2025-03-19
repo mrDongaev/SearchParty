@@ -77,7 +77,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<Results<
             Ok<GetUser.Response>,
-            BadRequest<HttpResponseBody<GetUser.Response>>,
+            BadRequest<HttpResponseBody<GetUser.Response?>>,
             UnauthorizedHttpResult>>
             Create(CreateUser.Request request, CancellationToken cancellationToken)
         {
@@ -104,7 +104,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType<HttpResponseBody>(StatusCodes.Status404NotFound)]
         public async Task<Results<
             Ok<GetUser.Response>,
-            NotFound<HttpResponseBody<GetUser.Response>>,
+            NotFound<HttpResponseBody<GetUser.Response?>>,
             UnauthorizedHttpResult>>
             Update(UpdateUser.Request request, CancellationToken cancellationToken)
         {
@@ -145,7 +145,7 @@ namespace WebAPI.Controllers
                 }
                 else if (result.HasError<EntityNotFoundError>())
                 {
-                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => res.Value));
+                    return TypedResults.NotFound(result.MapToHttpResponseBody(res => false));
                 }
             }
 

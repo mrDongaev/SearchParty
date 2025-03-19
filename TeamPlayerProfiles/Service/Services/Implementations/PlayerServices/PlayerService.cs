@@ -24,7 +24,7 @@ namespace Service.Services.Implementations.PlayerServices
             var userId = await playerRepo.GetProfileUserId(id, cancellationToken);
             if (userId != userContext.UserId)
             {
-                return Result.Fail<bool>(new UnauthorizedError()).WithValue(false);
+                return Result.Fail<bool>(new UnauthorizedError());
             }
 
             var result = await playerRepo.Delete(id, cancellationToken);
@@ -34,7 +34,7 @@ namespace Service.Services.Implementations.PlayerServices
                 return Result.Ok(true);
             }
 
-            return Result.Fail<bool>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(false);
+            return Result.Fail<bool>(new EntityNotFoundError("Player with the given ID has not been found"));
         }
 
         public async Task<Result<PlayerDto?>> Get(Guid id, CancellationToken cancellationToken = default)
@@ -48,7 +48,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (!player.Displayed.HasValue || (!player.Displayed.Value && player.UserId != userContext.UserId))
             {
-                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<PlayerDto?>(new UnauthorizedError());
             }
 
             return Result.Ok(mapper.Map<PlayerDto?>(player));
@@ -62,7 +62,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (players.Count == 0)
             {
-                return Result.Fail<ICollection<PlayerDto>>(new EntitiesNotFoundError("No players have been found")).WithValue([]);
+                return Result.Fail<ICollection<PlayerDto>>(new EntitiesNotFoundError("No players have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));
@@ -79,7 +79,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (players.Count == 0)
             {
-                return Result.Fail<ICollection<PlayerDto>>(new EntityRangeNotFoundError("No players of user with the given ID have been found")).WithValue([]);
+                return Result.Fail<ICollection<PlayerDto>>(new EntityRangeNotFoundError("No players of user with the given ID have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));
@@ -94,7 +94,7 @@ namespace Service.Services.Implementations.PlayerServices
                 return Result.Ok(userId);
             }
 
-            return Result.Fail<Guid?>(new EntityNotFoundError("No users corresponding to the given player ID have been found")).WithValue(default);
+            return Result.Fail<Guid?>(new EntityNotFoundError("No users corresponding to the given player ID have been found"));
         }
 
         public async Task<Result<ICollection<PlayerDto>>> GetRange(ICollection<Guid> ids, CancellationToken cancellationToken = default)
@@ -105,7 +105,7 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (players.Count == 0)
             {
-                return Result.Fail<ICollection<PlayerDto>>(new EntityRangeNotFoundError("No players with the given IDs have been found")).WithValue([]);
+                return Result.Fail<ICollection<PlayerDto>>(new EntityRangeNotFoundError("No players with the given IDs have been found"));
             }
 
             return Result.Ok(mapper.Map<ICollection<PlayerDto>>(players));
@@ -119,14 +119,14 @@ namespace Service.Services.Implementations.PlayerServices
 
             if (!userId.HasValue || userId.Value != userContext.UserId)
             {
-                return Result.Fail<PlayerDto?>(new UnauthorizedError()).WithValue(default);
+                return Result.Fail<PlayerDto?>(new UnauthorizedError());
             }
 
             var updatedPlayer = await playerRepo.Update(player, dto.HeroIds, cancellationToken);
 
             if (updatedPlayer == null)
             {
-                return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found")).WithValue(default);
+                return Result.Fail<PlayerDto?>(new EntityNotFoundError("Player with the given ID has not been found"));
             }
 
             return Result.Ok(mapper.Map<PlayerDto?>(updatedPlayer));

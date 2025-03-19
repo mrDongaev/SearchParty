@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace Library.Results.Errors.Messages
+﻿namespace Library.Results.Errors.Messages
 {
     public class MessageRescindFailedError : ErrorWithData
     {
@@ -8,7 +6,7 @@ namespace Library.Results.Errors.Messages
 
         public MessageRescindFailedError(string message, object? data = null) : base(message, data)
         {
-            WithMetadata("key", nameof(MessageRescindFailedError));
+            Metadata["ReasonName"] = nameof(MessageRescindFailedError);
         }
     }
 }
